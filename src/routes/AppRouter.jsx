@@ -24,70 +24,64 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-       {/* ── Públicas ── */}
+  {/* ── Públicas ── */}
 <Route path="/login" element={
-  <PageTransition><LoginView /></PageTransition>
+  <PageTransition type="slideUp"><LoginView /></PageTransition>
 }/>
 <Route path="/register" element={
-  <PageTransition><RegisterView /></PageTransition>
+  <PageTransition type="slideUp"><RegisterView /></PageTransition>
 }/>
-   {/*Recuperación de contraseña */}
 <Route path="/forgot-password" element={
-  <PageTransition><ForgotPasswordView /></PageTransition>
-} />
+  <PageTransition type="scale"><ForgotPasswordView /></PageTransition>
+}/>
 <Route path="/verify-code" element={
-  <PageTransition><VerifyCodeView /></PageTransition>
-} />
+  <PageTransition type="scale"><VerifyCodeView /></PageTransition>
+}/>
 <Route path="/reset-password" element={
-  <PageTransition><ResetPasswordView /></PageTransition>
-} />
+  <PageTransition type="scale"><ResetPasswordView /></PageTransition>
+}/>
+
 {/* ── Admin ── */}
 <Route path="/admin/dashboard" element={
   <ProtectedRoute allowedRoles={["admin"]}>
-    <PageTransition><AdminDashboard /></PageTransition>
+    <PageTransition type="slide"><AdminDashboard /></PageTransition>
   </ProtectedRoute>
 }/>
 <Route path="/admin/teachers" element={
   <ProtectedRoute allowedRoles={["admin"]}>
-    <PageTransition><TeachersView /></PageTransition>
+    <PageTransition type="slide"><TeachersView /></PageTransition>
   </ProtectedRoute>
 }/>
 <Route path="/admin/classes" element={
   <ProtectedRoute allowedRoles={["admin"]}>
-    <PageTransition><ClassesView /></PageTransition>
+    <PageTransition type="slide"><ClassesView /></PageTransition>
   </ProtectedRoute>
 }/>
 <Route path="/admin/reports" element={
   <ProtectedRoute allowedRoles={["admin"]}>
-    <PageTransition><ReportsView /></PageTransition>
+    <PageTransition type="slide"><ReportsView /></PageTransition>
   </ProtectedRoute>
 }/>
 
 {/* ── Profesor ── */}
 <Route path="/teacher/dashboard" element={
   <ProtectedRoute allowedRoles={["teacher"]}>
-    <PageTransition><ProfessorDashboard /></PageTransition>
+    <PageTransition type="slide"><ProfessorDashboard /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/teacher/schedule" element={
+  <ProtectedRoute allowedRoles={["teacher"]}>
+    <PageTransition type="slide"><ScheduleView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/teacher/messages" element={
+  <ProtectedRoute allowedRoles={["teacher"]}>
+    <PageTransition type="slide"><MessagesView /></PageTransition>
   </ProtectedRoute>
 }/>
 
-{/* Ruta de mensajeria */}
-<Route path="/teacher/messages" element={
-  <ProtectedRoute allowedRoles={["teacher"]}>
-    <PageTransition><MessagesView /></PageTransition>
-  </ProtectedRoute>
-}/>
 {/* ── Default ── */}
 <Route path="*" element={<Navigate to="/login" replace />} />
-<Route path="/teacher/dashboard" element={
-  <ProtectedRoute allowedRoles={["teacher"]}>
-    <ProfessorDashboard />
-  </ProtectedRoute>
-} />
-<Route path="/teacher/schedule" element={
-  <ProtectedRoute allowedRoles={["teacher"]}>
-    <PageTransition><ScheduleView /></PageTransition>
-  </ProtectedRoute>
-}/>
       </Routes>
     </AnimatePresence>
   );

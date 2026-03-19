@@ -19,7 +19,11 @@
   box-sizing: border-box;
   font-family: var(--font-family);
 }
-
+.navBrand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
 .navTitle {
   font-size: 1.2rem;
   font-weight: 700;

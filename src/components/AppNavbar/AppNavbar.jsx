@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./AppNavbar.module.css";
+import NextWordLogo from "../NextWordLogo/NextWordLogo";
 
 const AppNavbar = ({ title, navItems, activeItem }) => {
   const { user, logout } = useAuth();
@@ -8,9 +9,9 @@ const AppNavbar = ({ title, navItems, activeItem }) => {
 
   return (
     <header className={styles.navbar}>
-      <div className={styles.navBrand}>
-        <h1 className={styles.navTitle}>{title}</h1>
-      </div>
+     <div className={styles.navBrand}>
+  <NextWordLogo size="sm" />
+</div>
 
       <nav className={styles.navLinks}>
         {navItems.map((item) => (

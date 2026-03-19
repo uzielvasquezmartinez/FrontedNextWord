@@ -284,7 +284,7 @@ const RegisterView = () => {
       <aside className={styles.branding}>
         <div className={styles.brandingContent}>
         
-           <NextWordLogo />
+           <NextWordLogo  size="md"/>
           
           <p className={styles.tagline}>
             Transforma tu aprendizaje con clases personalizadas y profesores expertos

@@ -39,7 +39,7 @@ const LoginView = () => {
         <div className={styles.brandingContent}>
 <h1 className={styles.welcome}>Transforma tu futuro dominando el ingles
 hoy </h1>
-          <NextWordLogo />
+          <NextWordLogo size="md" />
 
 
           <p className={styles.tagline}>

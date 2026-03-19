@@ -239,22 +239,25 @@
   border-top: 1.5px solid var(--color-border);
   flex-shrink: 0;
 }
-
 .chatInput {
   flex: 1;
   padding: 0.65rem 1rem;
   border-radius: 999px;
-  border: 1.5px solid var(--color-border);
+  border: 1.5px solid var(--color-secondary);
+  background-color: #ffffff;
   font-size: 0.875rem;
   font-family: var(--font-family);
   color: var(--color-text-body);
   outline: none;
-  transition: border-color var(--transition-base);
+  transition: border-color 0.2s ease;
 }
 
-.chatInput:focus       { border-color: var(--color-primary); }
-.chatInput::placeholder { color: #9ca3af; }
+.chatInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(146, 60, 255, 0.12);
+}
 
+.chatInput::placeholder { color: #9ca3af; }
 .sendBtn {
   width: 42px;
   height: 42px;

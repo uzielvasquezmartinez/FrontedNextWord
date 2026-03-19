@@ -53,14 +53,14 @@ const navigate = useNavigate();
 
   return (
     <div className={styles.page}>
-      <AppNavbar title="NextWord" navItems={TEACHER_NAV} activeItem="Inicio" />
+      <AppNavbar  navItems={TEACHER_NAV} activeItem="Inicio" />
 
       <main className={styles.main}>
 
         <section className={styles.banner}>
           <div className={styles.bannerText}>
             <h2 className={styles.bannerTitle}>
-              Bienvenido, profesor {user?.name?.split(" ")[0] ?? "Profesor"}
+              Bienvenido, {user?.name?.split(" ")[0] ?? "Profesor"}
             </h2>
             <p className={styles.bannerSub}>
               Tiene(s) <strong>{TODAY_CLASSES.length} clases programada(s)</strong> para hoy

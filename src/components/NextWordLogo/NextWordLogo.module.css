@@ -8,6 +8,22 @@
 }
 
 .logoImg {
+  width: 100px;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}
+
+/* Tamaño navbar */
+.sm {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Tamaño login/register */
+.md {
   width: 500px;
   height: auto;
   border-radius: 12px;

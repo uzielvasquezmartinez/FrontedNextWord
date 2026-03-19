@@ -136,7 +136,7 @@ const TeachersView = () => {
 
       {/* ════ CONTENIDO ════ */}
       <main className={styles.main}>
-        <p className={styles.sectionLabel}>Gestión de profesores</p>
+        <p className={styles.sectionLabel}></p>
 
         {/* Barra de herramientas */}
         <div className={styles.toolbar}>
