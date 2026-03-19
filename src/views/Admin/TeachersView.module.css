@@ -1,0 +1,591 @@
+/* ================================================================
+   src/views/Admin/TeachersView.module.css
+   ================================================================ */
+
+.page {
+  --color-primary:        #7c5cbf;
+  --color-primary-hover:  #6a4aad;
+  --color-primary-border: #a78bdf;
+  --gradient-from:        #4f6ef7;
+  --gradient-to:          #8b5cf6;
+
+  --color-text-white:     #ffffff;
+  --color-text-heading:   #111827;
+  --color-text-body:      #374151;
+  --color-text-muted:     #6b7280;
+  --color-bg-page:        #f3f4f6;
+  --color-bg-card:        #ffffff;
+  --color-border:         #e5e7eb;
+
+  --badge-active-bg:      #d1fae5;
+  --badge-active-text:    #065f46;
+  --badge-inactive-bg:    #fee2e2;
+  --badge-inactive-text:  #991b1b;
+
+  --btn-eye-color:        #6b7280;
+  --btn-edit-color:       #7c5cbf;
+  --btn-delete-color:     #dc2626;
+
+  --radius-sm:            6px;
+  --radius-md:            12px;
+  --radius-lg:            18px;
+  --shadow-card:          0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-modal:         0 20px 60px rgba(0, 0, 0, 0.18);
+  --transition-base:      0.2s ease;
+  --font-family:          'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================================================
+   NAVBAR
+   ================================================================ */
+
+.navbar {
+  width: 100%;
+  background: linear-gradient(90deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 68px;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.navTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-white);
+  white-space: nowrap;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.3rem;
+}
+
+.navItem {
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-white);
+}
+
+.navItemActive {
+  background-color: var(--color-text-white);
+  color: #111827;
+  font-weight: 600;
+}
+
+.navItemActive:hover {
+  background-color: var(--color-text-white);
+  color: #111827;
+}
+
+.navUser {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navUserName {
+  color: var(--color-text-white);
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.avatarBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  padding: 0;
+}
+
+.avatarBtn:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ================================================================
+   MAIN
+   ================================================================ */
+
+.main {
+  flex: 1;
+  padding: 1.5rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.sectionLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Toolbar ── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.7rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.searchInput {
+  padding: 0.55rem 0.8rem 0.55rem 2.2rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-family: var(--font-family);
+  color: var(--color-text-body);
+  background-color: var(--color-bg-card);
+  outline: none;
+  width: 220px;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(124, 92, 191, 0.15);
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btnNew {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.btnNew:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+/* Toggle Profesores / Estudiantes */
+.toggle {
+  display: flex;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1.5px solid var(--color-primary);
+}
+
+.toggleBtn {
+  padding: 0.45rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.toggleActive {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+  font-weight: 600;
+}
+
+/* ── Tabla ── */
+
+.tableCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  padding: 0.9rem 1.25rem;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-body);
+  border-bottom: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-card);
+}
+
+.tr {
+  transition: background-color var(--transition-base);
+}
+
+.tr:hover {
+  background-color: #fafafa;
+}
+
+.td {
+  padding: 0.9rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-body);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tr:last-child .td {
+  border-bottom: none;
+}
+
+.emptyRow {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Badge estado */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badgeActive {
+  background-color: var(--badge-active-bg);
+  color: var(--badge-active-text);
+}
+
+.badgeInactive {
+  background-color: var(--badge-inactive-bg);
+  color: var(--badge-inactive-text);
+}
+
+/* Botones de acción */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnAction {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--btn-eye-color);
+  transition: background-color var(--transition-base), color var(--transition-base);
+  padding: 0;
+}
+
+.btnAction:hover {
+  background-color: #f3f4f6;
+}
+
+.btnEdit {
+  color: var(--btn-edit-color);
+}
+
+.btnEdit:hover {
+  background-color: #ede9ff;
+}
+
+.btnDelete {
+  color: var(--btn-delete-color);
+}
+
+.btnDelete:hover {
+  background-color: #fee2e2;
+}
+
+/* ================================================================
+   MODALES
+   ================================================================ */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modalBox {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color var(--transition-base);
+}
+
+.modalClose:hover {
+  color: var(--color-text-heading);
+}
+
+.modalBody {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Detalle */
+.detailGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem 1.5rem;
+  align-items: center;
+}
+
+.detailLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailValue {
+  font-size: 0.9rem;
+  color: var(--color-text-body);
+}
+
+/* Formulario del modal */
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.formLabel {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-body);
+  margin-bottom: 0.2rem;
+  display: block;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-family: var(--font-family);
+  color: var(--color-text-body);
+  background-color: var(--color-bg-card);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.formInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(124, 92, 191, 0.15);
+}
+
+/* Mensaje de eliminación */
+.deleteMsg {
+  font-size: 0.9rem;
+  color: var(--color-text-body);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Botones del modal */
+.btnPrimary {
+  padding: 0.55rem 1.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.btnPrimary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btnSecondary {
+  padding: 0.55rem 1.25rem;
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.btnSecondary:hover {
+  background-color: #f3f4f6;
+}
+
+.btnDanger {
+  padding: 0.55rem 1.25rem;
+  background-color: #dc2626;
+  color: var(--color-text-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.btnDanger:hover {
+  background-color: #b91c1c;
+}
+
+/* ================================================================
+   RESPONSIVO
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .navLinks {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 1.25rem 1rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .tableCard {
+    overflow-x: auto;
+  }
+}

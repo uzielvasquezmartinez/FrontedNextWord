@@ -1,0 +1,373 @@
+/* ================================================================
+   src/views/Admin/ClassesView.module.css
+   ================================================================ */
+
+.page {
+  --color-primary:          #2B58FE;
+  --color-secondary:        #923CFF;
+  --color-text-heading:     #111827;
+  --color-text-body:        #374151;
+  --color-text-muted:       #6b7280;
+  --color-text-white:       #ffffff;
+  --color-bg-page:          #f3f4f6;
+  --color-bg-card:          #ffffff;
+  --color-border:           #e5e7eb;
+
+  --badge-prog-bg:          #dbeafe;
+  --badge-prog-text:        #1d4ed8;
+  --badge-cancel-bg:        #fee2e2;
+  --badge-cancel-text:      #991b1b;
+
+  --filter-prog-bg:         rgba(43, 88, 254, 0.12);
+  --filter-prog-text:       #2B58FE;
+  --filter-cancel-bg:       rgba(220, 38, 38, 0.1);
+  --filter-cancel-text:     #dc2626;
+
+  --radius-sm:              8px;
+  --radius-md:              14px;
+  --radius-lg:              18px;
+  --shadow-card:            0 1px 4px rgba(0, 0, 0, 0.07);
+  --shadow-modal:           0 20px 60px rgba(0, 0, 0, 0.18);
+  --transition-base:        0.2s ease;
+  --font-family:            'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================================================
+   MAIN
+   ================================================================ */
+
+.main {
+  flex: 1;
+  padding: 1.75rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Filtros ── */
+
+.filtersRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+  margin-right: 0.25rem;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.filterBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filterBtnActive {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-white);
+  font-weight: 600;
+}
+
+.filterBtnActive:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+}
+/* ── Filtros: estado idle (sin seleccionar) ─────────────────── */
+.filterIdleProgramada  { color: #16a34a; border-color: #16a34a; }
+.filterIdleCancelada   { color: #dc2626; border-color: #dc2626; }
+.filterIdlePreagendada { color: #b45309; border-color: #b45309; }
+.filterIdleCompletada  { color: #0369a1; border-color: #0369a1; }
+
+/* ── Filtros: estado active (seleccionado) ──────────────────── */
+.filterActiveDefault    { background: #6b7280; color: #fff; border-color: #6b7280; }
+.filterActiveProgramada { background: #16a34a; color: #fff; border-color: #16a34a; }
+.filterActiveCancelada  { background: #dc2626; color: #fff; border-color: #dc2626; }
+.filterActivePreagendada{ background: #b45309; color: #fff; border-color: #b45309; }
+.filterActiveCompletada { background: #0369a1; color: #fff; border-color: #0369a1; }
+
+/* ── Badges en tarjetas ─────────────────────────────────────── */
+.badgePreagendada { background: #fef3c7; color: #b45309; }
+.badgeCompletada  { background: #dbeafe; color: #0369a1; }
+
+.filterDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── Lista de tarjetas ── */
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+/* ── Tarjeta ── */
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--color-border);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  cursor: pointer;
+  transition: box-shadow var(--transition-base), border-color var(--transition-base), transform var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(43, 88, 254, 0.12);
+  border-color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+/* Avatar */
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.avatarSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Info */
+.cardInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cardSubject {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.cardMeta {
+  font-size: 0.82rem;
+  color: var(--color-text-body);
+  margin: 0;
+}
+
+.cardMeta strong {
+  font-weight: 600;
+}
+
+.cardDate {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-white);
+  background-color: #6b7280;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* Derecha */
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.cardPrice {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badgeProgramada {
+  background-color: var(--badge-prog-bg);
+  color: var(--badge-prog-text);
+}
+
+.badgeCancelada {
+  background-color: var(--badge-cancel-bg);
+  color: var(--badge-cancel-text);
+}
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modalBox {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 420px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color var(--transition-base);
+}
+
+.modalClose:hover {
+  color: var(--color-text-heading);
+}
+
+.modalBody {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem 1.5rem;
+  align-items: center;
+}
+
+.detailLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailValue {
+  font-size: 0.9rem;
+  color: var(--color-text-body);
+}
+
+.btnSecondary {
+  padding: 0.55rem 1.25rem;
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.btnSecondary:hover {
+  background-color: #f3f4f6;
+}
+
+/* ================================================================
+   RESPONSIVO
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1.25rem 1rem;
+  }
+  .card {
+    flex-wrap: wrap;
+  }
+  .cardRight {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

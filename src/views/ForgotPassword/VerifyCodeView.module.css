@@ -1,0 +1,141 @@
+.backBtn {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backBtn:hover {
+  border-color: #2B58FE;
+  color: #2B58FE;
+}
+
+.iconWrapper {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+  color: #2B58FE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.subtitle strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+.codeInputs {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.digitInput {
+  width: 52px;
+  height: 60px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: #111827;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #f9fafb;
+}
+
+.digitInput:focus {
+  border-color: #2B58FE;
+  background-color: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(43,88,254,0.12);
+}
+
+.digitInputFilled {
+  border-color: #2B58FE;
+  background-color: #eff6ff;
+  color: #2B58FE;
+}
+
+.digitInputError {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.errorText {
+  font-size: 0.78rem;
+  color: #dc2626;
+  font-weight: 500;
+  text-align: center;
+}
+
+.btnPrimary {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2E3192, #8E2DE2);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Poppins', system-ui, sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btnPrimary:hover    { opacity: 0.88; }
+.btnPrimary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.resendBtn {
+  background: none;
+  border: none;
+  color: #2B58FE;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Poppins', system-ui, sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.resendBtn:hover    { opacity: 0.75; }
+.resendBtn:disabled { color: #16a34a; cursor: default; }

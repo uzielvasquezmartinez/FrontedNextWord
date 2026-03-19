@@ -1,0 +1,16 @@
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Variantes */
+.active      { background-color: #dcfce7; color: #16a34a; }
+.inactive    { background-color: #fee2e2; color: #991b1b; }
+.programada  { background-color: #dbeafe; color: #1d4ed8; }
+.cancelada   { background-color: #fee2e2; color: #991b1b; }
+.preagendada { background-color: #fef3c7; color: #b45309; }
+.completada  { background-color: #dbeafe; color: #0369a1; }
+.default     { background-color: #f3f4f6; color: #6b7280; }

@@ -1,0 +1,117 @@
+
+.navbar {
+  --gradient-from:       #2B58FE;
+  --gradient-to:         #923CFF;
+  --color-text-white:    #ffffff;
+  --nav-active-bg:       #ffffff;
+  --nav-active-text:     #111827;
+  --font-family:         'Poppins', system-ui, -apple-system, sans-serif;
+  --transition-base:     0.2s ease;
+
+  width: 100%;
+  background: linear-gradient(90deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 68px;
+  gap: 1.5rem;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+.navTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-white);
+  white-space: nowrap;
+  margin: 0;
+  flex-shrink: 0;
+  font-family: Poppins;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.3rem;
+}
+
+.navItem {
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-white);
+}
+
+.navItemActive {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  font-weight: 600;
+}
+
+.navItemActive:hover {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
+}
+
+.navUser {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navUserName {
+  color: var(--color-text-white);
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.avatarBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  padding: 0;
+}
+
+.avatarBtn:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .navLinks {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}

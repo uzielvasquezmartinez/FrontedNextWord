@@ -1,0 +1,305 @@
+/* ================================================================
+   src/views/Admin/AdminDashboard.module.css
+   ================================================================ */
+
+.page {
+  /* ── Variables ─────────────────────────────────────────────── */
+  --color-primary:        #7c5cbf;
+  --color-primary-hover:  #6a4aad;
+  --gradient-from:        #4f6ef7;
+  --gradient-to:          #8b5cf6;
+
+  --color-text-white:     #ffffff;
+  --color-text-heading:   #111827;
+  --color-text-body:      #374151;
+  --color-text-muted:     #6b7280;
+  --color-bg-page:        #f3f4f6;
+  --color-bg-card:        #ffffff;
+  --color-border:         #e5e7eb;
+  --color-icon-bg:        #ede9ff;
+  --color-icon:           #7c5cbf;
+
+  --nav-active-bg:        #ffffff;
+  --nav-active-text:      #111827;
+  --nav-inactive-text:    rgba(255, 255, 255, 0.85);
+
+  --radius-sm:            8px;
+  --radius-md:            14px;
+  --radius-lg:            20px;
+  --shadow-card:          0 1px 4px rgba(0, 0, 0, 0.08);
+  --transition-base:      0.2s ease;
+  --font-family:          'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================================================
+   NAVBAR
+   ================================================================ */
+
+.navbar {
+  width: 100%;
+  background: linear-gradient(90deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 68px;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.navTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-white);
+  white-space: nowrap;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Nav links */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.3rem;
+}
+
+.navItem {
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--nav-inactive-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-white);
+}
+
+.navItemActive {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  font-weight: 600;
+}
+
+.navItemActive:hover {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
+}
+
+/* Usuario */
+.navUser {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navUserName {
+  color: var(--color-text-white);
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.avatarBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  padding: 0;
+}
+
+.avatarBtn:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ================================================================
+   MAIN
+   ================================================================ */
+
+.main {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Tarjetas de estadísticas ── */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.statCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  line-height: 1;
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-icon-bg);
+  color: var(--color-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Actividad reciente ── */
+
+.activityCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.75rem 2rem;
+}
+
+.activityTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 1.25rem;
+}
+
+.activityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+.activityItemLast {
+  border-bottom: none;
+}
+
+.activityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.activityAction {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.activityName {
+  font-size: 0.825rem;
+  color: var(--color-text-muted);
+}
+
+.activityTime {
+  font-size: 0.825rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   RESPONSIVO
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .navLinks {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 1.5rem 1rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .activityCard {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navItem {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+  }
+}

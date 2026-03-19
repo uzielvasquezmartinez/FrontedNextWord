@@ -1,0 +1,321 @@
+
+.layout {
+  --color-primary:          #7c5cbf;   /* Morado principal (botón)        */
+  --color-primary-hover:    #6a4aad;   /* Morado al hacer hover           */
+  --color-primary-border:   #a78bdf;   /* Borde del botón                 */
+  --color-primary-focus:    rgba(124, 92, 191, 0.18); /* Sombra de foco  */
+
+  --gradient-from:          #4f6ef7;   /* Azul inicial                    */
+  --gradient-to:            #8b5cf6;   /* Morado final                    */
+
+  /* ── Tarjeta del logo ──────────────────────────────────────── */
+  --logo-card-bg:           #0f2a3c;   /* Fondo oscuro del contenedor     */
+  --logo-text-color:        #ffffff;   /* Color base del texto "NextWord" */
+  --logo-o-accent:          #38bdf8;   /* Color del carácter "o" en el logo */
+
+  /* ── Tipografía y neutros ──────────────────────────────────── */
+  --color-text-heading:     #111827;
+  --color-text-body:        #374151;
+  --color-text-muted:       #6b7280;
+  --color-text-white:       #ffffff;
+  --color-bg-form:          #ffffff;
+  --color-border-input:     #d1d5db;
+  --color-border-focus:     var(--color-primary);
+  --color-error-text:       #dc2626;
+  --color-error-bg:         #fef2f2;
+  --color-error-border:     #fecaca;
+
+  /* ── Radios y transiciones ─────────────────────────────────── */
+  --radius-sm:              6px;
+  --radius-md:              12px;
+  --radius-lg:              18px;
+  --transition-base:        0.2s ease;
+
+  /* ── Fuente ────────────────────────────────────────────────── */
+  --font-family:            'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* ── Layout ────────────────────────────────────────────────── */
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font-family);
+}
+
+
+/* ================================================================
+   COLUMNA IZQUIERDA — Branding
+   ================================================================ */
+
+.branding {
+  flex: 0 0 50%;
+  background: linear-gradient(
+    140deg,
+    var(--gradient-from) 0%,
+    var(--gradient-to) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2.5rem;
+}
+.welcome{
+  color: var(--color-text-white);
+  font-size: 1.25rem;
+  line-height: 1.65;
+  opacity: 0.92;
+  margin: 0;
+}
+.brandingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Tarjeta del logo */
+.logoCard {
+  width: 100%;
+  background-color: var(--logo-card-bg);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.logoText {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--logo-text-color);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.logoOAccent {
+  color: var(--logo-o-accent);
+}
+
+/* Tagline */
+.tagline {
+  color: var(--color-text-white);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  opacity: 0.92;
+  margin: 0;
+}
+
+
+/* ================================================================
+   COLUMNA DERECHA — Formulario
+   ================================================================ */
+
+.formSide {
+  flex: 0 0 50%;
+  background-color: var(--color-bg-form);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 390px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* Título */
+.title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-text-heading);
+  text-align: center;
+  letter-spacing: 0.06em;
+  margin: 0;
+   color: var(--color-primary);
+}
+
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+   text-align: left;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-body);
+  text-align: left; 
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  font-family: var(--font-family);
+  color: var(--color-text-body);
+  background-color: var(--color-bg-form);
+  border: 1.5px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  border-radius: 5px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-focus);
+}
+
+
+/* ── Fila: Recordarme + Olvidaste contraseña ── */
+
+.rowOptions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--color-text-body);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.forgotLink {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-base);
+  white-space: nowrap;
+}
+
+.forgotLink:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+
+/* ── Mensaje de error ── */
+
+.errorMessage {
+  font-size: 0.82rem;
+  color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+
+/* ── Botón principal ── */
+
+.submitButton {
+  width: 100%;
+  padding: 0.72rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: var(--color-text-white);
+  background-color: var(--color-primary);
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-sm);
+  border-radius: 10px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 4px 16px rgba(124, 92, 191, 0.38);
+  transform: translateY(-1px);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button{
+  background-color: white;
+}
+
+/* ── Enlace de registro ── */
+
+.registerText {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.registerLink {
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.registerLink:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+
+@media (max-width: 1024px) {
+  .branding {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Móvil: ocultar columna de branding */
+@media (max-width: 768px) {
+  .branding {
+    display: none;
+  }
+
+  .formSide {
+    flex: 0 0 100%;
+    padding: 2rem 1.25rem;
+  }
+}

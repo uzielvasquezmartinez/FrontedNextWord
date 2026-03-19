@@ -1,0 +1,15 @@
+.logoCard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-radius: 16px;
+  padding: 0.5rem;
+}
+
+.logoImg {
+  width: 500px;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}

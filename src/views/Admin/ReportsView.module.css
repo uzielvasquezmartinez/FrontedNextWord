@@ -1,0 +1,300 @@
+
+.page {
+  --color-primary:       #2B58FE;
+  --color-secondary:     #923CFF;
+  --color-text-heading:  #111827;
+  --color-text-body:     #374151;
+  --color-text-muted:    #6b7280;
+  --color-text-white:    #ffffff;
+  --color-bg-page:       #f3f4f6;
+  --color-bg-card:       #ffffff;
+  --color-border:        #e5e7eb;
+
+--bar-clases:   #2B58FE;
+--bar-ingresos: #923CFF;
+
+  --radius-sm:           8px;
+  --radius-md:           14px;
+  --shadow-card:         0 1px 4px rgba(0,0,0,0.07);
+  --transition-base:     0.2s ease;
+  --font-family:         'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+/*Main*/
+.main {
+  flex: 1;
+  padding: 1.75rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*Tarjetas de resumen*/
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.summaryCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--color-border);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.summaryIcon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.summaryValue {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 0.15rem;
+}
+
+.summaryLabel {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/*Grid central*/
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/*Card base*/
+.tableCard,
+.chartCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--color-border);
+  padding: 1.5rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 0.25rem;
+}
+
+.chartSubtitle {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin: 0 0 1.25rem;
+}
+
+/*Botones exportar*/
+.exportBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btnExcel,
+.btnPdf {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: 1.5px solid;
+  transition: all var(--transition-base);
+}
+
+.btnExcel {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+.btnExcel:hover {
+  background-color: #16a34a;
+  color: #fff;
+}
+
+.btnPdf {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.btnPdf:hover {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+/*Tabla*/
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 0.75rem 0.75rem;
+  border-bottom: 1.5px solid var(--color-border);
+}
+
+.tr {
+  transition: background-color var(--transition-base);
+}
+
+.tr:hover {
+  background-color: #f9fafb;
+}
+
+.td {
+  padding: 0.85rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-body);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tdCenter {
+  padding: 0.85rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tr:last-child .td,
+.tr:last-child .tdCenter {
+  border-bottom: none;
+}
+
+.classBadge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background-color: #eff6ff;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.incomeBadge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background-color: #f5f3ff;
+  color: var(--color-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/*Gráfica*/
+.chartWrapper {
+  margin-top: 0.5rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.legendDotBlue {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.legendDotPurple {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+/*Tooltip*/
+.tooltip {
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.tooltipLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 0.3rem;
+}
+
+.tooltipValue {
+  font-size: 0.78rem;
+  color: var(--color-primary);
+  margin: 0 0 0.15rem;
+  font-weight: 600;
+}
+
+.tooltipIncome {
+  font-size: 0.78rem;
+  color: var(--color-secondary);
+  margin: 0;
+  font-weight: 600;
+}
+/*Responsivo*/
+@media (max-width: 768px) {
+  .main {
+    padding: 1.25rem 1rem;
+  }
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}

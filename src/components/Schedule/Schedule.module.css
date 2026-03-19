@@ -1,0 +1,527 @@
+/* ================================================================
+   src/components/Schedule/Schedule.module.css
+   ================================================================ */
+
+/* ── Calendario base ── */
+.calendarCard {
+  background-color: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 1.5rem;
+}
+
+.calendarNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.calendarTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #111827);
+  margin: 0;
+}
+
+.navBtn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  background-color: transparent;
+  color: var(--color-text-body, #374151);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navBtn:hover {
+  border-color: var(--color-primary, #2B58FE);
+  color: var(--color-primary, #2B58FE);
+}
+
+/* ── Vista Mensual ── */
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.calendarDayHeader {
+  padding: 0.6rem 0;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  background-color: #f9fafb;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  letter-spacing: 0.05em;
+}
+
+.calendarCell {
+  min-height: 90px;
+  padding: 0.5rem;
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  box-sizing: border-box;
+}
+
+.calendarCell:nth-child(7n) { border-right: none; }
+
+.calendarCellDay {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendarCellDay:hover { background-color: #f0f4ff; }
+
+.cellReserved  { background-color: #eef2ff; }
+.cellAvailable { background-color: #f0fdf4; }
+
+.calendarDayNum {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-body, #374151);
+  display: block;
+}
+
+.calendarEvent {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+}
+
+.calendarEventReserved  { color: #2B58FE; background-color: #e0e7ff; }
+.calendarEventAvailable { color: #16a34a; background-color: #dcfce7; }
+
+/* ── Vista Semanal ── */
+.weekGrid {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.weekTimeHeader {
+  background-color: #f9fafb;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-right: 1px solid var(--color-border, #e5e7eb);
+}
+
+.weekDayHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0;
+  background-color: #f9fafb;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  gap: 0.1rem;
+}
+
+.weekDayLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  letter-spacing: 0.05em;
+}
+
+.weekDayNum {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #111827);
+}
+
+.weekHourLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #6b7280);
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  padding: 0 0.4rem;
+  min-height: 40px;
+}
+
+.weekCell {
+  min-height: 40px;
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  padding: 0.2rem 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.weekCell:hover     { background-color: #f0f4ff; }
+.weekCellReserved   { background-color: #eef2ff; }
+.weekCellAvailable  { background-color: #f0fdf4; }
+
+.weekCellLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--color-text-body, #374151);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Vista Diaria ── */
+.dailyKpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(135deg, #2E3192, #8E2DE2);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.dailyKpiCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.dailyKpiValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.dailyKpiLabel {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+  text-align: center;
+}
+
+.dailyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dailySlot {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dailySlotEmpty    { background-color: #f9fafb; }
+.dailySlotReserved { background-color: #f0fdf4; border-color: #86efac; }
+.dailySlotAvailable {
+  background-color: transparent;
+  border-color: #2B58FE;
+}
+
+.dailySlotHour {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  min-width: 40px;
+  flex-shrink: 0;
+}
+
+.dailySlotLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-body, #374151);
+  font-weight: 500;
+}
+
+.dailySlotMinutes {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  font-weight: 400;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.modalBox {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modalTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem;
+}
+
+.modalSubtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  background-color: #fee2e2;
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.modalBody {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modalSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modalLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.modalInput {
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 0.9rem;
+  color: #374151;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.modalInput:focus { border-color: #2B58FE; }
+
+.modalHint {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.modalSelect {
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 0.9rem;
+  color: #374151;
+  background-color: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.modalSelect:focus { border-color: #2B58FE; }
+
+.scheduleTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.scheduleTypeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1rem 0.75rem;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scheduleTypeBtn:hover    { border-color: #2B58FE; }
+.scheduleTypeBtnActive    { border-color: #2B58FE; background-color: #eff6ff; }
+.scheduleTypeIcon         { color: #2B58FE; }
+.scheduleTypeLabel        { font-size: 0.875rem; font-weight: 600; color: #111827; }
+.scheduleTypeSub          { font-size: 0.72rem; color: #6b7280; }
+
+.recurrenceToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.recurrenceBtn {
+  padding: 0.55rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background-color: transparent;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recurrenceBtn:hover      { border-color: #2B58FE; }
+.recurrenceBtnActive      { background-color: #2B58FE; border-color: #2B58FE; color: #ffffff; font-weight: 600; }
+
+.timeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.timeField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.timeLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.daysGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dayBtn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background-color: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dayBtn:hover   { border-color: #2B58FE; color: #2B58FE; }
+.dayBtnActive   { background-color: #2B58FE; border-color: #2B58FE; color: #ffffff; }
+
+.previewBox {
+  background-color: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.previewLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewText {
+  font-size: 0.82rem;
+  color: #374151;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modalFooter {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btnCancel {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background-color: transparent;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btnCancel:hover { background-color: #f3f4f6; }
+
+.btnSave {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #2E3192, #8E2DE2);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btnSave:hover { opacity: 0.88; }
+
+/* ── Responsivo ── */
+@media (max-width: 768px) {
+  .weekGrid         { grid-template-columns: 48px repeat(7, 1fr); }
+  .dailyKpis        { grid-template-columns: 1fr; }
+  .scheduleTypeGrid { grid-template-columns: 1fr; }
+  .timeRow          { grid-template-columns: 1fr; }
+}
