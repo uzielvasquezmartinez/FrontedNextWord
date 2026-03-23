@@ -1,5 +1,6 @@
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import styles from "./AdminDashboard.module.css";
+import { Users, CalendarDays, DollarSign } from "lucide-react";
 
 const ADMIN_NAV = [
   { label: "Inicio",     path: "/admin/dashboard" },
@@ -10,13 +11,15 @@ const ADMIN_NAV = [
 const STATS = [
   {
     id: "teachers", label: "PROFESORES ACTIVOS", value: "4",
- 
+    icon: <Users size={24} />
   },
   {
     id: "classes", label: "CLASES PROGRAMADAS HOY", value: "2",
+    icon: <CalendarDays size={24} />
   },
   {
     id: "income", label: "INGRESOS DEL MES", value: "$9,450",
+    icon: <DollarSign size={24} />
   },
 ];
 
