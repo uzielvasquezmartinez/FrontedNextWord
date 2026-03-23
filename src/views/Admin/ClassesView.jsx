@@ -1,6 +1,8 @@
 import { useState } from "react";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import styles from "./ClassesView.module.css";
+import { image } from "framer-motion/client";
+import Badge from "../../components/UI/Badge/Badge";
 
 const ADMIN_NAV = [
   { label: "Inicio",     path: "/admin/dashboard" },
@@ -10,15 +12,15 @@ const ADMIN_NAV = [
 ];
 // ── Datos mock ───────────────────────────────────────────────────
 const CLASSES = [
-  { id: 1, subject: "Inglés",      student: "Uziel Redondo",    teacher: "Miguel Gomez",  date: "20/02/2026", time: "11-12", price: "$25", status: "Programada"  },
-  { id: 2, subject: "Matemáticas", student: "Laura Salsedo",    teacher: "Ana Torres",    date: "20/02/2026", time: "13-14", price: "$30", status: "Cancelada"   },
-  { id: 3, subject: "Inglés",      student: "Mariana García",   teacher: "Miguel Gomez",  date: "21/02/2026", time: "10-11", price: "$35", status: "Programada"  },
-  { id: 4, subject: "Francés",     student: "Enrique Solano",   teacher: "Sophie Blanc",  date: "21/02/2026", time: "15-16", price: "$40", status: "Programada"  },
-  { id: 5, subject: "Física",      student: "Víctor Hernández", teacher: "Carlos Ruiz",   date: "22/02/2026", time: "09-10", price: "$28", status: "Cancelada"   },
-  { id: 6, subject: "Historia",    student: "Emmanuel Rosales", teacher: "Diana Flores",  date: "22/02/2026", time: "16-17", price: "$22", status: "Programada"  },
-  { id: 7, subject: "Química",     student: "Laura Dominguez",  teacher: "Carlos Ruiz",   date: "23/02/2026", time: "11-12", price: "$32", status: "Programada"  },
-  { id: 8, subject: "Química",     student: "Uchi Mamardo",     teacher: "Celin Santos",  date: "13/02/2026", time: "11-12", price: "$32", status: "PreAgendada" },
-  { id: 9, subject: "DSM",         student: "Sizasbro",         teacher: "Celin Santos",  date: "14/02/2026", time: "11-12", price: "$32", status: "Completada"  },
+  { id: 1, subject: "Inglés",      student: "Uziel Redondo",    teacher: "Miguel Gomez",  date: "20/02/2026", time: "11-12", price: "$25", status: "Programada",image: null  },
+  { id: 2, subject: "Matemáticas", student: "Laura Salsedo",    teacher: "Ana Torres",    date: "20/02/2026", time: "13-14", price: "$30", status: "Cancelada" ,image: null  },
+  { id: 3, subject: "Inglés",      student: "Mariana García",   teacher: "Miguel Gomez",  date: "21/02/2026", time: "10-11", price: "$35", status: "Programada",image: null  },
+  { id: 4, subject: "Francés",     student: "Enrique Solano",   teacher: "Sophie Blanc",  date: "21/02/2026", time: "15-16", price: "$40", status: "Programada",image: null  },
+  { id: 5, subject: "Física",      student: "Víctor Hernández", teacher: "Carlos Ruiz",   date: "22/02/2026", time: "09-10", price: "$28", status: "Cancelada" ,  image: null  },
+  { id: 6, subject: "Historia",    student: "Emmanuel Rosales", teacher: "Diana Flores",  date: "22/02/2026", time: "16-17", price: "$22", status: "Programada",image: null  },
+  { id: 7, subject: "Química",     student: "Laura Dominguez",  teacher: "Carlos Ruiz",   date: "23/02/2026", time: "11-12", price: "$32", status: "Programada" ,image: null  },
+  { id: 8, subject: "Química",     student: "Uchi Mamardo",     teacher: "Celin Santos",  date: "13/02/2026", time: "11-12", price: "$32", status: "PreAgendada", image: null  },
+  { id: 9, subject: "DSM",         student: "Sizasbro",         teacher: "Celin Santos",  date: "14/02/2026", time: "11-12", price: "$32", status: "Completada" ,image: null  },
 ];
 
 const FILTERS = ["Todos", "Programada", "Cancelada", "PreAgendada", "Completada"];
@@ -32,22 +34,17 @@ const FILTER_STYLES = {
   Completada:  { idle: styles.filterIdleCompletada, active: styles.filterActiveCompletada  },
 };
 
-// ── Mapa de estilos para badges en tarjetas ──────────────────────
-const BADGE_STYLES = {
-  Programada:  styles.badgeProgramada,
-  Cancelada:   styles.badgeCancelada,
-  PreAgendada: styles.badgePreagendada,
-  Completada:  styles.badgeCompletada,
-};
 
 // ── Avatar placeholder ───────────────────────────────────────────
-const AvatarPlaceholder = () => (
+const TeacherAvatar = ({ image, name }) => (
   <div className={styles.avatar}>
-    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" className={styles.avatarSvg}>
-      <rect width="60" height="60" fill="#e5e7eb"/>
-      <line x1="0" y1="0" x2="60" y2="60" stroke="#9ca3af" strokeWidth="1.5"/>
-      <line x1="60" y1="0" x2="0" y2="60" stroke="#9ca3af" strokeWidth="1.5"/>
-    </svg>
+    {image ? (
+      <img src={image} alt={name} className={styles.avatarImg} />
+    ) : (
+      <div className={styles.avatarFallback}>
+        {name?.charAt(0).toUpperCase() ?? "?"}
+      </div>
+    )}
   </div>
 );
 
@@ -111,8 +108,7 @@ const ClassesView = () => {
                 className={styles.card}
                 onClick={() => setDetailModal(cls)}
               >
-                <AvatarPlaceholder />
-
+<TeacherAvatar image={cls.image} name={cls.teacher} />
                 <div className={styles.cardInfo}>
                   <p className={styles.cardSubject}>Materia: {cls.subject}</p>
                   <p className={styles.cardMeta}><strong>Estudiante:</strong> {cls.student}</p>
@@ -120,12 +116,10 @@ const ClassesView = () => {
                   <span className={styles.cardDate}>{cls.date} &nbsp; {cls.time}</span>
                 </div>
 
-                <div className={styles.cardRight}>
-                  <span className={`${styles.badge} ${BADGE_STYLES[cls.status] ?? ""}`}>
-                    {cls.status}
-                  </span>
-                  <span className={styles.cardPrice}>{cls.price}</span>
-                </div>
+               <div className={styles.cardRight}>
+  <Badge label={cls.status} variant={cls.status.toLowerCase()} />
+  <span className={styles.cardPrice}>{cls.price}</span>
+</div>
               </div>
             ))
           )}
