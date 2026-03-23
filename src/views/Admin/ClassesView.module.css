@@ -1,6 +1,3 @@
-/* ================================================================
-   src/views/Admin/ClassesView.module.css
-   ================================================================ */
 
 .page {
   --color-primary:          #2B58FE;
@@ -87,10 +84,9 @@
   cursor: pointer;
   transition: all var(--transition-base);
 }
-
 .filterBtn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: currentColor;
+  opacity: 0.85;
 }
 
 .filterBtnActive {
@@ -103,23 +99,19 @@
 .filterBtnActive:hover {
   background-color: var(--color-primary);
   color: var(--color-text-white);
-}
-/* ── Filtros: estado idle (sin seleccionar) ─────────────────── */
-.filterIdleProgramada  { color: #16a34a; border-color: #16a34a; }
-.filterIdleCancelada   { color: #dc2626; border-color: #dc2626; }
-.filterIdlePreagendada { color: #b45309; border-color: #b45309; }
-.filterIdleCompletada  { color: #0369a1; border-color: #0369a1; }
+}/* ── Estado activo (sin hover) ── */
+.filterActiveDefault     { background: #6b7280; color: #fff; border-color: #6b7280; }
+.filterActiveProgramada  { background: #16a34a; color: #fff; border-color: #16a34a; }
+.filterActiveCancelada   { background: #dc2626; color: #fff; border-color: #dc2626; }
+.filterActivePreagendada { background: #b45309; color: #fff; border-color: #b45309; }
+.filterActiveCompletada  { background: #0369a1; color: #fff; border-color: #0369a1; }
 
-/* ── Filtros: estado active (seleccionado) ──────────────────── */
-.filterActiveDefault    { background: #6b7280; color: #fff; border-color: #6b7280; }
-.filterActiveProgramada { background: #16a34a; color: #fff; border-color: #16a34a; }
-.filterActiveCancelada  { background: #dc2626; color: #fff; border-color: #dc2626; }
-.filterActivePreagendada{ background: #b45309; color: #fff; border-color: #b45309; }
-.filterActiveCompletada { background: #0369a1; color: #fff; border-color: #0369a1; }
+/* ── Estado idle (sin hover) ── */
+.filterIdleProgramada  { color: #16a34a; border-color: #16a34a; background: transparent; }
+.filterIdleCancelada   { color: #dc2626; border-color: #dc2626; background: transparent; }
+.filterIdlePreagendada { color: #b45309; border-color: #b45309; background: transparent; }
+.filterIdleCompletada  { color: #0369a1; border-color: #0369a1; background: transparent; }
 
-/* ── Badges en tarjetas ─────────────────────────────────────── */
-.badgePreagendada { background: #fef3c7; color: #b45309; }
-.badgeCompletada  { background: #dbeafe; color: #0369a1; }
 
 .filterDot {
   width: 7px;
@@ -166,6 +158,7 @@
 }
 
 /* Avatar */
+
 .avatar {
   width: 60px;
   height: 60px;
@@ -175,13 +168,26 @@
   border: 1px solid var(--color-border);
 }
 
-.avatarSvg {
+.avatarImg {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-/* Info */
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2E3192, #8E2DE2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* Informcaión */
 .cardInfo {
   flex: 1;
   display: flex;
