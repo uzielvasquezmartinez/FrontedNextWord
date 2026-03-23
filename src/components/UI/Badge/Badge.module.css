@@ -9,7 +9,7 @@
 /* Variantes */
 .active      { background-color: #dcfce7; color: #16a34a; }
 .inactive    { background-color: #fee2e2; color: #991b1b; }
-.programada  { background-color: #dbeafe; color: #1d4ed8; }
+.programada  { background-color: #dcfce7; color: #16a34a; }
 .cancelada   { background-color: #fee2e2; color: #991b1b; }
 .preagendada { background-color: #fef3c7; color: #b45309; }
 .completada  { background-color: #dbeafe; color: #0369a1; }
