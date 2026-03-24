@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./RegisterView.module.css";
 import NextWordLogo from "../../components/NextWordLogo/NextWordLogo";
-import { IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 
 const IconEyeOpen = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
