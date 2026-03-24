@@ -50,7 +50,6 @@ const VerifyCodeView = () => {
       return;
     }
     setLoading(true);
-    // Mock — reemplazar con: authService verificación de código
     await new Promise((r) => setTimeout(r, 800));
     setLoading(false);
     navigate("/reset-password", { state: { email, token: fullCode } });
@@ -60,7 +59,6 @@ const VerifyCodeView = () => {
     setResent(true);
     setCode(Array(DIGITS).fill(""));
     inputsRef.current[0]?.focus();
-    // Mock — reemplazar con: authService.forgotPassword(email)
     await new Promise((r) => setTimeout(r, 500));
     setTimeout(() => setResent(false), 3000);
   };

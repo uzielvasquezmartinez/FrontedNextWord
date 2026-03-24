@@ -1,4 +1,3 @@
-/* src/components/UI/Button/Button.module.css */
 
 .btn {
   display: inline-flex;
@@ -73,7 +72,6 @@
 }
 .back:hover:not(:disabled) { color: #111827; }
 
-/* ── Icono y Spinner ── */
 .icon { display: flex; align-items: center; }
 
 .spinner {

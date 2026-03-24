@@ -14,7 +14,6 @@
   display: block;
 }
 
-/* Tamaño navbar */
 .sm {
   width: 100px;
   height: auto;
@@ -22,7 +21,6 @@
   display: block;
 }
 
-/* Tamaño login/register */
 .md {
   width: 500px;
   height: auto;

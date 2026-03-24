@@ -10,7 +10,6 @@ const ADMIN_NAV = [
   { label: "Clases",     path: "/admin/classes"   },
   { label: "Reportes",   path: "/admin/reports"   },
 ];
-// ── Datos mock ───────────────────────────────────────────────────
 const INITIAL_TEACHERS = [
   { id: 1, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Activo" },
   { id: 2, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Activo" },
@@ -24,7 +23,6 @@ const INITIAL_STUDENTS = [
   { id: 3, name: "Mariana García",   email: "mariana@mail.com", date: "11-01-2026", status: "Inactivo" },
 ];
 
-// ── Iconos SVG ───────────────────────────────────────────────────
 const IconEye = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -53,7 +51,6 @@ const IconPlus = () => (
   </svg>
 );
 
-// ── Componente Modal ─────────────────────────────────────────────
 const Modal = ({ title, onClose, children }) => (
   <div className={styles.modalOverlay} onClick={onClose}>
     <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
@@ -224,7 +221,6 @@ const TeachersView = () => {
         </div>
       </main>
 
-      {/* ════ MODAL: VER DETALLE ════ */}
       {viewModal && (
         <Modal title="Detalle" onClose={() => setViewModal(null)}>
           <div className={styles.detailGrid}>
@@ -245,7 +241,6 @@ const TeachersView = () => {
         </Modal>
       )}
 
-      {/* ════ MODAL: EDITAR ════ */}
       {editModal && (
         <Modal title="Editar" onClose={() => setEditModal(null)}>
           <div className={styles.formGrid}>
@@ -266,7 +261,6 @@ const TeachersView = () => {
         </Modal>
       )}
 
-      {/* ════ MODAL: CONFIRMAR ELIMINACIÓN ════ */}
       {deleteConfirm !== null && (
         <Modal title="Confirmar eliminación" onClose={() => setDeleteConfirm(null)}>
           <p className={styles.deleteMsg}>¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
@@ -277,7 +271,6 @@ const TeachersView = () => {
         </Modal>
       )}
 
-      {/* ════ MODAL: NUEVO PROFESOR ════ */}
       {newModal && (
         <Modal title="Nuevo Profesor" onClose={() => setNewModal(false)}>
           <div className={styles.formGrid}>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
-// ── Mock: credenciales por rol ── (fuera del componente)
+// credenciales por rol
 const MOCK_USERS = [
   { email: "admin@nextword.com",    password: "admin123",    role: "admin",   name: "Administrador", redirect: "/admin/dashboard"   },
   { email: "profesor@nextword.com", password: "profesor123", role: "teacher", name: "Profesor Uzi",  redirect: "/teacher/dashboard" },

@@ -1,8 +1,4 @@
-/* ================================================================
-   src/components/Schedule/Schedule.module.css
-   ================================================================ */
 
-/* ── Calendario base ── */
 .calendarCard {
   background-color: var(--color-bg-card, #ffffff);
   border-radius: 16px;
@@ -42,7 +38,6 @@
   color: var(--color-primary, #2B58FE);
 }
 
-/* ── Vista Mensual ── */
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -101,7 +96,6 @@
 .calendarEventReserved  { color: #2B58FE; background-color: #e0e7ff; }
 .calendarEventAvailable { color: #16a34a; background-color: #dcfce7; }
 
-/* ── Vista Semanal ── */
 .weekGrid {
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
@@ -176,7 +170,6 @@
   text-overflow: ellipsis;
 }
 
-/* ── Vista Diaria ── */
 .dailyKpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -255,7 +248,6 @@
   font-weight: 400;
 }
 
-/* ── Modal ── */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -518,7 +510,6 @@
 
 .btnSave:hover { opacity: 0.88; }
 
-/* ── Responsivo ── */
 @media (max-width: 768px) {
   .weekGrid         { grid-template-columns: 48px repeat(7, 1fr); }
   .dailyKpis        { grid-template-columns: 1fr; }

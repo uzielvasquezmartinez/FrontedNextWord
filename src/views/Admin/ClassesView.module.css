@@ -36,9 +36,6 @@
   flex-direction: column;
 }
 
-/* ================================================================
-   MAIN
-   ================================================================ */
 
 .main {
   flex: 1;
@@ -52,7 +49,6 @@
   box-sizing: border-box;
 }
 
-/* ── Filtros ── */
 
 .filtersRow {
   display: flex;
@@ -99,14 +95,14 @@
 .filterBtnActive:hover {
   background-color: var(--color-primary);
   color: var(--color-text-white);
-}/* ── Estado activo (sin hover) ── */
+}
+
 .filterActiveDefault     { background: #6b7280; color: #fff; border-color: #6b7280; }
 .filterActiveProgramada  { background: #16a34a; color: #fff; border-color: #16a34a; }
 .filterActiveCancelada   { background: #dc2626; color: #fff; border-color: #dc2626; }
 .filterActivePreagendada { background: #b45309; color: #fff; border-color: #b45309; }
 .filterActiveCompletada  { background: #0369a1; color: #fff; border-color: #0369a1; }
 
-/* ── Estado idle (sin hover) ── */
 .filterIdleProgramada  { color: #16a34a; border-color: #16a34a; background: transparent; }
 .filterIdleCancelada   { color: #dc2626; border-color: #dc2626; background: transparent; }
 .filterIdlePreagendada { color: #b45309; border-color: #b45309; background: transparent; }
@@ -121,7 +117,6 @@
   flex-shrink: 0;
 }
 
-/* ── Lista de tarjetas ── */
 
 .cardList {
   display: flex;
@@ -136,7 +131,6 @@
   padding: 2rem 0;
 }
 
-/* ── Tarjeta ── */
 
 .card {
   background-color: var(--color-bg-card);
@@ -157,7 +151,6 @@
   transform: translateY(-1px);
 }
 
-/* Avatar */
 
 .avatar {
   width: 60px;
@@ -187,7 +180,6 @@
   font-weight: 700;
 }
 
-/* Informcaión */
 .cardInfo {
   flex: 1;
   display: flex;
@@ -223,7 +215,6 @@
   border-radius: 999px;
 }
 
-/* Derecha */
 .cardRight {
   display: flex;
   flex-direction: column;
@@ -238,7 +229,6 @@
   color: var(--color-text-heading);
 }
 
-/* Badges */
 .badge {
   display: inline-block;
   padding: 0.2rem 0.75rem;
@@ -256,10 +246,6 @@
   background-color: var(--badge-cancel-bg);
   color: var(--badge-cancel-text);
 }
-
-/* ================================================================
-   MODAL
-   ================================================================ */
 
 .modalOverlay {
   position: fixed;
@@ -358,10 +344,6 @@
 .btnSecondary:hover {
   background-color: #f3f4f6;
 }
-
-/* ================================================================
-   RESPONSIVO
-   ================================================================ */
 
 @media (max-width: 768px) {
   .main {

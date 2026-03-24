@@ -2,13 +2,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 /**
- * ProtectedRoute
- * @param {string[]} allowedRoles - Roles permitidos para acceder a la ruta.
- *
- * Uso:
- * <ProtectedRoute allowedRoles={["admin"]}>
- *   <AdminDashboard />
- * </ProtectedRoute>
+ * envuelve las rutas protegidas, verificando si el usuario está autenticado y tiene el rol adecuado.
+ * @param {string[]} allowedRoles 
  */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();

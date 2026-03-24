@@ -18,7 +18,6 @@ const ADMIN_NAV = [
 
 
 
-// ── Datos mock ───────────────────────────────────────────────────
 const TEACHERS_DATA = [
   { id: 1, name: "Miguel Gomez Martinez",    classes: 150, income: 3750 },
   { id: 2, name: "Marina Estrada Estrada",   classes: 60,  income: 1500 },
@@ -26,14 +25,12 @@ const TEACHERS_DATA = [
   { id: 4, name: "David Martines Roman",     classes: 45,  income: 1125 },
 ];
 
-// ── Helpers ──────────────────────────────────────────────────────
 const totalClasses = TEACHERS_DATA.reduce((s, t) => s + t.classes, 0);
 const totalIncome  = TEACHERS_DATA.reduce((s, t) => s + t.income,  0);
 const topTeacher   = [...TEACHERS_DATA].sort((a, b) => b.classes - a.classes)[0];
 
 const fmt = (n) => `$${n.toLocaleString("es-MX")}`;
 
-// ── Exportar Excel ───────────────────────────────────────────────
 const exportExcel = () => {
   const rows = TEACHERS_DATA.map((t) => ({
     Nombre:            t.name,
@@ -46,7 +43,6 @@ const exportExcel = () => {
   XLSX.writeFile(wb, "reporte_profesores.xlsx");
 };
 
-// ── Exportar PDF ─────────────────────────────────────────────────
 const exportPDF = () => {
   const doc = new jsPDF();
   doc.setFontSize(14);
@@ -60,7 +56,6 @@ const exportPDF = () => {
   doc.save("reporte_profesores.pdf");
 };
 
-// ── Tooltip personalizado para la gráfica ────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -72,13 +67,11 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-// ── Componente principal ─────────────────────────────────────────
 const ReportsView = () => {
   const [activeBar, setActiveBar] = useState(null);
 
-  // Nombres cortos para el eje X de la gráfica
   const chartData = TEACHERS_DATA.map((t) => ({
-    name:    t.name.split(" ")[0],         // solo primer nombre
+    name:    t.name.split(" ")[0],       
     clases:  t.classes,
     ingresos: t.income,
   }));
@@ -89,7 +82,6 @@ const ReportsView = () => {
 
       <main className={styles.main}>
 
-        {/* ── Tarjetas de resumen ── */}
         <div className={styles.summaryGrid}>
           <div className={styles.summaryCard}>
             <span className={styles.summaryIcon}></span>
@@ -114,10 +106,8 @@ const ReportsView = () => {
           </div>
         </div>
 
-        {/* ── Contenido central ── */}
         <div className={styles.contentGrid}>
 
-          {/* Tabla */}
           <div className={styles.tableCard}>
             <div className={styles.cardHeader}>
               <h2 className={styles.cardTitle}>Clases por Profesor</h2>
@@ -155,7 +145,6 @@ const ReportsView = () => {
             </table>
           </div>
 
-          {/* Gráficas de los profesores*/}
           <div className={styles.chartCard}>
             <h2 className={styles.cardTitle}>Actividad visual</h2>
             <p className={styles.chartSubtitle}>Clases e ingresos por profesor</p>
@@ -181,7 +170,6 @@ const ReportsView = () => {
   </ResponsiveContainer>
 </div>
 
-            {/* Historial de cada profesor*/}
             <div className={styles.legend}>
               <span className={styles.legendItem}>
                 <span className={styles.legendDotBlue} /> Clases

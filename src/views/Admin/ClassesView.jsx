@@ -10,7 +10,6 @@ const ADMIN_NAV = [
   { label: "Clases",     path: "/admin/classes"   },
   { label: "Reportes",   path: "/admin/reports"   },
 ];
-// ── Datos mock ───────────────────────────────────────────────────
 const CLASSES = [
   { id: 1, subject: "Inglés",      student: "Uziel Redondo",    teacher: "Miguel Gomez",  date: "20/02/2026", time: "11-12", price: "$25", status: "Programada",image: null  },
   { id: 2, subject: "Matemáticas", student: "Laura Salsedo",    teacher: "Ana Torres",    date: "20/02/2026", time: "13-14", price: "$30", status: "Cancelada" ,image: null  },
@@ -25,7 +24,6 @@ const CLASSES = [
 
 const FILTERS = ["Todos", "Programada", "Cancelada", "PreAgendada", "Completada"];
 
-// ── Mapa de estilos por filtro ───────────────────────────────────
 const FILTER_STYLES = {
   Todos:       { idle: "",                          active: styles.filterActiveDefault    },
   Programada:  { idle: styles.filterIdleProgramada, active: styles.filterActiveProgramada },
@@ -35,7 +33,6 @@ const FILTER_STYLES = {
 };
 
 
-// ── Avatar placeholder ───────────────────────────────────────────
 const TeacherAvatar = ({ image, name }) => (
   <div className={styles.avatar}>
     {image ? (
@@ -48,7 +45,6 @@ const TeacherAvatar = ({ image, name }) => (
   </div>
 );
 
-// ── Modal ────────────────────────────────────────────────────────
 const Modal = ({ title, onClose, children }) => (
   <div className={styles.modalOverlay} onClick={onClose}>
     <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
@@ -61,7 +57,6 @@ const Modal = ({ title, onClose, children }) => (
   </div>
 );
 
-// ── Componente principal ─────────────────────────────────────────
 const ClassesView = () => {
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [detailModal, setDetailModal]   = useState(null);
@@ -76,7 +71,6 @@ const ClassesView = () => {
 
       <main className={styles.main}>
 
-        {/* ── Filtros ── */}
         <div className={styles.filtersRow}>
           <span className={styles.filterLabel}>FILTRAR:</span>
           {FILTERS.map((f) => {
@@ -97,7 +91,6 @@ const ClassesView = () => {
           })}
         </div>
 
-        {/* ── Tarjetas ── */}
         <div className={styles.cardList}>
           {filtered.length === 0 ? (
             <p className={styles.empty}>Sin clases para este filtro.</p>
@@ -127,7 +120,6 @@ const ClassesView = () => {
 
       </main>
 
-      {/* ════ MODAL: VER DETALLE ════ */}
       {detailModal && (
         <Modal title="Detalle de Clase" onClose={() => setDetailModal(null)}>
           <div className={styles.detailGrid}>

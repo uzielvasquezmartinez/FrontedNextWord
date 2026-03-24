@@ -87,7 +87,6 @@ hoy </h1>
               />
             </div>
 
-            {/* Fila: Recordarme + ¿Olvidaste tu contraseña? */}
             <div className={styles.rowOptions}>
               <label className={styles.checkboxLabel}>
                 <input
@@ -113,7 +112,6 @@ hoy </h1>
               </p>
             )}
 
-            {/* Botón principal */}
             <button
               type="submit"
               className={styles.submitButton}

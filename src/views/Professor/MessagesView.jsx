@@ -4,7 +4,6 @@ import Avatar from "../../components/UI/Avatar/Avatar";
 import styles from "./MessagesView.module.css";
 import { IconSend } from "../../components/Icons/Icons";
 
-// ── Navegación ───────────────────────────────────────────────────
 const TEACHER_NAV = [
   { label: "Inicio",   path: "/teacher/dashboard" },
   { label: "Horario",  path: "/teacher/schedule"  },
@@ -12,7 +11,6 @@ const TEACHER_NAV = [
 ];
 
 <IconSend />
-// ── Datos mock ───────────────────────────────────────────────────
 const MOCK_CONTACTS = [
   {
     id: 1,
@@ -50,7 +48,6 @@ const MOCK_CONTACTS = [
   },
 ];
 
-// ── Componente principal ─────────────────────────────────────────
 const MessagesView = () => {
   const [contacts, setContacts]         = useState(MOCK_CONTACTS);
   const [activeContact, setActiveContact] = useState(MOCK_CONTACTS[0]);
@@ -62,7 +59,6 @@ const MessagesView = () => {
   }, [activeContact?.messages]);
 
   const handleSelectContact = (contact) => {
-    // Marcar como leído
     setContacts((prev) =>
       prev.map((c) => c.id === contact.id ? { ...c, unread: false } : c)
     );
@@ -112,7 +108,6 @@ const MessagesView = () => {
 
         <div className={styles.chatContainer}>
 
-          {/* ── Panel izquierdo ── */}
           <div className={styles.contactList}>
             {contacts.map((contact) => (
               <div
@@ -133,11 +128,9 @@ const MessagesView = () => {
             ))}
           </div>
 
-          {/* ── Panel derecho ── */}
           {activeContact ? (
             <div className={styles.chatPanel}>
 
-              {/* Header */}
               <div className={styles.chatHeader}>
                 <Avatar initials={activeContact.initials} size="md" />
                 <div className={styles.chatHeaderInfo}>
@@ -148,7 +141,6 @@ const MessagesView = () => {
                 </div>
               </div>
 
-              {/* Mensajes */}
               <div className={styles.messagesList}>
                 {activeContact.messages.map((msg) => (
                   <div
@@ -164,7 +156,6 @@ const MessagesView = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input */}
               <div className={styles.chatInputRow}>
                 <input
                   type="text"

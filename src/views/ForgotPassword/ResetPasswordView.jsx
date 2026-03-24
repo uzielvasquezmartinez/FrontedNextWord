@@ -34,7 +34,6 @@ const ResetPasswordView = () => {
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
 
     setLoading(true);
-    // Mock — reemplazar con: authService.resetPassword(token, password)
     await new Promise((r) => setTimeout(r, 800));
     setLoading(false);
     setSuccess(true);

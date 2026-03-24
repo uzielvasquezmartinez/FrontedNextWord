@@ -1,19 +1,17 @@
 
 .layout {
-  --color-primary:          #7c5cbf;   /* Morado principal (botón)        */
-  --color-primary-hover:    #6a4aad;   /* Morado al hacer hover           */
-  --color-primary-border:   #a78bdf;   /* Borde del botón                 */
-  --color-primary-focus:    rgba(124, 92, 191, 0.18); /* Sombra de foco  */
+  --color-primary:          #7c5cbf;   
+  --color-primary-hover:    #6a4aad;   
+  --color-primary-border:   #a78bdf;  
+  --color-primary-focus:    rgba(124, 92, 191, 0.18); 
 
-  --gradient-from:          #4f6ef7;   /* Azul inicial                    */
-  --gradient-to:            #8b5cf6;   /* Morado final                    */
+  --gradient-from:          #4f6ef7;   
+  --gradient-to:            #8b5cf6;   
 
-  /* ── Tarjeta del logo ──────────────────────────────────────── */
-  --logo-card-bg:           #0f2a3c;   /* Fondo oscuro del contenedor     */
-  --logo-text-color:        #ffffff;   /* Color base del texto "NextWord" */
-  --logo-o-accent:          #38bdf8;   /* Color del carácter "o" en el logo */
+  --logo-card-bg:           #0f2a3c;  
+  --logo-text-color:        #ffffff;   
+  --logo-o-accent:          #38bdf8;   
 
-  /* ── Tipografía y neutros ──────────────────────────────────── */
   --color-text-heading:     #111827;
   --color-text-body:        #374151;
   --color-text-muted:       #6b7280;
@@ -25,16 +23,13 @@
   --color-error-bg:         #fef2f2;
   --color-error-border:     #fecaca;
 
-  /* ── Radios y transiciones ─────────────────────────────────── */
   --radius-sm:              6px;
   --radius-md:              12px;
   --radius-lg:              18px;
   --transition-base:        0.2s ease;
 
-  /* ── Fuente ────────────────────────────────────────────────── */
   --font-family:            'Segoe UI', system-ui, -apple-system, sans-serif;
 
-  /* ── Layout ────────────────────────────────────────────────── */
   display: flex;
   height: 100vh;
   width: 100%;
@@ -43,9 +38,6 @@
 }
 
 
-/* ================================================================
-   COLUMNA IZQUIERDA — Branding
-   ================================================================ */
 
 .branding {
   flex: 0 0 50%;
@@ -76,7 +68,6 @@
   text-align: center;
 }
 
-/* Tarjeta del logo */
 .logoCard {
   width: 100%;
   background-color: var(--logo-card-bg);
@@ -100,7 +91,6 @@
   color: var(--logo-o-accent);
 }
 
-/* Tagline */
 .tagline {
   color: var(--color-text-white);
   font-size: 0.95rem;
@@ -109,10 +99,6 @@
   margin: 0;
 }
 
-
-/* ================================================================
-   COLUMNA DERECHA — Formulario
-   ================================================================ */
 
 .formSide {
   flex: 0 0 50%;
@@ -132,7 +118,6 @@
   gap: 1.6rem;
 }
 
-/* Título */
 .title {
   font-size: 1.65rem;
   font-weight: 800;
@@ -185,7 +170,6 @@
 }
 
 
-/* ── Fila: Recordarme + Olvidaste contraseña ── */
 
 .rowOptions {
   display: flex;
@@ -226,7 +210,6 @@
 }
 
 
-/* ── Mensaje de error ── */
 
 .errorMessage {
   font-size: 0.82rem;
@@ -239,7 +222,6 @@
 }
 
 
-/* ── Botón principal ── */
 
 .submitButton {
   width: 100%;
@@ -280,7 +262,6 @@ button{
   background-color: white;
 }
 
-/* ── Enlace de registro ── */
 
 .registerText {
   font-size: 0.875rem;
@@ -308,7 +289,6 @@ button{
   }
 }
 
-/* Móvil: ocultar columna de branding */
 @media (max-width: 768px) {
   .branding {
     display: none;

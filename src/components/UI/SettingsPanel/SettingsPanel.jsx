@@ -42,7 +42,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   const roleLabel = user?.role === "teacher" ? "Profesor"
     : user?.role === "student" ? "Alumno" : "Admin";
 
-  // ── Avatar ───────────────────────────────────────────────────────
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -51,7 +50,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     reader.readAsDataURL(file);
   };
 
-  // ── Perfil ───────────────────────────────────────────────────────
   const handleProfileChange = (field) => (e) => {
     setProfileForm((p) => ({ ...p, [field]: e.target.value }));
     setProfileErrors((p) => ({ ...p, [field]: "" }));
@@ -77,7 +75,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     setTimeout(() => setSuccessProfile(""), 3000);
   };
 
-  // ── Contraseña ───────────────────────────────────────────────────
   const handlePasswordChange = (field) => (e) => {
     setPasswordForm((p) => ({ ...p, [field]: e.target.value }));
     setPasswordErrors((p) => ({ ...p, [field]: "" }));
@@ -127,13 +124,11 @@ const SettingsPanel = ({ isOpen, onClose }) => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
 
-            {/* Header */}
             <div className={styles.header}>
               <h2 className={styles.headerTitle}>Configuración</h2>
               <button className={styles.closeBtn} onClick={onClose} aria-label="Cerrar">✕</button>
             </div>
 
-            {/* Perfil resumido */}
             <div className={styles.profileSummary}>
               {avatar
                 ? <img src={avatar} alt="avatar" className={styles.summaryAvatarImg} />
@@ -146,7 +141,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Tabs */}
             <div className={styles.tabs}>
               <button
                 className={`${styles.tab} ${activeTab === "profile" ? styles.tabActive : ""}`}
@@ -170,10 +164,8 @@ const SettingsPanel = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            {/* Body */}
             <div className={styles.body}>
 
-              {/* TAB: PERFIL */}
               {activeTab === "profile" && (
                 <form className={styles.form} onSubmit={handleProfileSave} noValidate>
 
@@ -257,7 +249,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                 </form>
               )}
 
-              {/* TAB: CONTRASEÑA */}
               {activeTab === "password" && (
                 <form className={styles.form} onSubmit={handlePasswordSave} noValidate>
 
@@ -309,7 +300,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
 
             </div>
 
-            {/* Footer */}
             <div className={styles.footer}>
               <Button variant="danger" fullWidth onClick={logout}>
                 Cerrar Sesión

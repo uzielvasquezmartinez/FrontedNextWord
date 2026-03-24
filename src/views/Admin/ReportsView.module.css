@@ -27,7 +27,6 @@
   flex-direction: column;
 }
 
-/*Main*/
 .main {
   flex: 1;
   padding: 1.75rem 2.5rem 2.5rem;
@@ -40,7 +39,6 @@
   box-sizing: border-box;
 }
 
-/*Tarjetas de resumen*/
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -79,7 +77,6 @@
   letter-spacing: 0.05em;
 }
 
-/*Grid central*/
 .contentGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -87,7 +84,6 @@
   align-items: start;
 }
 
-/*Card base*/
 .tableCard,
 .chartCard {
   background-color: var(--color-bg-card);
@@ -117,7 +113,6 @@
   margin: 0 0 1.25rem;
 }
 
-/*Botones exportar*/
 .exportBtns {
   display: flex;
   gap: 0.5rem;
@@ -157,7 +152,6 @@
   color: #fff;
 }
 
-/*Tabla*/
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -220,7 +214,6 @@
   font-weight: 600;
 }
 
-/*Gráfica*/
 .chartWrapper {
   margin-top: 0.5rem;
 }
@@ -257,7 +250,6 @@
   flex-shrink: 0;
 }
 
-/*Tooltip*/
 .tooltip {
   background-color: var(--color-bg-card);
   border: 1.5px solid var(--color-border);
@@ -286,7 +278,7 @@
   margin: 0;
   font-weight: 600;
 }
-/*Responsivo*/
+
 @media (max-width: 768px) {
   .main {
     padding: 1.25rem 1rem;

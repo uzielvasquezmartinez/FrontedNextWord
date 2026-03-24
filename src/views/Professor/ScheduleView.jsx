@@ -36,7 +36,6 @@ const ScheduleView = () => {
 
       <main className={styles.main}>
 
-        {/* ── Toolbar ── */}
         <div className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
             <span className={styles.filterLabel}>FILTRO:</span>
@@ -55,7 +54,6 @@ const ScheduleView = () => {
           </button>
         </div>
 
-        {/* ── Leyenda ── */}
         <div className={styles.legend}>
           <span className={styles.legendItem}>
             <span className={`${styles.legendDot} ${styles.legendDotUnavailable}`} /> No disponible
@@ -68,7 +66,6 @@ const ScheduleView = () => {
           </span>
         </div>
 
-        {/* ── Vistas ── */}
         {activeFilter === "Mensual" && (
           <MonthlyView
             schedules={schedules}

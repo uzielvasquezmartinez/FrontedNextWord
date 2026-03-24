@@ -25,7 +25,6 @@
   flex-direction: column;
 }
 
-/* ── Main ── */
 .main {
   flex: 1;
   padding: 1.75rem 2.5rem 2.5rem;
@@ -38,7 +37,6 @@
   box-sizing: border-box;
 }
 
-/* ── Header ── */
 .pageHeader {
   background-color: var(--color-bg-card);
   border-radius: var(--radius-md);
@@ -54,7 +52,6 @@
   margin: 0;
 }
 
-/* ── Chat container ── */
 .chatContainer {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -66,7 +63,6 @@
   height: 600px;
 }
 
-/* ── Lista de contactos ── */
 .contactList {
   border-right: 1.5px solid var(--color-border);
   overflow-y: auto;
@@ -138,14 +134,12 @@
   flex-shrink: 0;
 }
 
-/* ── Panel del chat ── */
 .chatPanel {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* Header del chat */
 .chatHeader {
   display: flex;
   align-items: center;
@@ -175,7 +169,6 @@
 .statusOnline  { color: #16a34a; }
 .statusOffline { color: var(--color-text-muted); }
 
-/* Mensajes */
 .messagesList {
   flex: 1;
   overflow-y: auto;
@@ -230,7 +223,6 @@
 .messageBubbleReceived .messageTime { color: var(--color-text-muted); }
 .messageBubbleSent     .messageTime { color: rgba(255,255,255,0.75); }
 
-/* Input */
 .chatInputRow {
   display: flex;
   align-items: center;
@@ -276,7 +268,6 @@
 .sendBtn:hover    { opacity: 0.88; }
 .sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* Empty state */
 .emptyChat {
   flex: 1;
   display: flex;
@@ -286,7 +277,6 @@
   font-size: 0.9rem;
 }
 
-/* ── Responsivo ── */
 @media (max-width: 768px) {
   .main            { padding: 1.25rem 1rem; }
   .chatContainer   { grid-template-columns: 1fr; height: auto; }

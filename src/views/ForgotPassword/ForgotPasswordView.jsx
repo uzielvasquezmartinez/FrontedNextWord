@@ -18,7 +18,6 @@ const ForgotPasswordView = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Ingresa un correo electrónico válido."); return; }
 
     setLoading(true);
-    // Mock — reemplazar con: authService.forgotPassword(email)
     await new Promise((r) => setTimeout(r, 800));
     setLoading(false);
     navigate("/verify-code", { state: { email } });

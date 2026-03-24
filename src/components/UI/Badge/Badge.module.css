@@ -6,7 +6,6 @@
   font-weight: 600;
 }
 
-/* Variantes */
 .active      { background-color: #dcfce7; color: #16a34a; }
 .inactive    { background-color: #fee2e2; color: #991b1b; }
 .programada  { background-color: #dcfce7; color: #16a34a; }
