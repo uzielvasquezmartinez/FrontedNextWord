@@ -2,23 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./RegisterView.module.css";
 import NextWordLogo from "../../components/NextWordLogo/NextWordLogo";
-
-const IconEyeOpen = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-
-const IconEyeClosed = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
+import { IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 
 const calcularEdad = (birthDate) => {
   if (!birthDate) return null;
@@ -29,25 +13,38 @@ const calcularEdad = (birthDate) => {
   if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) edad--;
   return edad;
 };
-
 const validarFormulario = (formData) => {
   const errors = {};
-  if (!formData.fullName.trim())
+  const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+  if (!formData.fullName.trim()) {
     errors.fullName = "El nombre es requerido.";
-  if (!formData.email.trim())
+  } else if (!regexNombre.test(formData.fullName.trim())) {
+    errors.fullName = "El nombre solo debe contener letras y espacios.";
+  }
+
+  if (!formData.email.trim()) {
     errors.email = "El email es requerido.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
     errors.email = "Ingresa un email válido.";
-  if (!formData.birthDate)
+  }
+
+  if (!formData.birthDate) {
     errors.birthDate = "La fecha de nacimiento es requerida.";
-  if (!formData.password)
+  }
+
+  if (!formData.password) {
     errors.password = "La contraseña es requerida.";
-  else if (formData.password.length < 6)
+  } else if (formData.password.length < 6) {
     errors.password = "Mínimo 6 caracteres.";
-  if (!formData.confirmPassword)
+  }
+
+  if (!formData.confirmPassword) {
     errors.confirmPassword = "Confirma tu contraseña.";
-  else if (formData.password !== formData.confirmPassword)
+  } else if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = "Las contraseñas no coinciden.";
+  }
+
   return errors;
 };
 
@@ -325,16 +322,22 @@ const RegisterView = () => {
                 </div>
               </div>
 
-              <div className={styles.field}>
-                <label htmlFor="birthDate" className={styles.label}>
-                  Fecha Nacimiento<span className={styles.required}>*</span>
-                </label>
-                <input id="birthDate" name="birthDate" type="date"
-                  className={`${styles.input} ${styles.inputDate} ${errors.birthDate ? styles.inputError : ""}`}
-                  value={formData.birthDate} onChange={handleChange}
-                />
-                {errors.birthDate && <span className={styles.errorText}>{errors.birthDate}</span>}
-              </div>
+           <div className={styles.field}>
+  <label htmlFor="birthDate" className={styles.label}>
+    Fecha Nacimiento<span className={styles.required}>*</span>
+  </label>
+  <input 
+    id="birthDate" 
+    name="birthDate" 
+    type="date"
+    className={`${styles.input} ${styles.inputDate} ${errors.birthDate ? styles.inputError : ""}`}
+    value={formData.birthDate} 
+    onChange={handleChange}
+    min="1900-01-01" 
+    max={new Date().toISOString().split("T")[0]} 
+  />
+  {errors.birthDate && <span className={styles.errorText}>{errors.birthDate}</span>}
+</div>
             </fieldset>
 
             <fieldset className={styles.fieldset}>
