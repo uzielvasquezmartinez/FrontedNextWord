@@ -166,89 +166,92 @@ const SettingsPanel = ({ isOpen, onClose }) => {
 
             <div className={styles.body}>
 
-              {activeTab === "profile" && (
-                <form className={styles.form} onSubmit={handleProfileSave} noValidate>
+{activeTab === "profile" && (
+  <form className={styles.form} onSubmit={handleProfileSave} noValidate>
 
-                  <div className={styles.avatarSection}>
-                    {avatar
-                      ? <img src={avatar} alt="avatar" className={styles.avatarPreview} />
-                      : <Avatar initials={initials} size="xl" />
-                    }
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      className={styles.fileInput}
-                      onChange={handleAvatarChange}
-                    />
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      Cambiar foto
-                    </Button>
-                  </div>
+    <div className={styles.avatarSection}>
+      {avatar
+        ? <img src={avatar} alt="avatar" className={styles.avatarPreview} />
+        : <Avatar initials={initials} size="xl" />
+      }
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        className={styles.fileInput}
+        onChange={handleAvatarChange}
+      />
+      <Button
+        variant="secondary"
+        size="sm"
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+      >
+        Cambiar foto
+      </Button>
+    </div>
 
-                  <p className={styles.sectionLabel}>Información Básica</p>
+    <p className={styles.sectionLabel}>Información Básica</p>
 
-                  <Input
-                    id="sp_fullName"
-                    label="Nombre Completo"
-                    value={profileForm.fullName}
-                    onChange={handleProfileChange("fullName")}
-                    error={profileErrors.fullName}
-                    required
-                  />
+    <Input
+      id="sp_fullName"
+      label="Nombre Completo"
+      value={profileForm.fullName}
+      onChange={handleProfileChange("fullName")}
+      error={profileErrors.fullName}
+      required
+    />
 
-                  <Input
-                    id="sp_email"
-                    label="Correo Electrónico"
-                    type="email"
-                    value={profileForm.email}
-                    onChange={handleProfileChange("email")}
-                    error={profileErrors.email}
-                    required
-                  />
+    <Input
+      id="sp_email"
+      label="Correo Electrónico"
+      type="email"
+      value={profileForm.email}
+      onChange={handleProfileChange("email")}
+      error={profileErrors.email}
+      required
+    />
 
-                  <p className={styles.sectionLabel}>Información Profesional</p>
+    {user?.role === "teacher" && (
+      <>
+        <p className={styles.sectionLabel}>Información Profesional</p>
 
-                  <Input
-                    id="sp_specialization"
-                    label="Especialización"
-                    value={profileForm.specialization}
-                    onChange={handleProfileChange("specialization")}
-                    placeholder="Ej. Inglés, Matemáticas..."
-                  />
+        <Input
+          id="sp_specialization"
+          label="Especialización"
+          value={profileForm.specialization}
+          onChange={handleProfileChange("specialization")}
+          placeholder="Ej. Inglés, Matemáticas..."
+        />
 
-                  <div className={styles.textareaField}>
-                    <label className={styles.textareaLabel}>Biografía</label>
-                    <textarea
-                      className={styles.textarea}
-                      rows={3}
-                      placeholder="Cuéntanos sobre ti..."
-                      value={profileForm.bio}
-                      onChange={handleProfileChange("bio")}
-                    />
-                  </div>
+        <div className={styles.textareaField}>
+          <label className={styles.textareaLabel}>Biografía</label>
+          <textarea
+            className={styles.textarea}
+            rows={3}
+            placeholder="Cuéntanos sobre ti..."
+            value={profileForm.bio}
+            onChange={handleProfileChange("bio")}
+          />
+        </div>
+      </>
+    )}
 
-                  {successProfile && (
-                    <p className={styles.successMsg}>{successProfile}</p>
-                  )}
+    {successProfile && (
+      <p className={styles.successMsg}>{successProfile}</p>
+    )}
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={loadingProfile}
-                  >
-                    Guardar Cambios
-                  </Button>
+    <Button
+      type="submit"
+      variant="primary"
+      fullWidth
+      loading={loadingProfile}
+    >
+      Guardar Cambios
+    </Button>
 
-                </form>
-              )}
-
+  </form>
+)}
               {activeTab === "password" && (
                 <form className={styles.form} onSubmit={handlePasswordSave} noValidate>
 
