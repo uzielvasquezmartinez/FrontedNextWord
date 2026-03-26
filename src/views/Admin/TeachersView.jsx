@@ -1,8 +1,8 @@
 import { useState } from "react";
-
 import { useAuth } from "../../context/AuthContext";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import styles from "./TeachersView.module.css";
+import { IconEye, IconEdit, IconTrash, IconSearch, IconPlus } from "../../components/Icons/Icons";
 
 const ADMIN_NAV = [
   { label: "Inicio",     path: "/admin/dashboard" },
@@ -10,11 +10,12 @@ const ADMIN_NAV = [
   { label: "Clases",     path: "/admin/classes"   },
   { label: "Reportes",   path: "/admin/reports"   },
 ];
+
 const INITIAL_TEACHERS = [
-  { id: 1, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Activo" },
-  { id: 2, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Activo" },
-  { id: 3, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Activo" },
-  { id: 4, name: "Erick Gomez Ñoño", email: "erickgome@sist.com", date: "09-01-2026", status: "Inactivo" },
+  { id: 1, name: "Erick Gomez Ñoño", email: "erickgome@Nextword.com", date: "09-01-2026", status: "Activo" },
+  { id: 2, name: "Erick Gomez Ñoño", email: "erickgome@Nextword.com", date: "09-01-2026", status: "Activo" },
+  { id: 3, name: "Erick Gomez Ñoño", email: "erickgome@Nextword.com", date: "09-01-2026", status: "Activo" },
+  { id: 4, name: "Erick Gomez Ñoño", email: "erickgome@Nextword.com", date: "09-01-2026", status: "Inactivo" },
 ];
 
 const INITIAL_STUDENTS = [
@@ -22,34 +23,6 @@ const INITIAL_STUDENTS = [
   { id: 2, name: "Laura Dominguez",  email: "ldomin@mail.com",  date: "10-01-2026", status: "Activo" },
   { id: 3, name: "Mariana García",   email: "mariana@mail.com", date: "11-01-2026", status: "Inactivo" },
 ];
-
-const IconEye = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-const IconEdit = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-  </svg>
-);
-const IconTrash = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-    <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-  </svg>
-);
-const IconSearch = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
-);
-const IconPlus = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-);
 
 const Modal = ({ title, onClose, children }) => (
   <div className={styles.modalOverlay} onClick={onClose}>
@@ -63,22 +36,21 @@ const Modal = ({ title, onClose, children }) => (
   </div>
 );
 
-// ── Componente principal ─────────────────────────────────────────
 const TeachersView = () => {
-  const [activeTab, setActiveTab]     = useState("teachers"); // "teachers" | "students"
-  const [search, setSearch]           = useState("");
-  const [teachers, setTeachers]       = useState(INITIAL_TEACHERS);
-  const [students, setStudents]       = useState(INITIAL_STUDENTS);
+  const [activeTab, setActiveTab] = useState("teachers");
+  const [search, setSearch] = useState("");
+  const [teachers, setTeachers] = useState(INITIAL_TEACHERS);
+  const [students, setStudents] = useState(INITIAL_STUDENTS);
 
-  // Modales
-  const [viewModal, setViewModal]     = useState(null);  // persona seleccionada
-  const [editModal, setEditModal]     = useState(null);  // persona seleccionada
-  const [editForm, setEditForm]       = useState({});
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // id a eliminar
+  const [viewModal, setViewModal] = useState(null);
+  const [editModal, setEditModal] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  // Modal nuevo profesor
-  const [newModal, setNewModal]       = useState(false);
-  const [newForm, setNewForm]         = useState({ name: "", email: "", status: "Activo" });
+  const [newModal, setNewModal] = useState(false);
+  const [newForm, setNewForm] = useState({ name: "", email: "", status: "Activo" });
+
+  const [formErrors, setFormErrors] = useState({});
 
   const data = activeTab === "teachers" ? teachers : students;
 
@@ -88,10 +60,12 @@ const TeachersView = () => {
       p.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ── Handlers ──────────────────────────────────────────────────
-
   const openView = (person) => setViewModal(person);
-  const openEdit = (person) => { setEditModal(person); setEditForm({ ...person }); };
+  const openEdit = (person) => { 
+    setEditModal(person); 
+    setEditForm({ ...person }); 
+    setFormErrors({});
+  };
   const openDelete = (id) => setDeleteConfirm(id);
 
   const handleDelete = () => {
@@ -104,16 +78,44 @@ const TeachersView = () => {
   };
 
   const handleEditSave = () => {
+    const errors = {};
+    const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+    if (!editForm.name.trim()) errors.name = "El nombre es requerido.";
+    else if (!regexNombre.test(editForm.name.trim())) errors.name = "El nombre solo debe contener letras.";
+
+    if (!editForm.email.trim()) errors.email = "El email es requerido.";
+    else if (!editForm.email.endsWith("@nextword.com")) errors.email = "Debe ser un correo @nextword.com";
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
     if (activeTab === "teachers") {
       setTeachers((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
     } else {
       setStudents((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
     }
     setEditModal(null);
+    setFormErrors({});
   };
 
   const handleNewSave = () => {
-    if (!newForm.name || !newForm.email) return;
+    const errors = {};
+    const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+    if (!newForm.name.trim()) errors.name = "El nombre es requerido.";
+    else if (!regexNombre.test(newForm.name.trim())) errors.name = "El nombre solo debe contener letras.";
+
+    if (!newForm.email.trim()) errors.email = "El email es requerido.";
+    else if (!newForm.email.endsWith("@nextword.com")) errors.email = "Debe ser un correo @nextword.com";
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
     const newPerson = {
       id: Date.now(),
       name: newForm.name,
@@ -124,18 +126,16 @@ const TeachersView = () => {
     setTeachers((prev) => [...prev, newPerson]);
     setNewModal(false);
     setNewForm({ name: "", email: "", status: "Activo" });
+    setFormErrors({});
   };
 
   return (
     <div className={styles.page}>
+      <AppNavbar title="Panel de Administrador" navItems={ADMIN_NAV} activeItem="Profesores" />
 
-<AppNavbar title="Panel de Administrador" navItems={ADMIN_NAV} activeItem="Profesores" />
-
-      {/* ════ CONTENIDO ════ */}
       <main className={styles.main}>
         <p className={styles.sectionLabel}></p>
 
-        {/* Barra de herramientas */}
         <div className={styles.toolbar}>
           <div className={styles.searchWrapper}>
             <span className={styles.searchIcon}><IconSearch /></span>
@@ -148,13 +148,12 @@ const TeachersView = () => {
             />
           </div>
            
-        {/* Modal del profesor/estudiante*/}
-<div className={styles.toolbarRight}>
-  {activeTab === "teachers" && (
-    <button className={styles.btnNew} onClick={() => setNewModal(true)}>
-      <IconPlus /> Nuevo Profesor
-    </button>
-  )}
+          <div className={styles.toolbarRight}>
+            {activeTab === "teachers" && (
+              <button className={styles.btnNew} onClick={() => { setNewModal(true); setFormErrors({}); }}>
+                <IconPlus /> Nuevo Profesor
+              </button>
+            )}
             <div className={styles.toggle}>
               <button
                 className={`${styles.toggleBtn} ${activeTab === "teachers" ? styles.toggleActive : ""}`}
@@ -172,7 +171,6 @@ const TeachersView = () => {
           </div>
         </div>
 
-        {/* Tabla */}
         <div className={styles.tableCard}>
           <table className={styles.table}>
             <thead>
@@ -242,20 +240,42 @@ const TeachersView = () => {
       )}
 
       {editModal && (
-        <Modal title="Editar" onClose={() => setEditModal(null)}>
+        <Modal title="Editar" onClose={() => { setEditModal(null); setFormErrors({}); }}>
           <div className={styles.formGrid}>
             <label className={styles.formLabel}>Nombre</label>
-            <input className={styles.formInput} value={editForm.name} onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))} />
+            <div>
+              <input 
+                className={styles.formInput} 
+                value={editForm.name} 
+                onChange={(e) => {
+                  setEditForm((p) => ({ ...p, name: e.target.value }));
+                  if (formErrors.name) setFormErrors(p => ({ ...p, name: null }));
+                }} 
+              />
+              {formErrors.name && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.name}</div>}
+            </div>
+
             <label className={styles.formLabel}>Email</label>
-            <input className={styles.formInput} value={editForm.email} onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))} />
+            <div>
+              <input 
+                className={styles.formInput} 
+                value={editForm.email} 
+                onChange={(e) => {
+                  setEditForm((p) => ({ ...p, email: e.target.value }));
+                  if (formErrors.email) setFormErrors(p => ({ ...p, email: null }));
+                }} 
+              />
+              {formErrors.email && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.email}</div>}
+            </div>
+
             <label className={styles.formLabel}>Estado</label>
             <select className={styles.formInput} value={editForm.status} onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}>
-              <option>Activo</option>
-              <option>Inactivo</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
           <div className={styles.modalFooter}>
-            <button className={styles.btnSecondary} onClick={() => setEditModal(null)}>Cancelar</button>
+            <button className={styles.btnSecondary} onClick={() => { setEditModal(null); setFormErrors({}); }}>Cancelar</button>
             <button className={styles.btnPrimary} onClick={handleEditSave}>Guardar</button>
           </div>
         </Modal>
@@ -272,20 +292,44 @@ const TeachersView = () => {
       )}
 
       {newModal && (
-        <Modal title="Nuevo Profesor" onClose={() => setNewModal(false)}>
+        <Modal title="Nuevo Profesor" onClose={() => { setNewModal(false); setFormErrors({}); }}>
           <div className={styles.formGrid}>
             <label className={styles.formLabel}>Nombre</label>
-            <input className={styles.formInput} placeholder="Nombre completo" value={newForm.name} onChange={(e) => setNewForm((p) => ({ ...p, name: e.target.value }))} />
+            <div>
+              <input 
+                className={styles.formInput} 
+                placeholder="Nombre completo" 
+                value={newForm.name} 
+                onChange={(e) => {
+                  setNewForm((p) => ({ ...p, name: e.target.value }));
+                  if (formErrors.name) setFormErrors(p => ({ ...p, name: null }));
+                }} 
+              />
+              {formErrors.name && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.name}</div>}
+            </div>
+
             <label className={styles.formLabel}>Email</label>
-            <input className={styles.formInput} placeholder="correo@ejemplo.com" value={newForm.email} onChange={(e) => setNewForm((p) => ({ ...p, email: e.target.value }))} />
+            <div>
+              <input 
+                className={styles.formInput} 
+                placeholder="correo@nextword.com" 
+                value={newForm.email} 
+                onChange={(e) => {
+                  setNewForm((p) => ({ ...p, email: e.target.value }));
+                  if (formErrors.email) setFormErrors(p => ({ ...p, email: null }));
+                }} 
+              />
+              {formErrors.email && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.email}</div>}
+            </div>
+
             <label className={styles.formLabel}>Estado</label>
             <select className={styles.formInput} value={newForm.status} onChange={(e) => setNewForm((p) => ({ ...p, status: e.target.value }))}>
-              <option>Activo</option>
-              <option>Inactivo</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
           <div className={styles.modalFooter}>
-            <button className={styles.btnSecondary} onClick={() => setNewModal(false)}>Cancelar</button>
+            <button className={styles.btnSecondary} onClick={() => { setNewModal(false); setFormErrors({}); }}>Cancelar</button>
             <button className={styles.btnPrimary} onClick={handleNewSave}>Agregar</button>
           </div>
         </Modal>
