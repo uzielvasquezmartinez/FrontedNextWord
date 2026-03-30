@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import GradientPage from "../../components/UI/GradientPage/GradientPage";
 import PageCard from "../../components/UI/PageCard/PageCard";
 import { IconMail } from "../../components/Icons/Icons";
 import styles from "./ForgotPasswordView.module.css";
 
 const ForgotPasswordView = () => {
-  const navigate          = useNavigate();
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const navigate           = useNavigate();
+  const { forgotPassword } = useAuth();
+  const [email,   setEmail]   = useState("");
+  const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -18,24 +20,27 @@ const ForgotPasswordView = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Ingresa un correo electrónico válido."); return; }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    const result = await forgotPassword(email);
     setLoading(false);
+
+    if (!result.success) {
+      setError(result.message);
+      return;
+    }
+
     navigate("/verify-code", { state: { email } });
   };
 
   return (
     <GradientPage>
       <PageCard>
-
         <div className={styles.iconWrapper}>
           <IconMail />
         </div>
-
         <h1 className={styles.title}>¿Olvidaste tu contraseña?</h1>
         <p className={styles.subtitle}>
           Ingresa tu correo electrónico y te enviaremos un código de verificación
         </p>
-
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
             <label className={styles.label}>Correo Electrónico</label>
@@ -52,16 +57,13 @@ const ForgotPasswordView = () => {
             </div>
             {error && <span className={styles.errorText}>{error}</span>}
           </div>
-
           <button type="submit" className={styles.btnPrimary} disabled={loading}>
             {loading ? "Enviando..." : "Enviar Código de Verificación"}
           </button>
         </form>
-
         <button className={styles.backLink} onClick={() => navigate("/login")}>
           ← Volver al inicio
         </button>
-
       </PageCard>
     </GradientPage>
   );
