@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import GradientPage from "../../components/UI/GradientPage/GradientPage";
 import PageCard from "../../components/UI/PageCard/PageCard";
 import { IconLock, IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 import styles from "./ResetPasswordView.module.css";
 
 const ResetPasswordView = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const token     = location.state?.token ?? "";
-  const email     = location.state?.email ?? "";
+  const navigate          = useNavigate();
+  const location          = useLocation();
+  const { resetPassword } = useAuth();
+  const token             = location.state?.token ?? "";
+  const email             = location.state?.email ?? "";
 
   const [password,        setPassword]        = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,9 +23,9 @@ const ResetPasswordView = () => {
 
   const validate = () => {
     const e = {};
-    if (!password)               e.password = "La contraseña es requerida.";
+    if (!password)                e.password = "La contraseña es requerida.";
     else if (password.length < 6) e.password = "Mínimo 6 caracteres.";
-    if (!confirmPassword)        e.confirmPassword = "Confirma tu contraseña.";
+    if (!confirmPassword)         e.confirmPassword = "Confirma tu contraseña.";
     else if (password !== confirmPassword) e.confirmPassword = "Las contraseñas no coinciden.";
     return e;
   };
@@ -34,8 +36,14 @@ const ResetPasswordView = () => {
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    const result = await resetPassword(token, password);
     setLoading(false);
+
+    if (!result.success) {
+      setErrors({ password: result.message });
+      return;
+    }
+
     setSuccess(true);
     setTimeout(() => navigate("/login"), 2000);
   };
@@ -57,22 +65,17 @@ const ResetPasswordView = () => {
   return (
     <GradientPage>
       <PageCard>
-
         <button className={styles.backBtn} onClick={() => navigate("/verify-code", { state: { email } })}>
           ←
         </button>
-
         <div className={styles.iconWrapper}>
           <IconLock />
         </div>
-
         <h1 className={styles.title}>Nueva Contraseña</h1>
         <p className={styles.subtitle}>
           Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta
         </p>
-
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
-
           <div className={styles.field}>
             <label className={styles.label}>Nueva Contraseña</label>
             <div className={`${styles.inputWrapper} ${errors.password ? styles.inputWrapperError : ""}`}>
@@ -90,7 +93,6 @@ const ResetPasswordView = () => {
             </div>
             {errors.password && <span className={styles.errorText}>{errors.password}</span>}
           </div>
-
           <div className={styles.field}>
             <label className={styles.label}>Confirmar Contraseña</label>
             <div className={`${styles.inputWrapper} ${errors.confirmPassword ? styles.inputWrapperError : ""}`}>
@@ -108,13 +110,10 @@ const ResetPasswordView = () => {
             </div>
             {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
           </div>
-
           <button type="submit" className={styles.btnPrimary} disabled={loading}>
             {loading ? "Actualizando..." : "Actualizar Contraseña"}
           </button>
-
         </form>
-
       </PageCard>
     </GradientPage>
   );
