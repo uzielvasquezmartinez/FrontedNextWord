@@ -222,7 +222,7 @@ const RegisterView = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    fullName: "", email: "", birthDate: "", password: "", confirmPassword: "",
+    fullName: "", email: "", birthDate: "", phoneNumber: "", password: "", confirmPassword: "",
   });
   const [showPassword, setShowPassword]             = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
