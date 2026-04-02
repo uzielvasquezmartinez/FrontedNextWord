@@ -70,6 +70,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+
+
   // ── Registro Estudiante ────────────────────────────────────────
   const registerStudent = async (data) => {
     try {
@@ -109,6 +112,35 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+    // ── Verify Code (Forgot Password) ─────────────────────────────
+const verifyCode = async (email, code) => {
+  try {
+    await authService.verifyCode(email, code);
+    return { success: true, token: code };
+  } catch (error) {
+    const message =
+      error.response?.data?.message ??
+      error.response?.data ??
+      "Código incorrecto o expirado.";
+    return { success: false, message };
+  }
+};
+
+
+      const verifyAccount = async (email, code) => {
+  try {
+    const res = await authService.verifyAccount(email, code);
+    return { success: true, message: res.data };
+  } catch (error) {
+    const message =
+      error.response?.data?.message ??
+      error.response?.data ??
+      "Código incorrecto o expirado.";
+    return { success: false, message };
+  }
+};
+
+
   // ── Reset Password ─────────────────────────────────────────────
   const resetPassword = async (token, newPassword) => {
     try {
@@ -137,6 +169,8 @@ export const AuthProvider = ({ children }) => {
       registerStudent,
       registerTeacher,
       forgotPassword,
+      verifyCode,
+       verifyAccount,
       resetPassword,
       logout,
     }}>
