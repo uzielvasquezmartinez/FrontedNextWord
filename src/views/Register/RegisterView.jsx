@@ -1,239 +1,32 @@
+// src/views/Register/RegisterView.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./RegisterView.module.css";
+import { useAuth } from "../../context/AuthContext";
 import NextWordLogo from "../../components/NextWordLogo/NextWordLogo";
 import { IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
-
-const calcularEdad = (birthDate) => {
-  if (!birthDate) return null;
-  const hoy   = new Date();
-  const nac   = new Date(birthDate);
-  let edad    = hoy.getFullYear() - nac.getFullYear();
-  const mes   = hoy.getMonth() - nac.getMonth();
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) edad--;
-  return edad;
-};
-const validarFormulario = (formData) => {
-  const errors = {};
-  const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-
-  if (!formData.fullName.trim()) {
-    errors.fullName = "El nombre es requerido.";
-  } else if (!regexNombre.test(formData.fullName.trim())) {
-    errors.fullName = "El nombre solo debe contener letras y espacios.";
-  }
-
-  if (!formData.email.trim()) {
-    errors.email = "El email es requerido.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-    errors.email = "Ingresa un email válido.";
-  }
-
-  if (!formData.birthDate) {
-    errors.birthDate = "La fecha de nacimiento es requerida.";
-  }
-
-  if (!formData.password) {
-    errors.password = "La contraseña es requerida.";
-  } else if (formData.password.length < 6) {
-    errors.password = "Mínimo 6 caracteres.";
-  }
-
-  if (!formData.confirmPassword) {
-    errors.confirmPassword = "Confirma tu contraseña.";
-  } else if (formData.password !== formData.confirmPassword) {
-    errors.confirmPassword = "Las contraseñas no coinciden.";
-  }
-
-  return errors;
-};
-
-const validarTutor = (tutorData) => {
-  const errors = {};
-  if (!tutorData.tutorName.trim())
-    errors.tutorName = "El nombre del tutor es requerido.";
-  if (!tutorData.tutorEmail.trim())
-    errors.tutorEmail = "El email del tutor es requerido.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tutorData.tutorEmail))
-    errors.tutorEmail = "Ingresa un email válido.";
-  if (!tutorData.tutorPhone.trim())
-    errors.tutorPhone = "El teléfono es requerido.";
-  if (!tutorData.tutorPassword)
-    errors.tutorPassword = "La contraseña es requerida.";
-  else if (tutorData.tutorPassword.length < 6)
-    errors.tutorPassword = "Mínimo 6 caracteres.";
-  if (!tutorData.tutorConfirmPassword)
-    errors.tutorConfirmPassword = "Confirma la contraseña.";
-  else if (tutorData.tutorPassword !== tutorData.tutorConfirmPassword)
-    errors.tutorConfirmPassword = "Las contraseñas no coinciden.";
-  return errors;
-};
-
-const TutorModal = ({ onConfirm, onClose }) => {
-  const [tutorData, setTutorData] = useState({
-    tutorName: "", tutorEmail: "", tutorPhone: "",
-    tutorPassword: "", tutorConfirmPassword: "",
-  });
-  const [showPass, setShowPass]         = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
-  const [errors, setErrors]             = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTutorData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const handleSubmit = () => {
-    const validationErrors = validarTutor(tutorData);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    onConfirm(tutorData);
-  };
-
-  return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalBox}>
-
-        <div className={styles.modalHeader}>
-          <div className={styles.modalIconWrapper}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div>
-            <h3 className={styles.modalTitle}>Registro de Tutor</h3>
-            <p className={styles.modalSubtitle}>
-              El usuario es menor de edad. Se requieren los datos del tutor para completar el registro.
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.modalBody}>
-
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>INFORMACIÓN PADRE O TUTOR</legend>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Nombre del Tutor<span className={styles.required}>*</span>
-              </label>
-              <input
-                name="tutorName"
-                type="text"
-                placeholder="Nombre completo del tutor"
-                className={`${styles.input} ${errors.tutorName ? styles.inputError : ""}`}
-                value={tutorData.tutorName}
-                onChange={handleChange}
-              />
-              {errors.tutorName && <span className={styles.errorText}>{errors.tutorName}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Email del tutor<span className={styles.required}>*</span>
-              </label>
-              <input
-                name="tutorEmail"
-                type="email"
-                placeholder="tutor@email.com"
-                className={`${styles.input} ${errors.tutorEmail ? styles.inputError : ""}`}
-                value={tutorData.tutorEmail}
-                onChange={handleChange}
-              />
-              {errors.tutorEmail && <span className={styles.errorText}>{errors.tutorEmail}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Teléfono del tutor</label>
-              <input
-                name="tutorPhone"
-                type="tel"
-                placeholder="+1 234 567 8900"
-                className={`${styles.input} ${errors.tutorPhone ? styles.inputError : ""}`}
-                value={tutorData.tutorPhone}
-                onChange={handleChange}
-              />
-              {errors.tutorPhone && <span className={styles.errorText}>{errors.tutorPhone}</span>}
-            </div>
-          </fieldset>
-
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>SEGURIDAD</legend>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Contraseña<span className={styles.required}>*</span>
-              </label>
-              <div className={styles.inputWrapper}>
-                <input
-                  name="tutorPassword"
-                  type={showPass ? "text" : "password"}
-                  className={`${styles.input} ${styles.inputWithIcon} ${errors.tutorPassword ? styles.inputError : ""}`}
-                  value={tutorData.tutorPassword}
-                  onChange={handleChange}
-                />
-                <button type="button" className={styles.eyeButton} onClick={() => setShowPass((p) => !p)}>
-                  {showPass ? <IconEyeClosed /> : <IconEyeOpen />}
-                </button>
-              </div>
-              {errors.tutorPassword && <span className={styles.errorText}>{errors.tutorPassword}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Confirmar contraseña<span className={styles.required}>*</span>
-              </label>
-              <div className={styles.inputWrapper}>
-                <input
-                  name="tutorConfirmPassword"
-                  type={showConfirmPass ? "text" : "password"}
-                  className={`${styles.input} ${styles.inputWithIcon} ${errors.tutorConfirmPassword ? styles.inputError : ""}`}
-                  value={tutorData.tutorConfirmPassword}
-                  onChange={handleChange}
-                />
-                <button type="button" className={styles.eyeButton} onClick={() => setShowConfirmPass((p) => !p)}>
-                  {showConfirmPass ? <IconEyeClosed /> : <IconEyeOpen />}
-                </button>
-              </div>
-              {errors.tutorConfirmPassword && <span className={styles.errorText}>{errors.tutorConfirmPassword}</span>}
-            </div>
-          </fieldset>
-
-        </div>
-
-        <div className={styles.modalFooter}>
-          <button className={styles.cancelButton} onClick={onClose}>Cancelar</button>
-          <button className={styles.submitButton} onClick={handleSubmit}>Registrarse</button>
-        </div>
-
-      </div>
-    </div>
-  );
-};
+import TutorModal from "./TutorModal";
+import { calcularEdad, validarFormulario, getMaxBirthDate } from "./registerValidations";
+import styles from "./RegisterView.module.css";
 
 const RegisterView = () => {
-  const navigate = useNavigate();
+  const navigate            = useNavigate();
+  const { registerStudent } = useAuth();
 
   const [formData, setFormData] = useState({
-    fullName: "", email: "", birthDate: "", phoneNumber: "", password: "", confirmPassword: "",
+    fullName: "", email: "", birthDate: "",  phoneNumber:"",password: "", confirmPassword: "",
   });
-  const [showPassword, setShowPassword]             = useState(false);
+  const [showPassword, setShowPassword]               = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors]                         = useState({});
-  const [loading, setLoading]                       = useState(false);
-  const [showTutorModal, setShowTutorModal]         = useState(false);
+  const [errors, setErrors]                           = useState({});
+  const [globalError, setGlobalError]                 = useState("");
+  const [loading, setLoading]                         = useState(false);
+  const [showTutorModal, setShowTutorModal]           = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+    setGlobalError("");
   };
 
   const handleSubmit = async (e) => {
@@ -250,20 +43,40 @@ const RegisterView = () => {
       return;
     }
 
-    await registrar({ student: formData });
+    await registrar(formData, null);
   };
 
   const handleTutorConfirm = async (tutorData) => {
     setShowTutorModal(false);
-    await registrar({ student: formData, tutor: tutorData });
+    await registrar(formData, tutorData);
   };
 
-  const registrar = async (payload) => {
+  const registrar = async (student, tutor) => {
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    console.log("Registro completo:", payload);
+    setGlobalError("");
+
+    const body = {
+      email:       student.email,
+      password:    student.password,
+      fullname:    student.fullName,
+      dateOfBirth: student.birthDate,
+     phoneNumber: student.phoneNumber,
+      ...(tutor && {
+        tutorName:  tutor.tutorName,
+        tutorEmail: tutor.tutorEmail,
+        tutorPhone: tutor.tutorPhone,
+      }),
+    };
+
+    const result = await registerStudent(body);
     setLoading(false);
-    navigate("/login");
+
+    if (!result.success) {
+      setGlobalError(result.message);
+      return;
+    }
+
+navigate("/verify-code", { state: { email: student.email, mode: "register" } });
   };
 
   return (
@@ -271,9 +84,7 @@ const RegisterView = () => {
 
       <aside className={styles.branding}>
         <div className={styles.brandingContent}>
-        
-           <NextWordLogo  size="md"/>
-          
+          <NextWordLogo size="md" />
           <p className={styles.tagline}>
             Transforma tu aprendizaje con clases personalizadas y profesores expertos
           </p>
@@ -305,8 +116,7 @@ const RegisterView = () => {
                   </label>
                   <input id="fullName" name="fullName" type="text"
                     className={`${styles.input} ${errors.fullName ? styles.inputError : ""}`}
-                    value={formData.fullName} onChange={handleChange} autoComplete="name"
-                  />
+                    value={formData.fullName} onChange={handleChange} autoComplete="name" />
                   {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
                 </div>
 
@@ -316,28 +126,38 @@ const RegisterView = () => {
                   </label>
                   <input id="email" name="email" type="email"
                     className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
-                    value={formData.email} onChange={handleChange} autoComplete="email"
-                  />
+                    value={formData.email} onChange={handleChange} autoComplete="email" />
                   {errors.email && <span className={styles.errorText}>{errors.email}</span>}
                 </div>
               </div>
 
-           <div className={styles.field}>
-  <label htmlFor="birthDate" className={styles.label}>
-    Fecha Nacimiento<span className={styles.required}>*</span>
+                      <div className={styles.field}>
+  <label htmlFor="phoneNumber" className={styles.label}>
+    Teléfono<span className={styles.required}>*</span>
   </label>
-  <input 
-    id="birthDate" 
-    name="birthDate" 
-    type="date"
-    className={`${styles.input} ${styles.inputDate} ${errors.birthDate ? styles.inputError : ""}`}
-    value={formData.birthDate} 
+  <input
+    id="phoneNumber"
+    name="phoneNumber"
+    type="tel"
+    placeholder="10 dígitos"
+    className={`${styles.input} ${errors.phoneNumber ? styles.inputError : ""}`}
+    value={formData.phoneNumber}
     onChange={handleChange}
-    min="1900-01-01" 
-    max={new Date().toISOString().split("T")[0]} 
   />
-  {errors.birthDate && <span className={styles.errorText}>{errors.birthDate}</span>}
+  {errors.phoneNumber && <span className={styles.errorText}>{errors.phoneNumber}</span>}
 </div>
+
+              <div className={styles.field}>
+                <label htmlFor="birthDate" className={styles.label}>
+                  Fecha Nacimiento<span className={styles.required}>*</span>
+                </label>
+                <input id="birthDate" name="birthDate" type="date"
+                  className={`${styles.input} ${styles.inputDate} ${errors.birthDate ? styles.inputError : ""}`}
+                  value={formData.birthDate} onChange={handleChange}
+                  min="1900-01-01"
+                  max={getMaxBirthDate()} />
+                {errors.birthDate && <span className={styles.errorText}>{errors.birthDate}</span>}
+              </div>
             </fieldset>
 
             <fieldset className={styles.fieldset}>
@@ -351,8 +171,7 @@ const RegisterView = () => {
                   <input id="password" name="password"
                     type={showPassword ? "text" : "password"}
                     className={`${styles.input} ${styles.inputWithIcon} ${errors.password ? styles.inputError : ""}`}
-                    value={formData.password} onChange={handleChange} autoComplete="new-password"
-                  />
+                    value={formData.password} onChange={handleChange} autoComplete="new-password" />
                   <button type="button" className={styles.eyeButton}
                     onClick={() => setShowPassword((p) => !p)}>
                     {showPassword ? <IconEyeClosed /> : <IconEyeOpen />}
@@ -369,8 +188,7 @@ const RegisterView = () => {
                   <input id="confirmPassword" name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     className={`${styles.input} ${styles.inputWithIcon} ${errors.confirmPassword ? styles.inputError : ""}`}
-                    value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password"
-                  />
+                    value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password" />
                   <button type="button" className={styles.eyeButton}
                     onClick={() => setShowConfirmPassword((p) => !p)}>
                     {showConfirmPassword ? <IconEyeClosed /> : <IconEyeOpen />}
@@ -379,6 +197,12 @@ const RegisterView = () => {
                 {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
               </div>
             </fieldset>
+
+            {globalError && (
+              <p className={styles.errorText} role="alert" style={{ textAlign: "center" }}>
+                {globalError}
+              </p>
+            )}
 
             <div className={styles.buttonRow}>
               <button type="button" className={styles.cancelButton} onClick={() => navigate("/login")}>
