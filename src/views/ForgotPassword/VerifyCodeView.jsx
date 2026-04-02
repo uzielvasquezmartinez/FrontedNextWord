@@ -9,11 +9,12 @@ import styles from "./VerifyCodeView.module.css";
 const DIGITS = 6;
 
 const VerifyCodeView = () => {
-  const navigate           = useNavigate();
-  const location           = useLocation();
-  const { forgotPassword } = useAuth();
-  const email              = location.state?.email ?? "";
-  const inputsRef          = useRef([]);
+  const navigate                              = useNavigate();
+  const location                              = useLocation();
+  const { forgotPassword, verifyCode, verifyAccount } = useAuth();
+  const email   = location.state?.email ?? "";
+  const mode    = location.state?.mode  ?? "forgot"; // "register" o "forgot"
+  const inputsRef = useRef([]);
 
   const [code,    setCode]    = useState(Array(DIGITS).fill(""));
   const [error,   setError]   = useState("");
@@ -51,18 +52,28 @@ const VerifyCodeView = () => {
       setError("Por favor ingresa el código completo de 6 dígitos.");
       return;
     }
+
     setLoading(true);
-    // El código es válido, navega a reset password
-    // La verificación real la hace el backend en /resetPassword
-    setLoading(false);
-    navigate("/reset-password", { state: { email, token: fullCode } });
+
+    if (mode === "register") {
+      const result = await verifyAccount(email, fullCode);
+      setLoading(false);
+      if (!result.success) { setError(result.message); return; }
+      navigate("/login");
+    } else {
+      const result = await verifyCode(email, fullCode);
+      setLoading(false);
+      if (!result.success) { setError(result.message); return; }
+      navigate("/reset-password", { state: { email, token: result.token } });
+    }
   };
 
   const handleResend = async () => {
     setResent(true);
     setCode(Array(DIGITS).fill(""));
     inputsRef.current[0]?.focus();
-    await forgotPassword(email);
+    if (mode === "forgot") await forgotPassword(email);
+    // mode === "register": pendiente endpoint de reenvío en backend
     setTimeout(() => setResent(false), 3000);
   };
 
