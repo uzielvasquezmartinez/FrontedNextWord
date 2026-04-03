@@ -88,6 +88,12 @@ const AnimatedRoutes = () => {
   </ProtectedRoute>
 }/>
 
+
+
+
+
+
+
 {/* ── Default ── */}
 <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
