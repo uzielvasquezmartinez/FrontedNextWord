@@ -1,0 +1,217 @@
+/* ================================================================
+   StudentClassesView.module.css
+   ================================================================ */
+
+.page {
+  --color-primary:      #2B58FE;
+  --color-secondary:    #923CFF;
+  --gradient-from:      #2E3192;
+  --gradient-to:        #8E2DE2;
+  --color-text-heading: #111827;
+  --color-text-body:    #374151;
+  --color-text-muted:   #6b7280;
+  --color-bg-page:      #f3f4f6;
+  --color-bg-card:      #ffffff;
+  --color-border:       #e5e7eb;
+  --radius-md:          16px;
+  --shadow-card:        0 2px 8px rgba(0,0,0,0.07);
+  --shadow-hover:       0 8px 24px rgba(43,88,254,0.13);
+  --transition-base:    0.2s ease;
+  --font-family:        'Poppins', system-ui, sans-serif;
+
+  min-height: 100vh;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.headerCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.heading {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin: 0.75rem 0 0;
+  max-width: 520px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+}
+
+.filterPanel {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filterLabel {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.filterBtn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.filterBtnActive {
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.classesList {
+  display: grid;
+  gap: 1rem;
+}
+
+.classCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.classCard:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.classInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.classTag {
+  display: inline-flex;
+  padding: 0.35rem 0.8rem;
+  background: #eef2ff;
+  color: var(--color-primary);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.classTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.classMeta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.classFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  padding: 2rem 0;
+}
+
+@media (max-width: 900px) {
+  .headerCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .classCard {
+    grid-template-columns: 1fr;
+  }
+  .classFooter {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .main { padding: 1.25rem 1rem; }
+  .filterPanel { flex-direction: column; align-items: flex-start; }
+}
