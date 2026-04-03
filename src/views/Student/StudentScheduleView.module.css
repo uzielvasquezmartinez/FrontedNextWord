@@ -1,0 +1,193 @@
+/* ================================================================
+   StudentScheduleView.module.css
+   ================================================================ */
+
+.page {
+  --color-primary:      #2B58FE;
+  --color-secondary:    #923CFF;
+  --gradient-from:      #2E3192;
+  --gradient-to:        #8E2DE2;
+  --color-text-heading: #111827;
+  --color-text-body:    #374151;
+  --color-text-muted:   #6b7280;
+  --color-bg-page:      #f3f4f6;
+  --color-bg-card:      #ffffff;
+  --color-border:       #e5e7eb;
+  --radius-md:          16px;
+  --shadow-card:        0 2px 8px rgba(0,0,0,0.07);
+  --transition-base:    0.2s ease;
+  --font-family:        'Poppins', system-ui, sans-serif;
+
+  min-height: 100vh;
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+/* ── Búsqueda ── */
+.searchWrapper {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1.25rem;
+}
+
+/* ── Grid de profesores ── */
+.teachersContainer {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+.teachersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  grid-column: 1 / -1;
+}
+
+/* ── Profesor activo ── */
+.activeTeacherBar {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.activeTeacherInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.activeTeacherAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #c7d2fe;
+  flex-shrink: 0;
+}
+.activeTeacherActions{
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-muted);
+}
+.activeTeacherName {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.activeTeacherPrice {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Toolbar filtros ── */
+.toolbar {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+}
+
+.filterBtn {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.filterBtn:hover      { border-color: var(--color-primary); color: var(--color-primary); }
+.filterBtnActive      { background-color: var(--color-primary); border-color: var(--color-primary); color: #ffffff; font-weight: 600; }
+
+/* ── Leyenda ── */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-left: 0.25rem;
+}
+.activeTeacherActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.legendDot              { width: 10px; height: 10px; border-radius: 50%; }
+.legendDotUnavailable   { background-color: #e5e7eb; }
+.legendDotReserved      { background-color: #c7d2fe; }
+.legendDotAvailable     { background-color: #bbf7d0; }
+
+/* ── Responsivo ── */
+@media (max-width: 768px) {
+  .main         { padding: 1.25rem 1rem; }
+  .teachersGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .teachersGrid { grid-template-columns: 1fr; }
+}
