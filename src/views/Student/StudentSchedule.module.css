@@ -1,0 +1,14 @@
+.page { min-height: 100vh; background: #f5f7ff; }
+.main { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.7rem 2rem; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; }
+.header h2 { margin: 0; }
+.header p { margin: .2rem 0 0; color: #5f6693; }
+.teacherGrid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1rem; }
+.teacherCard { background: #fff; border-radius: .9rem; box-shadow: 0 4px 14px rgba(15,20,62,0.07); padding: 1rem; display: flex; flex-direction: column; align-items: center; gap: .85rem; }
+.teacherImage { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; }
+.teacherInfo { display: grid; gap: .18rem; text-align: center; }
+.teacherInfo h4 { margin: 0; }
+.teacherInfo span { color: #5f6693; font-size: .88rem; }
+.actions { display: flex; width: 100%; justify-content: center; gap: .5rem; }
+.modalBody { display: grid; gap: .8rem; }
+.modalHeader { display: flex; gap: .7rem; align-items: center; }
