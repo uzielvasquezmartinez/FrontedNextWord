@@ -11,6 +11,7 @@ import ClassesView       from "../views/Admin/ClassesView";
 import ReportsView       from "../views/Admin/ReportsView";
 import ProfessorDashboard from "../views/Professor/ProfessorDashboard";
 import ScheduleView from "../views/Professor/ScheduleView";
+import StudentDashboard from "../views/Student/StudentDashboard";
 import ForgotPasswordView from "../views/ForgotPassword/ForgotPasswordView";
 import VerifyCodeView     from "../views/ForgotPassword/VerifyCodeView";
 import ResetPasswordView  from "../views/ForgotPassword/ResetPasswordView";
@@ -77,6 +78,13 @@ const AnimatedRoutes = () => {
 <Route path="/teacher/messages" element={
   <ProtectedRoute allowedRoles={["teacher"]}>
     <PageTransition type="slide"><MessagesView /></PageTransition>
+  </ProtectedRoute>
+}/>
+
+{/* ── Alumno ── */}
+<Route path="/alumno/dashboard" element={
+  <ProtectedRoute allowedRoles={["alumno"]}>
+    <PageTransition type="slide"><StudentDashboard /></PageTransition>
   </ProtectedRoute>
 }/>
 
