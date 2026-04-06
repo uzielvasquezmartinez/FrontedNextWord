@@ -71,11 +71,12 @@ const AnimatedRoutes = () => {
 }/>
 
 {/* ── Profesor ── */}
+
 <Route path="/teacher/dashboard" element={
   <ProtectedRoute allowedRoles={["teacher"]}>
     <PageTransition type="slide"><ProfessorDashboard /></PageTransition>
   </ProtectedRoute>
-}/>
+} />
 <Route path="/teacher/schedule" element={
   <ProtectedRoute allowedRoles={["teacher"]}>
     <PageTransition type="slide"><ScheduleView /></PageTransition>
