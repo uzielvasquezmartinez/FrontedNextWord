@@ -1,8 +1,17 @@
+// src/views/Professor/MessagesView.jsx
 import { useState, useRef, useEffect } from "react";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Avatar from "../../components/UI/Avatar/Avatar";
-import styles from "./MessagesView.module.css";
 import { IconSend } from "../../components/Icons/Icons";
+import { useAuth } from "../../context/AuthContext";
+import {
+  getChatHistory,
+  markAsRead,
+  connectWebSocket,
+  sendMessage,
+  disconnectWebSocket,
+} from "../../services/messageService";
+import styles from "./MessagesView.module.css";
 
 const TEACHER_NAV = [
   { label: "Inicio",   path: "/teacher/dashboard" },
@@ -10,83 +19,107 @@ const TEACHER_NAV = [
   { label: "Mensajes", path: "/teacher/messages"  },
 ];
 
-<IconSend />
-const MOCK_CONTACTS = [
-  {
-    id: 1,
-    name: "Carlos Rodríguez",
-    initials: "CR",
-    preview: "Puede ayudarme con un exámen",
-    online: true,
-    unread: true,
-    messages: [
-      { id: 1, text: "¿Puede ayudarme con un exámen?",          time: "11:30 a.m.", sent: false },
-      { id: 2, text: "Claro, lo revisamos en la próxima sesión", time: "11:32 a.m.", sent: true  },
-    ],
-  },
-  {
-    id: 2,
-    name: "Javier Muñoz",
-    initials: "JM",
-    preview: "Necesito una asesoría para una visa",
-    online: false,
-    unread: true,
-    messages: [
-      { id: 1, text: "Necesito una asesoría para una visa", time: "10:15 a.m.", sent: false },
-    ],
-  },
-  {
-    id: 3,
-    name: "Carlos Belcast",
-    initials: "CB",
-    preview: "Puede ayudarme con un exámen",
-    online: false,
-    unread: true,
-    messages: [
-      { id: 1, text: "Puede ayudarme con un exámen", time: "09:45 a.m.", sent: false },
-    ],
-  },
-];
+// ── Helper: genera iniciales desde un ID o nombre ─────────────────
+const getInitials = (name = "") =>
+  name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 
 const MessagesView = () => {
-  const [contacts, setContacts]         = useState(MOCK_CONTACTS);
-  const [activeContact, setActiveContact] = useState(MOCK_CONTACTS[0]);
-  const [newMessage, setNewMessage]     = useState("");
-  const messagesEndRef                  = useRef(null);
+  const { user }                          = useAuth();
+  const [contacts, setContacts]           = useState([]);
+  const [activeContact, setActiveContact] = useState(null);
+  const [messages, setMessages]           = useState([]);
+  const [newMessage, setNewMessage]       = useState("");
+  const [loading, setLoading]             = useState(false);
+  const messagesEndRef                    = useRef(null);
 
+  // ── Conectar WebSocket al montar ────────────────────────────────
+  useEffect(() => {
+    const client = connectWebSocket((incomingMessage) => {
+      // Solo agrega el mensaje si pertenece a la conversación activa
+      setActiveContact((prev) => {
+        if (
+          prev &&
+          (incomingMessage.senderId === prev.id ||
+            incomingMessage.receiverId === prev.id)
+        ) {
+          setMessages((msgs) => [...msgs, incomingMessage]);
+        }
+        return prev;
+      });
+
+      // Actualiza el preview del contacto
+      setContacts((prev) =>
+        prev.map((c) =>
+          c.id === incomingMessage.senderId
+            ? { ...c, preview: incomingMessage.body, unread: true }
+            : c
+        )
+      );
+    });
+
+    return () => disconnectWebSocket();
+  }, []);
+
+  // ── Scroll al último mensaje ─────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeContact?.messages]);
+  }, [messages]);
 
-  const handleSelectContact = (contact) => {
-    setContacts((prev) =>
-      prev.map((c) => c.id === contact.id ? { ...c, unread: false } : c)
-    );
-    setActiveContact({ ...contact, unread: false });
+  // ── Cargar historial al seleccionar un contacto ──────────────────
+  const handleSelectContact = async (contact) => {
+    setActiveContact(contact);
+    setLoading(true);
+
+    try {
+      const res = await getChatHistory(user.id, contact.id);
+      setMessages(res.data);
+
+      // Marcar mensajes no leídos como leídos
+      res.data
+        .filter((m) => m.read === "0" && m.receiverId === user.id)
+        .forEach((m) => markAsRead(m.id));
+
+      // Quitar indicador de no leído
+      setContacts((prev) =>
+        prev.map((c) => (c.id === contact.id ? { ...c, unread: false } : c))
+      );
+    } catch (error) {
+      console.error("Error cargando historial:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ── Enviar mensaje ───────────────────────────────────────────────
   const handleSend = () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !activeContact) return;
 
-    const message = {
-      id: Date.now(),
-      text: newMessage.trim(),
-      time: new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }),
-      sent: true,
+    const messageDto = {
+      senderId:   user.id,
+      receiverId: activeContact.id,
+      body:       newMessage.trim(),
     };
 
-    const updatedContacts = contacts.map((c) =>
-      c.id === activeContact.id
-        ? { ...c, messages: [...c.messages, message], preview: newMessage.trim() }
-        : c
-    );
+    sendMessage(messageDto);
 
-    setContacts(updatedContacts);
-    setActiveContact((prev) => ({
-      ...prev,
-      messages: [...prev.messages, message],
-      preview: newMessage.trim(),
-    }));
+    // Optimistic UI — agrega el mensaje localmente antes de que llegue por WS
+    const optimisticMessage = {
+      id:         Date.now().toString(),
+      senderId:   user.id,
+      receiverId: activeContact.id,
+      body:       newMessage.trim(),
+      sentAt:     new Date().toISOString(),
+      read:       "0",
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.id === activeContact.id
+          ? { ...c, preview: newMessage.trim() }
+          : c
+      )
+    );
     setNewMessage("");
   };
 
@@ -95,6 +128,15 @@ const MessagesView = () => {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  // ── Helper: formatea la hora de sentAt ───────────────────────────
+  const formatTime = (sentAt) => {
+    if (!sentAt) return "";
+    return new Date(sentAt).toLocaleTimeString("es-MX", {
+      hour:   "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -108,31 +150,39 @@ const MessagesView = () => {
 
         <div className={styles.chatContainer}>
 
+          {/* ── Lista de contactos ── */}
           <div className={styles.contactList}>
-            {contacts.map((contact) => (
-              <div
-                key={contact.id}
-                className={`${styles.contactItem} ${activeContact?.id === contact.id ? styles.contactItemActive : ""}`}
-                onClick={() => handleSelectContact(contact)}
-              >
-                <div className={styles.contactAvatar}>
-                  <Avatar initials={contact.initials} size="md" />
-                  {contact.online && <span className={styles.onlineDot} />}
+            {contacts.length === 0 ? (
+              <p style={{ padding: "1rem", color: "#9ca3af", fontSize: "14px" }}>
+                No tienes conversaciones aún
+              </p>
+            ) : (
+              contacts.map((contact) => (
+                <div
+                  key={contact.id}
+                  className={`${styles.contactItem} ${activeContact?.id === contact.id ? styles.contactItemActive : ""}`}
+                  onClick={() => handleSelectContact(contact)}
+                >
+                  <div className={styles.contactAvatar}>
+                    <Avatar initials={getInitials(contact.name)} size="md" />
+                    {contact.online && <span className={styles.onlineDot} />}
+                  </div>
+                  <div className={styles.contactInfo}>
+                    <span className={styles.contactName}>{contact.name}</span>
+                    <span className={styles.contactPreview}>{contact.preview}</span>
+                  </div>
+                  {contact.unread && <span className={styles.unreadDot} />}
                 </div>
-                <div className={styles.contactInfo}>
-                  <span className={styles.contactName}>{contact.name}</span>
-                  <span className={styles.contactPreview}>{contact.preview}</span>
-                </div>
-                {contact.unread && <span className={styles.unreadDot} />}
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
+          {/* ── Panel de chat ── */}
           {activeContact ? (
             <div className={styles.chatPanel}>
 
               <div className={styles.chatHeader}>
-                <Avatar initials={activeContact.initials} size="md" />
+                <Avatar initials={getInitials(activeContact.name)} size="md" />
                 <div className={styles.chatHeaderInfo}>
                   <span className={styles.chatHeaderName}>{activeContact.name}</span>
                   <span className={`${styles.chatHeaderStatus} ${activeContact.online ? styles.statusOnline : styles.statusOffline}`}>
@@ -142,17 +192,23 @@ const MessagesView = () => {
               </div>
 
               <div className={styles.messagesList}>
-                {activeContact.messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`${styles.messageBubbleWrapper} ${msg.sent ? styles.messageBubbleWrapperSent : ""}`}
-                  >
-                    <div className={`${styles.messageBubble} ${msg.sent ? styles.messageBubbleSent : styles.messageBubbleReceived}`}>
-                      <p className={styles.messageText}>{msg.text}</p>
-                      <span className={styles.messageTime}>{msg.time}</span>
+                {loading ? (
+                  <p style={{ textAlign: "center", color: "#9ca3af", padding: "2rem" }}>
+                    Cargando mensajes...
+                  </p>
+                ) : (
+                  messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`${styles.messageBubbleWrapper} ${msg.senderId === user.id ? styles.messageBubbleWrapperSent : ""}`}
+                    >
+                      <div className={`${styles.messageBubble} ${msg.senderId === user.id ? styles.messageBubbleSent : styles.messageBubbleReceived}`}>
+                        <p className={styles.messageText}>{msg.body}</p>
+                        <span className={styles.messageTime}>{formatTime(msg.sentAt)}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
