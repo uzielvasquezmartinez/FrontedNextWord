@@ -3,7 +3,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import NextWordLogo from "../../components/NextWordLogo/NextWordLogo";
 import styles from "./LoginView.module.css";
-
 const LoginView = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -12,7 +11,7 @@ const LoginView = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+const { mockLogin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +32,7 @@ const LoginView = () => {
   };
 
   return (
+    
     <div className={styles.layout}>
 
       <aside className={styles.branding}>
@@ -121,6 +121,59 @@ hoy </h1>
             </button>
 
           </form>
+<button 
+          type="button" 
+          onClick={() => mockLogin("student")} 
+          style={{
+            width: "100%",
+            padding: "0.8rem",
+            background: "#f5a623", // Color naranja para que sepas que es de prueba
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginBottom: "0.5rem"
+          }}
+        >
+          🚧 Entrar rápido como Estudiante
+        </button>
+
+        {/* ¡Incluso puedes agregar otro para el profesor! */}
+        <button 
+          type="button" 
+          onClick={() => mockLogin("teacher")} 
+          style={{
+            width: "100%",
+            padding: "0.8rem",
+            background: "#8e4bff", 
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+        >
+          🚧 Entrar rápido como Profesor
+        </button>
+           <button 
+          type="button" 
+          onClick={() => mockLogin("admin")} 
+          style={{
+            width: "100%",
+            padding: "0.8rem",
+            background: "#8e4bff", 
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+        >
+          🚧 Entrar rápido como Profesor
+        </button>
+
+
 
         <p className={styles.registerText}>
   ¿No tienes una cuenta?{" "}

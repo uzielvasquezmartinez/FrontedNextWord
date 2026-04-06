@@ -11,11 +11,17 @@ import ClassesView       from "../views/Admin/ClassesView";
 import ReportsView       from "../views/Admin/ReportsView";
 import ProfessorDashboard from "../views/Professor/ProfessorDashboard";
 import ScheduleView from "../views/Professor/ScheduleView";
-import StudentDashboard from "../views/Student/StudentDashboard";
+import StudentDashboard from "../views/Student/StudentDashboardView";
+import StudentScheduleView from "../views/Student/StudentScheduleView";
+import StudentClassesView from "../views/Student/StudentClassesView";
+import CheckoutView        from "../views/Student/CheckoutView";
+import PaymentSuccessView  from "../views/Student/PaymentSuccessView";
+import PaymentFailureView  from "../views/Student/PaymentFailureView";
 import ForgotPasswordView from "../views/ForgotPassword/ForgotPasswordView";
 import VerifyCodeView     from "../views/ForgotPassword/VerifyCodeView";
 import ResetPasswordView  from "../views/ForgotPassword/ResetPasswordView";
 import MessagesView from "../views/Professor/MessagesView";
+import StudentMessagesView from "../views/Student/StudentMessagesView";
 
 // AnimatePresence necesita leer la location, por eso se separa en un componente interno
 const AnimatedRoutes = () => {
@@ -82,14 +88,42 @@ const AnimatedRoutes = () => {
 }/>
 
 {/* ── Alumno ── */}
-<Route path="/alumno/dashboard" element={
-  <ProtectedRoute allowedRoles={["alumno"]}>
+<Route path="/student/dashboard" element={
+  <ProtectedRoute allowedRoles={["student"]}>
     <PageTransition type="slide"><StudentDashboard /></PageTransition>
   </ProtectedRoute>
 }/>
+<Route path="/student/schedule" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="slide"><StudentScheduleView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/student/classes" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="slide"><StudentClassesView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/student/checkout" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="slideUp"><CheckoutView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/student/payment/success" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="scale"><PaymentSuccessView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/student/payment/failure" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="scale"><PaymentFailureView /></PageTransition>
+  </ProtectedRoute>
+}/>
 
-
-
+<Route path="/student/messages" element={
+  <ProtectedRoute allowedRoles={["student"]}>
+    <PageTransition type="slide"><StudentMessagesView /></PageTransition>
+  </ProtectedRoute>
+}/>
 
 
 

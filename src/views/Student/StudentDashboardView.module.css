@@ -1,145 +1,144 @@
+/* ================================================================
+   StudentDashboardView.module.css
+   ================================================================ */
+
 .page {
+  --color-primary:      #2B58FE;
+  --color-secondary:    #923CFF;
+  --gradient-from:      #2E3192;
+  --gradient-to:        #8E2DE2;
+  --color-text-heading: #111827;
+  --color-text-body:    #374151;
+  --color-text-muted:   #6b7280;
+  --color-bg-page:      #f3f4f6;
+  --color-bg-card:      #ffffff;
+  --color-border:       #e5e7eb;
+  --radius-md:          16px;
+  --shadow-card:        0 2px 8px rgba(0,0,0,0.07);
+  --shadow-hover:       0 8px 24px rgba(43,88,254,0.13);
+  --transition-base:    0.2s ease;
+  --font-family:        'Poppins', system-ui, sans-serif;
+
   min-height: 100vh;
-  background: #f7f8fb;
-  color: #1f2a4a;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
-}
-
-.heroHeader {
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.1rem 2rem;
-  background: linear-gradient(90deg, #2d6cff 0%, #8e4bff 100%);
-  color: white;
-}
-
-.navPills {
-  display: flex;
-  gap: 0.7rem;
-  background: transparent;
-}
-
-.navPill {
-  border: 0;
-  background: transparent;
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.navPillActive {
-  background: white;
-  color: #2d6cff;
-  box-shadow: 0 8px 25px rgba(45, 108, 255, 0.18);
-}
-
-.userContainer {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.userGreeting {
-  font-weight: 700;
+  flex-direction: column;
 }
 
 .main {
-  max-width: 1200px;
-  margin: -1.2rem auto 2rem;
-  padding: 0 1rem 2rem;
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-sizing: border-box;
 }
 
+/* ── Banner ── */
 .bannerCard {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 12px 30px rgba(19, 45, 105, 0.08);
-  border: 1px solid #e8ebff;
-  padding: 1.2rem 1.4rem;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.4rem;
 }
 
 .bannerText h1 {
-  font-size: 1.7rem;
-  margin: 0;
-  color: #2d62d9;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
 }
 
 .bannerText p {
-  margin: 0.3rem 0 0;
-  color: #6678a4;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
 }
 
+/* ── KPIs ── */
 .kpiGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(170px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-bottom: 1.4rem;
 }
 
 .kpiCard {
-  background: white;
-  border: 1px solid #dce2ff;
-  border-radius: 0.9rem;
-  padding: 0.95rem 1rem;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: box-shadow var(--transition-base);
 }
 
-.kpiIcon {
-  color: #2d6cff;
-}
+.kpiCard:hover { box-shadow: var(--shadow-hover); }
 
 .kpiBody {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 .kpiLabel {
-  display: block;
-  color: #657198;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .kpiValue {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #1f2a4a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  line-height: 1;
 }
 
-.nextClassSection {
-  margin-bottom: 1.4rem;
+.kpiIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.nextClassHeading {
-  margin-bottom: 0.6rem;
-}
+/* ── Próxima clase ── */
+.nextClassSection { display: flex; flex-direction: column; gap: 0.75rem; }
 
 .nextClassTag {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #ebf1ff;
-  color: #2b4d99;
+  background: #eff6ff;
+  color: var(--color-primary);
   border-radius: 999px;
-  padding: 0.35rem 0.8rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
 .nextClassCard {
-  background: white;
-  border-radius: 1rem;
-  border: 1px solid #dce2ff;
-  box-shadow: 0 10px 28px rgba(17, 61, 141, 0.08);
-  padding: 1rem;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -149,120 +148,56 @@
 .nextClassInfo {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .nextClassInfo h3 {
-  margin: 0;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 0.2rem;
 }
 
 .nextClassInfo p {
-  margin: 0.15rem 0 0;
-  color: #4d5f84;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
 }
 
 .nextClassActions {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  width: 220px;
+  gap: 0.5rem;
+  min-width: 160px;
 }
 
-.teachersGridSection h2 {
-  margin: 0 0 0.9rem;
-  color: #2d3f72;
+/* ── Profesores ── */
+.teachersSection {}
+
+.teachersTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0 0 1rem;
 }
 
 .teachersGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 
-.teacherCard {
-  background: white;
-  border-radius: 1rem;
-  border: 1px solid #dce2ff;
-  box-shadow: 0 8px 22px rgba(28, 49, 96, 0.08);
-  padding: 1rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  align-items: center;
+/* ── Responsivo ── */
+@media (max-width: 900px) {
+  .teachersGrid { grid-template-columns: repeat(2, 1fr); }
+  .kpiGrid      { grid-template-columns: repeat(2, 1fr); }
 }
 
-.teacherAvatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #a9befd;
-}
-
-.teacherName {
-  font-weight: 700;
-  margin: 0;
-}
-
-.teacherRating {
-  color: #f5a623;
-}
-
-@media (max-width: 1024px) {
-  .teachersGrid {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-
-  .nextClassActions {
-    width: 100%;
-  }
-}
-
-@media (max-width: 740px) {
-  .main {
-    margin-top: 0.6rem;
-  }
-
-  .navPills {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .bannerCard,
-  .kpiGrid,
-  .nextClassCard,
-  .teachersGrid {
-    grid-template-columns: 1fr;
-    width: 100%;
-  }
-
-  .kpiGrid {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .teachersGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .nextClassCard {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
-
-  .nextClassInfo {
-    justify-content: center;
-  }
-
-  .nextClassActions {
-    width: 100%;
-  }
-
-  .teacherCard {
-    padding: 0.9rem;
-  }
+@media (max-width: 768px) {
+  .main         { padding: 1.25rem 1rem; }
+  .bannerCard   { flex-direction: column; align-items: flex-start; }
+  .kpiGrid      { grid-template-columns: 1fr; }
+  .nextClassCard { flex-direction: column; }
+  .nextClassActions { width: 100%; }
+  .teachersGrid { grid-template-columns: repeat(2, 1fr); }
 }

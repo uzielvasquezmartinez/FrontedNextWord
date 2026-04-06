@@ -10,20 +10,30 @@ export const TEACHER_NAV = [
   { label: "Horario",  path: "/teacher/schedule"  },
   { label: "Mensajes", path: "/teacher/messages"  },
 ];
+const generateMockSchedules = () => {
+ const today = new Date();
+const year  = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, "0");
+const day   = String(today.getDate()).padStart(2, "0");
 
-export const MOCK_SCHEDULES = [
-  { date: "2026-03-05", start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
-  { date: "2026-03-05", start: "10:00", end: "11:00", type: "Reservado",   label: "Entrevista Inglés", minutes: 60 },
-  { date: "2026-03-05", start: "12:00", end: "13:00", type: "Disponible",  label: "Horario disponible para reservar" },
-  { date: "2026-03-10", start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
-  { date: "2026-03-11", start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
-  { date: "2026-03-11", start: "11:00", end: "12:00", type: "Reservado",   label: "Inglés III", minutes: 60 },
-  { date: "2026-03-13", start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
-  { date: "2026-03-13", start: "13:00", end: "14:00", type: "Reservado",   label: "Matemáticas", minutes: 60 },
-  { date: "2026-03-14", start: "11:00", end: "12:00", type: "Reservado",   label: "Inglés III", minutes: 60 },
-  { date: "2026-03-15", start: "11:00", end: "12:00", type: "Reservado",   label: "Francés", minutes: 60 },
-  { date: "2026-03-16", start: "11:00", end: "12:00", type: "Reservado",   label: "Física", minutes: 60 },
-];
+  return [
+     { date: `${year}-${month}-${day}`, start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-${day}`, start: "10:00", end: "11:00", type: "Reservado",   label: "Inglés Avanzado", minutes: 60 },
+    { date: `${year}-${month}-${day}`, start: "12:00", end: "13:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-05`, start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-05`, start: "10:00", end: "11:00", type: "Reservado",   label: "Entrevista Inglés", minutes: 60 },
+    { date: `${year}-${month}-05`, start: "12:00", end: "13:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-10`, start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-11`, start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-11`, start: "11:00", end: "12:00", type: "Reservado",   label: "Inglés III", minutes: 60 },
+    { date: `${year}-${month}-13`, start: "09:00", end: "10:00", type: "Disponible",  label: "Horario disponible para reservar" },
+    { date: `${year}-${month}-13`, start: "13:00", end: "14:00", type: "Reservado",   label: "Matemáticas", minutes: 60 },
+    { date: `${year}-${month}-14`, start: "11:00", end: "12:00", type: "Reservado",   label: "Inglés III", minutes: 60 },
+    { date: `${year}-${month}-15`, start: "11:00", end: "12:00", type: "Reservado",   label: "Francés", minutes: 60 },
+    { date: `${year}-${month}-16`, start: "11:00", end: "12:00", type: "Reservado",   label: "Física", minutes: 60 },
+  ];
+};
+export const MOCK_SCHEDULES = generateMockSchedules();
 
 export const getDaysInMonth     = (y, m) => new Date(y, m + 1, 0).getDate();
 export const getFirstDayOfMonth = (y, m) => { const d = new Date(y, m, 1).getDay(); return d === 0 ? 6 : d - 1; };

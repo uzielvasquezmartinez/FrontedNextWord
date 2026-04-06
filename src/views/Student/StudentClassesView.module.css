@@ -50,12 +50,6 @@
   gap: 1rem;
 }
 
-.subtitle {
-  font-size: 0.85rem;
-  color: var(--color-primary);
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-}
 
 .heading {
   font-size: 1.45rem;
@@ -125,6 +119,40 @@
   border-color: transparent;
 }
 
+.classInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.classSubject {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.classTeacher {
+  font-size: 0.85rem;
+  color: #374151;
+  margin: 0;
+  font-weight: 500;
+}
+
+.classMeta {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.classActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 120px;
+  align-items: stretch;
+}
 .classesList {
   display: grid;
   gap: 1rem;
@@ -148,11 +176,6 @@
   box-shadow: var(--shadow-hover);
 }
 
-.classInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 
 .classTag {
   display: inline-flex;
@@ -171,11 +194,7 @@
   color: var(--color-text-heading);
 }
 
-.classMeta {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-}
+
 
 .classFooter {
   display: flex;
@@ -185,11 +204,7 @@
   flex-wrap: wrap;
 }
 
-.cardActions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
+
 
 .empty {
   text-align: center;
@@ -198,20 +213,49 @@
   padding: 2rem 0;
 }
 
-@media (max-width: 900px) {
-  .headerCard {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .classCard {
-    grid-template-columns: 1fr;
-  }
-  .classFooter {
-    justify-content: space-between;
-  }
+
+
+
+/* ── Filtros con color por estado ── */
+.filterIdleProximas    { color: #2B58FE; border-color: #2B58FE; }
+.filterIdleCompletadas { color: #16a34a; border-color: #16a34a; }
+.filterIdleCanceladas  { color: #dc2626; border-color: #dc2626; }
+
+.filterActiveProximas    { background: #2B58FE;  color: #fff; border-color: #2B58FE;  }
+.filterActiveCompletadas { background: #16a34a;  color: #fff; border-color: #16a34a;  }
+.filterActiveCanceladas  { background: #dc2626;  color: #fff; border-color: #dc2626;  }
+
+
+
+/* ── Layout de la card ── */
+.classCard {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
 }
 
+.teacherAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+/* ── Responsivo ── */
 @media (max-width: 768px) {
-  .main { padding: 1.25rem 1rem; }
-  .filterPanel { flex-direction: column; align-items: flex-start; }
+  .classCard {
+    flex-wrap: wrap;
+  }
+  .classActions {
+    width: 100%;
+    flex-direction: row;
+  }
 }

@@ -14,6 +14,21 @@ const AppNavbar = ({ navItems, activeItem }) => {
   const initials = user?.name
     ?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "U";
 
+const pingBackend = async () => {
+    try {
+      const response = await fetch("https://unpoetically-interramal-loren.ngrok-free.dev", {
+        headers: {
+          "ngrok-skip-browser-warning": "true" // Para que ngrok no bloquee la prueba
+        }
+      });
+      const data = await response.text();
+      console.log("Respuesta del servidor:", data);
+      alert("¡Petición enviada! Dile a tu amigo que revise su consola.");
+    } catch (error) {
+      console.error("Error al conectar:", error);
+      alert("No se pudo conectar al ngrok.");
+    }
+  };
   return (
     <>
       <header className={styles.navbar}>
@@ -35,6 +50,24 @@ const AppNavbar = ({ navItems, activeItem }) => {
         </nav>
 
         <div className={styles.navUser}>
+
+<button 
+            onClick={pingBackend}
+            style={{
+              background: '#00d084',
+              color: 'white',
+              border: 'none',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              marginRight: '1rem'
+            }}
+          >
+            🔌 Ping Ngrok
+          </button>
+
+
           <span className={styles.navUserName}>
             Hola, {user?.name?.split(" ")[0] ?? "Usuario"}
           </span>

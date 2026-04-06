@@ -38,6 +38,16 @@
   transform: translateY(-1px);
 }
 
+.outline {
+  background: transparent;
+  color: #6a4aad;
+  border: 1.5px solid #6a4aad;
+}
+.outline:hover:not(:disabled) {
+  background-color: rgba(106, 74, 173, 0.06);
+  transform: translateY(-1px);
+}
+
 .secondary {
   background: transparent;
   color: #6a4aad;

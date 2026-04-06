@@ -70,8 +70,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ── Mock Login (Solo para saltar el login en desarrollo) ───────
+  const mockLogin = (role = "student") => {
+    // Creamos un usuario falso respetando la estructura de tu app
+    const mockUser = { 
+      token: "mock-token-desarrollo-123", 
+      email: `test@${role}.com`, 
+      role: role, 
+      name: `Uzi (${role})`, 
+      id: 999 
+    };
 
+    // Lo guardamos en localStorage para que persista si recargas la página
+    localStorage.setItem("token", mockUser.token);
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    setUser(mockUser);
 
+    // Redirigimos usando tu propio mapa de rutas
+    navigate(ROLE_REDIRECTS[role]);
+  };
 
   // ── Registro Estudiante ────────────────────────────────────────
   const registerStudent = async (data) => {
@@ -112,34 +129,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-    // ── Verify Code (Forgot Password) ─────────────────────────────
-const verifyCode = async (email, code) => {
-  try {
-    await authService.verifyCode(email, code);
-    return { success: true, token: code };
-  } catch (error) {
-    const message =
-      error.response?.data?.message ??
-      error.response?.data ??
-      "Código incorrecto o expirado.";
-    return { success: false, message };
-  }
-};
+  // ── Verify Code (Forgot Password) ─────────────────────────────
+  const verifyCode = async (email, code) => {
+    try {
+      await authService.verifyCode(email, code);
+      return { success: true, token: code };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ??
+        error.response?.data ??
+        "Código incorrecto o expirado.";
+      return { success: false, message };
+    }
+  };
 
-
-      const verifyAccount = async (email, code) => {
-  try {
-    const res = await authService.verifyAccount(email, code);
-    return { success: true, message: res.data };
-  } catch (error) {
-    const message =
-      error.response?.data?.message ??
-      error.response?.data ??
-      "Código incorrecto o expirado.";
-    return { success: false, message };
-  }
-};
-
+  const verifyAccount = async (email, code) => {
+    try {
+      const res = await authService.verifyAccount(email, code);
+      return { success: true, message: res.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ??
+        error.response?.data ??
+        "Código incorrecto o expirado.";
+      return { success: false, message };
+    }
+  };
 
   // ── Reset Password ─────────────────────────────────────────────
   const resetPassword = async (token, newPassword) => {
@@ -161,16 +176,17 @@ const verifyCode = async (email, code) => {
     setUser(null);
     navigate("/login");
   };
-
+ 
   return (
     <AuthContext.Provider value={{
       user,
       login,
+      mockLogin, // <-- Función inyectada aquí
       registerStudent,
       registerTeacher,
       forgotPassword,
       verifyCode,
-       verifyAccount,
+      verifyAccount,
       resetPassword,
       logout,
     }}>
