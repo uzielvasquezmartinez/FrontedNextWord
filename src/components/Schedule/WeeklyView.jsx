@@ -1,5 +1,8 @@
 import { DAYS_OF_WEEK, HOURS, formatWeekRange } from "./scheduleHelpers";
 import styles from "./Schedule.module.css";
+import React from "react";
+
+
 
 const WeeklyView = ({ schedules, weekStart, onPrev, onNext, onCellClick }) => {
   const weekDays = Array.from({ length: 7 }, (_, i) => {
@@ -28,9 +31,9 @@ const WeeklyView = ({ schedules, weekStart, onPrev, onNext, onCellClick }) => {
             <span className={styles.weekDayNum}>{d.getDate()}</span>
           </div>
         ))}
-        {HOURS.map((hour) => (
-          <>
-            <div key={`h-${hour}`} className={styles.weekHourLabel}>{hour}</div>
+     {HOURS.map((hour) => (
+  <React.Fragment key={hour}>
+    <div className={styles.weekHourLabel}>{hour}</div>
             {weekDays.map((d, i) => {
               const s = getScheduleForCell(d, hour);
               return (
@@ -47,7 +50,7 @@ const WeeklyView = ({ schedules, weekStart, onPrev, onNext, onCellClick }) => {
                 </div>
               );
             })}
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>
