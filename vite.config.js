@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server : {
     host : true
+     
+  },
+   define: {
+    global: {}  // ← dentro de define
   }
+   
 })
