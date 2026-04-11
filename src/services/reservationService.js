@@ -9,14 +9,13 @@ import api from "./Api";
  * Body: { teacherId, slotDate, startTime, endTime, classType }
  */
 export const createSlot = (data) =>
-  api.post("/reservations/slot", data);
-
+api.get('/api/reservations/slots/available')
 /**
  * GET /api/reservations/slots/available
  * Devuelve todos los slots disponibles
  */
 export const getAvailableSlots = () =>
-  api.get("/reservations/slots/available");
+  api.get("/api/reservations/slots/available");
 
 /**
  * GET /api/reservations/slots/filter
@@ -28,7 +27,7 @@ export const getAvailableSlots = () =>
 export const getSlotsByRange = (startDate, endDate, teacherId = null) => {
   const params = { startDate, endDate };
   if (teacherId) params.teacherId = teacherId;
-  return api.get("/reservations/slots/filter", { params });
+  return api.get("/api/reservations/slots/filter", { params });
 };
 
 // ── Reservaciones ─────────────────────────────────────────────────
@@ -39,7 +38,7 @@ export const getSlotsByRange = (startDate, endDate, teacherId = null) => {
  * Body: { studentId, slotId }
  */
 export const bookSlot = (studentId, slotId) =>
-  api.post("/reservations/book", { studentId, slotId });
+  api.post("/api/reservations/book", { studentId, slotId });
 
 /**
  * GET /api/reservations/myClass
@@ -48,7 +47,7 @@ export const bookSlot = (studentId, slotId) =>
  */
 export const getMyReservations = (status = null) => {
   const params = status ? { status } : {};
-  return api.get("/reservations/myClass", { params });
+  return api.get("/api/reservations/myClass", { params });
 };
 
 /**
@@ -56,14 +55,14 @@ export const getMyReservations = (status = null) => {
  * Devuelve la agenda del profesor autenticado
  */
 export const getTeacherAgenda = () =>
-  api.get("/reservations/teacherAgenda");
+  api.get("/api/reservations/teacherAgenda");
 
 /**
  * GET /api/reservations/myAgenda
  * Devuelve la agenda del estudiante autenticado
  */
 export const getStudentAgenda = () =>
-  api.get("/reservations/myAgenda");
+  api.get("/api/reservations/myAgenda");
 
 /**
  * PUT /api/reservations/complete
@@ -71,7 +70,7 @@ export const getStudentAgenda = () =>
  * Body: { reservationId }
  */
 export const completeReservation = (reservationId) =>
-  api.put("/reservations/complete", { reservationId });
+  api.put("/api/reservations/complete", { reservationId });
 
 /**
  * POST /api/reservations/cancel
@@ -79,4 +78,4 @@ export const completeReservation = (reservationId) =>
  * Body: { reservaId, actionType, reason, requesterId }
  */
 export const cancelReservation = (reservaId, actionType, reason, requesterId) =>
-  api.post("/reservations/cancel", { reservaId, actionType, reason, requesterId });
+  api.post("/api/reservations/cancel", { reservaId, actionType, reason, requesterId });
