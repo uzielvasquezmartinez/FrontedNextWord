@@ -69,14 +69,16 @@ const VerifyCodeView = () => {
   };
 
   const handleResend = async () => {
-    setResent(true);
-    setCode(Array(DIGITS).fill(""));
-    inputsRef.current[0]?.focus();
-    if (mode === "forgot") await forgotPassword(email);
-    // mode === "register": pendiente endpoint de reenvío en backend
-    setTimeout(() => setResent(false), 3000);
-  };
-
+  setResent(true);
+  setCode(Array(DIGITS).fill(""));
+  inputsRef.current[0]?.focus();
+  
+  if (mode === "forgot") {
+    await forgotPassword(email); // ← reenvía el código ✅
+  }
+  
+  setTimeout(() => setResent(false), 3000);
+};
   return (
     <GradientPage>
       <PageCard>
