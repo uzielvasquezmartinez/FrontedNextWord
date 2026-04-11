@@ -6,13 +6,14 @@ import PageCard from "../../components/UI/PageCard/PageCard";
 import { IconLock, IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 import styles from "./ResetPasswordView.module.css";
 
+
+
 const ResetPasswordView = () => {
   const navigate          = useNavigate();
   const location          = useLocation();
   const { resetPassword } = useAuth();
   const token             = location.state?.token ?? "";
   const email             = location.state?.email ?? "";
-
   const [password,        setPassword]        = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass,        setShowPass]        = useState(false);
@@ -24,7 +25,7 @@ const ResetPasswordView = () => {
   const validate = () => {
     const e = {};
     if (!password)                e.password = "La contraseña es requerida.";
-    else if (password.length < 6) e.password = "Mínimo 6 caracteres.";
+    else if (password.length < 8) e.password = "Mínimo 6 caracteres.";
     if (!confirmPassword)         e.confirmPassword = "Confirma tu contraseña.";
     else if (password !== confirmPassword) e.confirmPassword = "Las contraseñas no coinciden.";
     return e;
@@ -34,9 +35,8 @@ const ResetPasswordView = () => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
-
     setLoading(true);
-    const result = await resetPassword(token, password);
+    const result = await resetPassword(email,token, password);
     setLoading(false);
 
     if (!result.success) {
@@ -61,7 +61,6 @@ const ResetPasswordView = () => {
       </GradientPage>
     );
   }
-
   return (
     <GradientPage>
       <PageCard>
@@ -76,7 +75,7 @@ const ResetPasswordView = () => {
           Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta
         </p>
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <div className={styles.field}>
+          <div className={styles.field}/>
             <label className={styles.label}>Nueva Contraseña</label>
             <div className={`${styles.inputWrapper} ${errors.password ? styles.inputWrapperError : ""}`}>
               <span className={styles.inputIcon}><IconLock /></span>
@@ -85,15 +84,15 @@ const ResetPasswordView = () => {
                 className={styles.input}
                 placeholder="Mínimo 6 caracteres"
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
+                onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" 
+
+                })); }}
               />
               <button type="button" className={styles.eyeBtn} onClick={() => setShowPass((p) => !p)}>
                 {showPass ? <IconEyeClosed /> : <IconEyeOpen />}
               </button>
             </div>
-            {errors.password && <span className={styles.errorText}>{errors.password}</span>}
-          </div>
-          <div className={styles.field}>
+            {errors.password && <span className={styles.errorText}>{errors.password}</span>}          <div className={styles.field}>
             <label className={styles.label}>Confirmar Contraseña</label>
             <div className={`${styles.inputWrapper} ${errors.confirmPassword ? styles.inputWrapperError : ""}`}>
               <span className={styles.inputIcon}><IconLock /></span>
