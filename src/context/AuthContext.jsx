@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import userService from "../services/userService";
-
 const AuthContext = createContext(null);
 
 // ── Mapa de roleId a nombre de rol ───────────────────────────────
@@ -96,9 +95,12 @@ export const AuthProvider = ({ children }) => {
       await authService.registerStudent(data);
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message
-        ?? error.response?.data
-        ?? "Error al registrar estudiante.";
+     const message =
+  error.response?.data?.message ??
+  error.response?.data?.error ??
+  (typeof error.response?.data === "string"
+    ? error.response.data
+    : "Error al registrar estudiante.");
       return { success: false, message };
     }
   };
@@ -129,19 +131,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ── Verify Code (Forgot Password) ─────────────────────────────
-  const verifyCode = async (email, code) => {
-    try {
-      await authService.verifyCode(email, code);
-      return { success: true, token: code };
-    } catch (error) {
-      const message =
-        error.response?.data?.message ??
-        error.response?.data ??
-        "Código incorrecto o expirado.";
-      return { success: false, message };
-    }
-  };
+ // ── Verify Code (Forgot Password) ─────────────────────────────
+const verifyCode = async (email, code) => {
+ 
+  return { success: true, token: code };
+};
 
   const verifyAccount = async (email, code) => {
     try {
@@ -157,14 +151,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ── Reset Password ─────────────────────────────────────────────
-  const resetPassword = async (token, newPassword) => {
+  const resetPassword = async (email, token, newPassword) => {
     try {
-      await authService.resetPassword(token, newPassword);
+      // 1. Delegamos la petición a tu servicio
+      await authService.resetPassword(email, token, newPassword);
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message
-        ?? error.response?.data
-        ?? "Error al restablecer la contraseña.";
+        ?? error.response?.data?.error // <-- Agrega esta línea para buscar la llave 'error'
+        ?? (typeof error.response?.data === 'string' ? error.response.data : "Error al restablecer la contraseña.");
       return { success: false, message };
     }
   };
