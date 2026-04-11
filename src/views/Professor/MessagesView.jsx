@@ -34,8 +34,7 @@ const MessagesView = () => {
 
   // ── Conectar WebSocket al montar ────────────────────────────────
   useEffect(() => {
-    const client = connectWebSocket((incomingMessage) => {
-      // Solo agrega el mensaje si pertenece a la conversación activa
+const client = connectWebSocket(user.id, (incomingMessage) => {      
       setActiveContact((prev) => {
         if (
           prev &&
