@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Input from "../../components/UI/Input/Input";
@@ -12,54 +12,31 @@ import DailyView from "../../components/Schedule/DailyView";
 import { IconSearch } from "../../components/Icons/Icons";
 import { MOCK_SCHEDULES, getWeekStart } from "../../components/Schedule/scheduleHelpers";
 import styles from "./StudentScheduleView.module.css";
+// IMPORTAMOS EL SERVICIO
+import teacherService from "../../services/teacherService";
+// 1. Agrega el import de tu nuevo servicio (que crearemos en breve)
 
-// ── Navegación ───────────────────────────────────────────────────
+// ... dentro de tu componente StudentScheduleView ...
+import scheduleService from "../../services/scheduleService";
+
+
+
 const STUDENT_NAV = [
-  { label: "Inicio",   path: "/student/dashboard" },
-  { label: "Horario",  path: "/student/schedule"  },
-  { label: "Clases",   path: "/student/classes"   },
-  { label: "Mensajes", path: "/student/messages"  },
+  { label: "Inicio",    path: "/student/dashboard" },
+  { label: "Horario",   path: "/student/schedule"  },
+  { label: "Clases",    path: "/student/classes"   },
+  { label: "Mensajes",  path: "/student/messages"  },
 ];
 
-// ── Datos mock profesores ────────────────────────────────────────
-const TEACHERS = [
-  {
-    id: 1, name: "Marco Lopez",     rating: 4.8, classes: 50, hourlyRate: 25,
-    avatar: "https://i.pravatar.cc/150?img=12",
-    bio: "Lingüista con doctorado y 10 años transformando el aprendizaje del idioma.",
-    education: "Doctorado en Lingüística Aplicada / Enseñanza del Inglés",
-    experience: "10 años de experiencia",
-  },
-  {
-    id: 2, name: "Marco Lopez",     rating: 4.8, classes: 50, hourlyRate: 25,
-    avatar: "https://i.pravatar.cc/150?img=32",
-    bio: "Especialista en inglés conversacional con enfoque en negocios internacionales.",
-    education: "Maestría en Lingüística Aplicada",
-    experience: "8 años de experiencia",
-  },
-  {
-    id: 3, name: "Marco Lopez",     rating: 4.8, classes: 50, hourlyRate: 25,
-    avatar: "https://i.pravatar.cc/150?img=22",
-    bio: "Profesor certificado por Cambridge con experiencia en preparación de exámenes.",
-    education: "Certificación Cambridge CELTA",
-    experience: "12 años de experiencia",
-  },
-  {
-    id: 4, name: "Carolina Bahena", rating: 4.5, classes: 40, hourlyRate: 20,
-    avatar: "https://i.pravatar.cc/150?img=44",
-    bio: "Apasionada por la enseñanza del inglés con metodología dinámica e interactiva.",
-    education: "Licenciatura en Idiomas Modernos",
-    experience: "6 años de experiencia",
-  },
-];
-
-// ── Componente principal ─────────────────────────────────────────
-const StudentScheduleView = () => {
+// 2. AGREGA ESTOS ESTADOS JUSTO DEBAJO DE TUS OTROS ESTADOS
+  
+  const StudentScheduleView = () => {
   const location  = useLocation();
   const navigate  = useNavigate();
   const today     = new Date();
 
-  // ── Estados ──────────────────────────────────────────────────
+
+  // 1. ── TUS ESTADOS ORIGINALES (Aquí creamos activeTeacher) ──
   const [search,          setSearch]          = useState("");
   const [activeFilter,    setActiveFilter]    = useState("Mensual");
   const [currentYear,     setCurrentYear]     = useState(today.getFullYear());
@@ -70,7 +47,78 @@ const StudentScheduleView = () => {
   const [activeTeacher,   setActiveTeacher]   = useState(location.state?.teacher ?? null);
   const [bookingSlot,     setBookingSlot]     = useState(null);
 
-  // ── Navegación mensual ────────────────────────────────────────
+  // 2. ── NUEVOS ESTADOS PARA EL BACKEND ──
+  const [teachers, setTeachers] = useState([]);
+  const [loadingTeachers, setLoadingTeachers] = useState(true);
+  const [errorTeachers, setErrorTeachers] = useState(null);
+  
+  const [schedules, setSchedules] = useState([]);
+  const [loadingSchedules, setLoadingSchedules] = useState(false);
+
+  // 3. ── EFECTO PARA CARGAR LA LISTA DE PROFESORES ──
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        setLoadingTeachers(true);
+        const response = await teacherService.getTeachers();
+        
+        const mappedTeachers = response.data.map(t => ({
+          id: t.id,
+          name: t.fullName, 
+          rating: t.averageRating,
+          classes: 0, 
+          hourlyRate: 25, 
+          avatar: "https://i.pravatar.cc/150?u=" + t.id, 
+          bio: t.professionalDescription,
+          education: t.certifications,
+          experience: `${t.yearsOfExperience} años de experiencia`,
+        }));
+
+        setTeachers(mappedTeachers);
+      } catch (err) {
+        console.error("Error al traer los profesores:", err);
+        setErrorTeachers("Hubo un problema al cargar la lista de profesores.");
+      } finally {
+        setLoadingTeachers(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
+  // 4. ── EFECTO PARA TRAER HORARIOS DEL PROFESOR ACTIVO ──
+  useEffect(() => {
+    // Como esto está debajo de la línea 15, activeTeacher ya existe y no dará error
+    if (!activeTeacher) {
+      setSchedules([]);
+      return;
+    }
+
+    const fetchTeacherSchedules = async () => {
+      try {
+        setLoadingSchedules(true);
+        const response = await scheduleService.getSchedulesByTeacher(activeTeacher.id);
+        
+        const mappedSchedules = response.data.map(slot => ({
+          id: slot.reservationId, 
+          date: slot.date,         
+          start: slot.startTime,   
+          end: slot.endTime,       
+          type: slot.status        
+        }));
+
+        setSchedules(mappedSchedules);
+      } catch (err) {
+        console.error("Error al cargar horarios:", err);
+        setSchedules([]); 
+      } finally {
+        setLoadingSchedules(false);
+      }
+    };
+
+    fetchTeacherSchedules();
+  }, [activeTeacher]);
+  // ── Navegación mensual, semanal y diaria (Se mantienen igual) ──
   const prevMonth = () => {
     if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear((y) => y - 1); }
     else setCurrentMonth((m) => m - 1);
@@ -79,12 +127,8 @@ const StudentScheduleView = () => {
     if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear((y) => y + 1); }
     else setCurrentMonth((m) => m + 1);
   };
-
-  // ── Navegación semanal ────────────────────────────────────────
   const prevWeek = () => { const d = new Date(weekStart); d.setDate(d.getDate() - 7); setWeekStart(d); };
   const nextWeek = () => { const d = new Date(weekStart); d.setDate(d.getDate() + 7); setWeekStart(d); };
-
-  // ── Navegación diaria ─────────────────────────────────────────
   const prevDay = () => { const d = new Date(currentDay); d.setDate(d.getDate() - 1); setCurrentDay(d); };
   const nextDay = () => { const d = new Date(currentDay); d.setDate(d.getDate() + 1); setCurrentDay(d); };
 
@@ -98,17 +142,19 @@ const StudentScheduleView = () => {
     setBookingSlot(null);
     navigate("/student/checkout", { state: { slot, teacher } });
   };
-
-  const handleDayClick = ({ day, currentYear, currentMonth }) => {
+const handleDayClick = ({ day, currentYear, currentMonth }) => {
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-    const slot = MOCK_SCHEDULES.find((s) => s.date === dateStr && s.type === "Disponible");
+    // Cambiamos MOCK_SCHEDULES por schedules 👇
+    const slot = schedules.find((s) => s.date === dateStr && s.type === "Disponible");
     if (slot) setBookingSlot(slot);
   };
 
-  const filteredTeachers = TEACHERS.filter((t) =>
+  // ── Filtramos la lista REAL de profesores ────────────────────
+  const filteredTeachers = teachers.filter((t) =>
     t.name.toLowerCase().includes(search.toLowerCase())
   );
-  // ── Render ────────────────────────────────────────────────────
+
+  
   return (
     <div className={styles.page}>
       <AppNavbar title="NextWord" navItems={STUDENT_NAV} activeItem="Horario" />
@@ -119,25 +165,25 @@ const StudentScheduleView = () => {
           <>
             {/* ── Barra del profesor activo ── */}
            <div className={styles.activeTeacherBar}>
-  <div className={styles.activeTeacherInfo}>
-    <img
-      className={styles.activeTeacherAvatar}
-      src={activeTeacher.avatar}
-      alt={activeTeacher.name}
-    />
-    <div>
-      <span className={styles.activeTeacherName}>{activeTeacher.name}</span>
-      <span className={styles.activeTeacherPrice}>${activeTeacher.hourlyRate}/hr</span>
-    </div>
-  </div>
-  <div className={styles.activeTeacherActions}>
-    <Button variant="outline" onClick={() => setActiveTeacher(null)}>
-      ← Ver profesores
-    </Button>
-  </div>
-</div>
+              <div className={styles.activeTeacherInfo}>
+                <img
+                  className={styles.activeTeacherAvatar}
+                  src={activeTeacher.avatar}
+                  alt={activeTeacher.name}
+                />
+                <div>
+                  <span className={styles.activeTeacherName}>{activeTeacher.name}</span>
+                  <span className={styles.activeTeacherPrice}>${activeTeacher.hourlyRate}/hr</span>
+                </div>
+              </div>
+              <div className={styles.activeTeacherActions}>
+                <Button variant="outline" onClick={() => setActiveTeacher(null)}>
+                  ← Ver profesores
+                </Button>
+              </div>
+            </div>
 
-            {/* ── Toolbar filtros ── */}
+            {/* ... (El resto de la Toolbar de filtros y leyenda se mantiene igual) ... */}
             <div className={styles.toolbar}>
               <div className={styles.toolbarLeft}>
                 <span className={styles.filterLabel}>FILTRO:</span>
@@ -153,7 +199,6 @@ const StudentScheduleView = () => {
               </div>
             </div>
 
-            {/* ── Leyenda ── */}
             <div className={styles.legend}>
               <span className={styles.legendItem}>
                 <span className={`${styles.legendDot} ${styles.legendDotUnavailable}`} /> No disponible
@@ -169,7 +214,7 @@ const StudentScheduleView = () => {
             {/* ── Vistas del calendario ── */}
             {activeFilter === "Mensual" && (
               <MonthlyView
-                schedules={MOCK_SCHEDULES}
+                schedules={schedules}
                 currentYear={currentYear}
                 currentMonth={currentMonth}
                 onPrev={prevMonth}
@@ -179,7 +224,7 @@ const StudentScheduleView = () => {
             )}
             {activeFilter === "Semanal" && (
               <WeeklyView
-                schedules={MOCK_SCHEDULES}
+                schedules={schedules}
                 weekStart={weekStart}
                 onPrev={prevWeek}
                 onNext={nextWeek}
@@ -190,7 +235,7 @@ const StudentScheduleView = () => {
             )}
             {activeFilter === "Diaria" && (
               <DailyView
-                schedules={MOCK_SCHEDULES}
+                schedules={schedules}
                 currentDay={currentDay}
                 onPrev={prevDay}
                 onNext={nextDay}
@@ -213,26 +258,33 @@ const StudentScheduleView = () => {
             </div>
 
             <div className={styles.teachersContainer}>
-              <div className={styles.teachersGrid}>
-                {filteredTeachers.length === 0 ? (
-                  <p className={styles.empty}>No se encontraron profesores.</p>
-                ) : (
-                  filteredTeachers.map((teacher) => (
-                    <TeacherCard
-                      key={teacher.id}
-                      teacher={teacher}
-                      onViewMore={(t) => setSelectedTeacher(t)}
-                    />
-                  ))
-                )}
-              </div>
+              {/* Manejo de estados de carga y error */}
+              {loadingTeachers ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>Cargando profesores...</div>
+              ) : errorTeachers ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>{errorTeachers}</div>
+              ) : (
+                <div className={styles.teachersGrid}>
+                  {filteredTeachers.length === 0 ? (
+                    <p className={styles.empty}>No se encontraron profesores.</p>
+                  ) : (
+                    filteredTeachers.map((teacher) => (
+                      <TeacherCard
+                        key={teacher.id}
+                        teacher={teacher}
+                        onViewMore={(t) => setSelectedTeacher(t)}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </>
         )}
 
       </main>
 
-      {/* ── Modal perfil del profesor ── */}
+      {/* ── Modales se mantienen igual ── */}
       {selectedTeacher && (
         <TeacherProfileModal
           teacher={selectedTeacher}
@@ -241,7 +293,6 @@ const StudentScheduleView = () => {
         />
       )}
 
-      {/* ── Modal confirmación de reserva ── */}
       {bookingSlot && (
         <BookingConfirmModal
           slot={bookingSlot}

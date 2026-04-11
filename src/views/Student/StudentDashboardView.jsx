@@ -26,28 +26,28 @@ const KPIS = [
 const TEACHERS = [
   {
     id: 1, name: "Marco Lopez",     rating: 4.5, classes: 30, hourlyRate: 45,
-    avatar: "https://i.pravatar.cc/150?img=12",
+    avatar: "",
     bio: "Lingüista con doctorado y 10 años transformando el aprendizaje del idioma.",
     education: "Doctorado en Lingüística Aplicada / Enseñanza del Inglés",
     experience: "10 años de experiencia",
   },
   {
     id: 2, name: "Kioga Lee",       rating: 4.7, classes: 50, hourlyRate: 40,
-    avatar: "https://i.pravatar.cc/150?img=32",
+    avatar: "",
     bio: "Especialista en inglés conversacional con enfoque en negocios internacionales.",
     education: "Maestría en Lingüística Aplicada",
     experience: "8 años de experiencia",
   },
   {
     id: 3, name: "Jose Emmanuel",   rating: 4.8, classes: 80, hourlyRate: 50,
-    avatar: "https://i.pravatar.cc/150?img=22",
+    avatar: "",
     bio: "Profesor certificado por Cambridge con experiencia en preparación de exámenes.",
     education: "Certificación Cambridge CELTA",
     experience: "12 años de experiencia",
   },
   {
     id: 4, name: "Juan Sebastian",  rating: 4.6, classes: 40, hourlyRate: 35,
-    avatar: "https://i.pravatar.cc/150?img=14",
+    avatar: "",
     bio: "Apasionado por la enseñanza del inglés con metodología dinámica e interactiva.",
     education: "Licenciatura en Idiomas Modernos",
     experience: "6 años de experiencia",

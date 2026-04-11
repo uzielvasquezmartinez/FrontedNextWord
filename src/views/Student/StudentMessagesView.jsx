@@ -2,6 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Avatar from "../../components/UI/Avatar/Avatar";
 import { IconSend } from "../../components/Icons/Icons";
+import { useAuth } from "../../context/AuthContext";
+import {
+  getChatHistory,
+  markAsRead,
+  connectWebSocket,
+  sendMessage,
+  disconnectWebSocket,
+} from "../../services/messageService";
 import styles from "../Professor/MessagesView.module.css";
 
 // ── Navegación ───────────────────────────────────────────────────
@@ -12,84 +20,132 @@ const STUDENT_NAV = [
   { label: "Mensajes", path: "/student/messages"  },
 ];
 
-// ── Datos mock — ahora los contactos son profesores ──────────────
-const MOCK_CONTACTS = [
+// ── Helper: genera iniciales desde un ID o nombre ─────────────────
+const getInitials = (name = "") =>
+  name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+
+// ── Datos mock temporales (hasta que tengas tu endpoint de contactos) ──
+const MOCK_TEACHERS = [
   {
-    id: 1,
+    id: "1", // Asegúrate de que coincida con el ID real del Profesor Uzi en tu BD
     name: "Mario Moreno",
     initials: "MM",
     avatar: "https://i.pravatar.cc/150?img=33",
-    preview: "Claro, lo revisamos en la próxima sesión",
+    preview: "Envía un mensaje para comenzar",
     online: true,
     unread: false,
-    messages: [
-      { id: 1, text: "Profesor, ¿puede ayudarme con el examen?", time: "11:30 a.m.", sent: true  },
-      { id: 2, text: "Claro, lo revisamos en la próxima sesión", time: "11:32 a.m.", sent: false },
-    ],
   },
   {
-    id: 2,
+    id: "2",
     name: "Carolina Bahena",
     initials: "CB",
     avatar: "https://i.pravatar.cc/150?img=44",
-    preview: "Échale más ganas, practica más",
+    preview: "",
     online: false,
-    unread: true,
-    messages: [
-      { id: 1, text: "Échale más ganas, practica más", time: "10:15 a.m.", sent: false },
-    ],
-  },
-  {
-    id: 3,
-    name: "Brandon Moreno",
-    initials: "BM",
-    avatar: "https://i.pravatar.cc/150?img=22",
-    preview: "Deberías practicar más tu listening",
-    online: false,
-    unread: true,
-    messages: [
-      { id: 1, text: "Deberías practicar más tu listening", time: "09:45 a.m.", sent: false },
-    ],
-  },
+    unread: false,
+  }
 ];
 
 // ── Componente principal ─────────────────────────────────────────
 const StudentMessagesView = () => {
-  const [contacts,      setContacts]      = useState(MOCK_CONTACTS);
-  const [activeContact, setActiveContact] = useState(MOCK_CONTACTS[0]);
-  const [newMessage,    setNewMessage]    = useState("");
+  const { user }                          = useAuth(); // Obtenemos el ID del alumno logueado
+  const [contacts, setContacts]           = useState(MOCK_TEACHERS);
+  const [activeContact, setActiveContact] = useState(null);
+  const [messages, setMessages]           = useState([]);
+  const [newMessage, setNewMessage]       = useState("");
+  const [loading, setLoading]             = useState(false);
   const messagesEndRef                    = useRef(null);
 
+  // ── Conectar WebSocket al montar ────────────────────────────────
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const client = connectWebSocket(user.id, (incomingMessage) => {
+      // Solo agrega el mensaje si pertenece a la conversación activa
+      setActiveContact((prev) => {
+        if (
+          prev &&
+          (incomingMessage.senderId === prev.id ||
+            incomingMessage.receiverId === prev.id)
+        ) {
+          setMessages((msgs) => [...msgs, incomingMessage]);
+        }
+        return prev;
+      });
+
+      // Actualiza el preview del contacto
+      setContacts((prev) =>
+        prev.map((c) =>
+          c.id === incomingMessage.senderId
+            ? { ...c, preview: incomingMessage.body, unread: true }
+            : c
+        )
+      );
+    });
+
+    return () => disconnectWebSocket();
+  }, [user?.id]);
+
+  // ── Scroll al último mensaje ─────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeContact?.messages]);
+  }, [messages]);
 
-  const handleSelectContact = (contact) => {
-    setContacts((prev) =>
-      prev.map((c) => c.id === contact.id ? { ...c, unread: false } : c)
-    );
-    setActiveContact({ ...contact, unread: false });
+  // ── Cargar historial al seleccionar un contacto ──────────────────
+  const handleSelectContact = async (contact) => {
+    setActiveContact(contact);
+    setLoading(true);
+
+    try {
+      const res = await getChatHistory(user.id, contact.id);
+      setMessages(res.data);
+
+      // Marcar mensajes no leídos como leídos
+      res.data
+        .filter((m) => m.read === "0" && m.receiverId === user.id)
+        .forEach((m) => markAsRead(m.id));
+
+      // Quitar indicador de no leído en la lista local
+      setContacts((prev) =>
+        prev.map((c) => (c.id === contact.id ? { ...c, unread: false } : c))
+      );
+    } catch (error) {
+      console.error("Error cargando historial:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ── Enviar mensaje ───────────────────────────────────────────────
   const handleSend = () => {
-    if (!newMessage.trim()) return;
-    const message = {
-      id:   Date.now(),
-      text: newMessage.trim(),
-      time: new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }),
-      sent: true,
+    if (!newMessage.trim() || !activeContact) return;
+
+    const messageDto = {
+      senderId:   user.id,
+      receiverId: activeContact.id,
+      body:       newMessage.trim(),
     };
-    const updatedContacts = contacts.map((c) =>
-      c.id === activeContact.id
-        ? { ...c, messages: [...c.messages, message], preview: newMessage.trim() }
-        : c
+
+    sendMessage(messageDto);
+
+    // Optimistic UI — agrega el mensaje localmente
+    const optimisticMessage = {
+      id:         Date.now().toString(),
+      senderId:   user.id,
+      receiverId: activeContact.id,
+      body:       newMessage.trim(),
+      sentAt:     new Date().toISOString(),
+      read:       "0",
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.id === activeContact.id
+          ? { ...c, preview: newMessage.trim() }
+          : c
+      )
     );
-    setContacts(updatedContacts);
-    setActiveContact((prev) => ({
-      ...prev,
-      messages: [...prev.messages, message],
-      preview: newMessage.trim(),
-    }));
     setNewMessage("");
   };
 
@@ -98,6 +154,15 @@ const StudentMessagesView = () => {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  // ── Helper: formatea la hora de sentAt ───────────────────────────
+  const formatTime = (sentAt) => {
+    if (!sentAt) return "";
+    return new Date(sentAt).toLocaleTimeString("es-MX", {
+      hour:   "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -147,17 +212,23 @@ const StudentMessagesView = () => {
               </div>
 
               <div className={styles.messagesList}>
-                {activeContact.messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`${styles.messageBubbleWrapper} ${msg.sent ? styles.messageBubbleWrapperSent : ""}`}
-                  >
-                    <div className={`${styles.messageBubble} ${msg.sent ? styles.messageBubbleSent : styles.messageBubbleReceived}`}>
-                      <p className={styles.messageText}>{msg.text}</p>
-                      <span className={styles.messageTime}>{msg.time}</span>
+                {loading ? (
+                  <p style={{ textAlign: "center", color: "#9ca3af", padding: "2rem" }}>
+                    Cargando mensajes...
+                  </p>
+                ) : (
+                  messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`${styles.messageBubbleWrapper} ${msg.senderId === user.id ? styles.messageBubbleWrapperSent : ""}`}
+                    >
+                      <div className={`${styles.messageBubble} ${msg.senderId === user.id ? styles.messageBubbleSent : styles.messageBubbleReceived}`}>
+                        <p className={styles.messageText}>{msg.body}</p>
+                        <span className={styles.messageTime}>{formatTime(msg.sentAt)}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
