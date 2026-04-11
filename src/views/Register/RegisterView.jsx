@@ -198,12 +198,11 @@ navigate("/verify-code", { state: { email: student.email, mode: "register" } });
               </div>
             </fieldset>
 
-            {globalError && (
-              <p className={styles.errorText} role="alert" style={{ textAlign: "center" }}>
-                {globalError}
-              </p>
-            )}
-
+          {globalError && (
+  <p className={styles.errorText} role="alert" style={{ textAlign: "center" }}>
+    {globalError}
+  </p>
+)}
             <div className={styles.buttonRow}>
               <button type="button" className={styles.cancelButton} onClick={() => navigate("/login")}>
                 Cancelar
