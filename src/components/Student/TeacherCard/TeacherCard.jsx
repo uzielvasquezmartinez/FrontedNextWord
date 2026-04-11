@@ -4,11 +4,12 @@ import { IconStar } from "../../Icons/Icons";
 import styles from "./TeacherCard.module.css";
 const TeacherCard = ({ teacher, onViewMore }) => (
   <article className={styles.card}>
-    <img
-      className={styles.avatar}
-      src={teacher.avatar ?? `https://i.pravatar.cc/150?img=${teacher.id}`}
-      alt={teacher.name}
-    />
+    {teacher.avatar
+  ? <img className={styles.avatar} src={teacher.avatar} alt={teacher.name} />
+  : <div className={styles.avatarInitials}>
+      {teacher.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
+    </div>
+}
     <p className={styles.name}>{teacher.name}</p>
     <div className={styles.rating}>
       <IconStar />
