@@ -25,16 +25,17 @@ let stompClient = null;
 /**
  * Conecta al WebSocket y se suscribe a /topic/messages
  * @param {Function} onMessage - callback que recibe cada mensaje nuevo
+ * @param {string|number} userId
  * @returns {Client} instancia del cliente STOMP
  */
-export const connectWebSocket = (onMessage) => {
+export const connectWebSocket = (userId, onMessage) => {
   stompClient = new Client({
     webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
     reconnectDelay: 5000,
     onConnect: () => {
-      console.log("✅ WebSocket conectado");
-      stompClient.subscribe("/topic/messages", (frame) => {
-        const message = JSON.parse(frame.body);
+console.log(`✅ WebSocket conectado para el usuario: ${userId}`);
+stompClient.subscribe(`/user/${userId}/queue/messages`, (frame) => { 
+const message = JSON.parse(frame.body);
         onMessage(message);
       });
     },
@@ -74,3 +75,5 @@ export const disconnectWebSocket = () => {
     stompClient = null;
   }
 };
+
+
