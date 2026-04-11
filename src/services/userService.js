@@ -1,19 +1,17 @@
 import Api from "./Api";
 
 const userService = {
-// GET /api/users/me ← NUEVO
+  // GET /api/users/me
   getMe: () =>
-    Api.get("/users/me"),
+    Api.get("/users/me"), 
+
   // POST /api/users
   create: (data) =>
-    Api.post("/users", data),
+    Api.post("/users", data), 
 
   // PUT /api/users/profile
   updateProfile: (data) =>
-    Api.put("/users/profile", data),
-
-  
+    Api.put("/users/profile", data), 
 };
-
 
 export default userService;
