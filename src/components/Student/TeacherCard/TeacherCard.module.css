@@ -48,3 +48,15 @@
   color: #374151;
   margin: 0;
 }
+.avatarInitials {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #8A2BE2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
