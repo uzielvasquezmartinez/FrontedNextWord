@@ -8,6 +8,7 @@ import Input from "../Input/Input";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import Button from "../Button/Button";
 import styles from "./SettingsPanel.module.css";
+import userService from "../../../services/userService";
 
 const SettingsPanel = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
@@ -19,6 +20,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   const [profileForm, setProfileForm] = useState({
     fullName:       user?.name  ?? "",
     email:          user?.email ?? "",
+      phoneNumber:    "",           // ← agrega esta línea
     specialization: "",
     bio:            "",
   });
@@ -29,13 +31,14 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     confirm: "",
   });
 
-  const [profileErrors,   setProfileErrors]   = useState({});
+   const [profileErrors,   setProfileErrors]   = useState({});
   const [passwordErrors,  setPasswordErrors]  = useState({});
   const [loadingProfile,  setLoadingProfile]  = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
   const [successProfile,  setSuccessProfile]  = useState("");
   const [successPassword, setSuccessPassword] = useState("");
-
+  const [errorProfile,    setErrorProfile]    = useState("");
+  const [errorPassword,   setErrorPassword]   = useState("");
   const initials = user?.name
     ?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "U";
 
@@ -53,14 +56,12 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   const handleProfileChange = (field) => (e) => {
     setProfileForm((p) => ({ ...p, [field]: e.target.value }));
     setProfileErrors((p) => ({ ...p, [field]: "" }));
+    setErrorProfile("");
   };
 
-  const validateProfile = () => {
+   const validateProfile = () => {
     const e = {};
     if (!profileForm.fullName.trim()) e.fullName = "El nombre es requerido.";
-    if (!profileForm.email.trim())    e.email    = "El correo es requerido.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email))
-      e.email = "Ingresa un correo válido.";
     return e;
   };
 
@@ -68,39 +69,83 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     e.preventDefault();
     const errs = validateProfile();
     if (Object.keys(errs).length) { setProfileErrors(errs); return; }
+
     setLoadingProfile(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setLoadingProfile(false);
-    setSuccessProfile("Perfil actualizado correctamente.");
-    setTimeout(() => setSuccessProfile(""), 3000);
+    setErrorProfile("");
+
+    try {
+      // Construye el body con los campos del StudentUpdateDto
+      const body = {
+        fullName:       profileForm.fullName     || null,
+        phoneNumber:    profileForm.phoneNumber  || null,
+        profilePicture: avatar                   || null,
+        newPassword:    null, // la contraseña se cambia en la pestaña de contraseña
+      };
+
+      await userService.updateProfile(body);
+      setSuccessProfile("Perfil actualizado correctamente.");
+      setTimeout(() => setSuccessProfile(""), 3000);
+
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ??
+        error.response?.data ??
+        "Error al actualizar el perfil.";
+      setErrorProfile(msg);
+    } finally {
+      setLoadingProfile(false);
+    }
   };
 
+  // ── Contraseña ────────────────────────────────────────────────
   const handlePasswordChange = (field) => (e) => {
     setPasswordForm((p) => ({ ...p, [field]: e.target.value }));
     setPasswordErrors((p) => ({ ...p, [field]: "" }));
+    setErrorPassword("");
   };
 
   const validatePassword = () => {
     const e = {};
-    if (!passwordForm.current)                e.current = "Ingresa tu contraseña actual.";
     if (!passwordForm.newPass)                e.newPass = "Ingresa la nueva contraseña.";
-    else if (passwordForm.newPass.length < 6) e.newPass = "Mínimo 6 caracteres.";
+    else if (passwordForm.newPass.length < 8) e.newPass = "Mínimo 8 caracteres.";
     if (!passwordForm.confirm)                e.confirm = "Confirma tu contraseña.";
     else if (passwordForm.newPass !== passwordForm.confirm)
       e.confirm = "Las contraseñas no coinciden.";
     return e;
   };
 
-  const handlePasswordSave = async (e) => {
-    e.preventDefault();
-    const errs = validatePassword();
-    if (Object.keys(errs).length) { setPasswordErrors(errs); return; }
+ const handlePasswordSave = async (e) => {
+  e.preventDefault();
+  console.log("handlePasswordSave llamado"); // ← agrega esto
+  const errs = validatePassword();
+  console.log("errores:", errs); // ← y esto
+  if (Object.keys(errs).length) { setPasswordErrors(errs); return; }
+
     setLoadingPassword(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setLoadingPassword(false);
-    setPasswordForm({ current: "", newPass: "", confirm: "" });
-    setSuccessPassword("Contraseña actualizada correctamente.");
-    setTimeout(() => setSuccessPassword(""), 3000);
+    setErrorPassword("");
+  console.log("body que se envía:", { newPassword: passwordForm.newPass }); // ← agrega esto
+
+    try {
+      // Solo manda newPassword — el backend lo encripta y actualiza
+      await userService.updateProfile({
+        newPassword: passwordForm.newPass,
+      });
+
+      setPasswordForm({ newPass: "", confirm: "" });
+      setSuccessPassword("Contraseña actualizada correctamente.");
+      setTimeout(() => setSuccessPassword(""), 3000);
+
+    } catch (error) {
+      console.log("error completo:", error); // ← y esto
+  console.log("error response:", error.response); // ← y esto
+      const msg =
+        error.response?.data?.message ??
+        error.response?.data ??
+        "Error al actualizar la contraseña.";
+      setErrorPassword(msg);
+    } finally {
+      setLoadingPassword(false);
+    }
   };
 
   return (
@@ -123,17 +168,16 @@ const SettingsPanel = ({ isOpen, onClose }) => {
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-
             <div className={styles.header}>
               <h2 className={styles.headerTitle}>Configuración</h2>
               <button className={styles.closeBtn} onClick={onClose} aria-label="Cerrar">✕</button>
             </div>
 
             <div className={styles.profileSummary}>
-              {avatar
-                ? <img src={avatar} alt="avatar" className={styles.summaryAvatarImg} />
-                : <Avatar initials={initials} size="md" />
-              }
+            {avatar && avatar !== ""
+  ? <img src={avatar} alt="avatar" className={styles.summaryAvatarImg} />
+  : <Avatar initials={initials} size="md" />
+}
               <div className={styles.profileInfo}>
                 <span className={styles.profileName}>{user?.name ?? "Usuario"}</span>
                 <span className={styles.profileEmail}>{user?.email ?? ""}</span>
@@ -146,125 +190,102 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                 className={`${styles.tab} ${activeTab === "profile" ? styles.tabActive : ""}`}
                 onClick={() => setActiveTab("profile")}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
                 Perfil
               </button>
               <button
                 className={`${styles.tab} ${activeTab === "password" ? styles.tabActive : ""}`}
                 onClick={() => setActiveTab("password")}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
                 Contraseña
               </button>
             </div>
 
             <div className={styles.body}>
 
-{activeTab === "profile" && (
-  <form className={styles.form} onSubmit={handleProfileSave} noValidate>
+              {/* ── Pestaña Perfil ── */}
+              {activeTab === "profile" && (
+                <form className={styles.form} onSubmit={handleProfileSave} noValidate>
 
-    <div className={styles.avatarSection}>
-      {avatar
-        ? <img src={avatar} alt="avatar" className={styles.avatarPreview} />
-        : <Avatar initials={initials} size="xl" />
-      }
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        className={styles.fileInput}
-        onChange={handleAvatarChange}
-      />
-      <Button
-        variant="secondary"
-        size="sm"
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        Cambiar foto
-      </Button>
-    </div>
+                  <div className={styles.avatarSection}>
+                  {avatar && avatar !== ""
+  ? <img src={avatar} alt="avatar" className={styles.summaryAvatarImg} />
+  : <Avatar initials={initials} size="md" />
+}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      className={styles.fileInput}
+                      onChange={handleAvatarChange}
+                    />
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Cambiar foto
+                    </Button>
+                  </div>
 
-    <p className={styles.sectionLabel}>Información Básica</p>
+                  <p className={styles.sectionLabel}>Información Básica</p>
 
-    <Input
-      id="sp_fullName"
-      label="Nombre Completo"
-      value={profileForm.fullName}
-      onChange={handleProfileChange("fullName")}
-      error={profileErrors.fullName}
-      required
-    />
+                  <Input
+                    id="sp_fullName"
+                    label="Nombre Completo"
+                    value={profileForm.fullName}
+                    onChange={handleProfileChange("fullName")}
+                    error={profileErrors.fullName}
+                    required
+                  />
 
-    <Input
-      id="sp_email"
-      label="Correo Electrónico"
-      type="email"
-      value={profileForm.email}
-      onChange={handleProfileChange("email")}
-      error={profileErrors.email}
-      required
-    />
+                  <Input
+                    id="sp_phoneNumber"
+                    label="Teléfono"
+                    value={profileForm.phoneNumber}
+                    onChange={handleProfileChange("phoneNumber")}
+                    placeholder="10 dígitos"
+                  />
 
-    {user?.role === "teacher" && (
-      <>
-        <p className={styles.sectionLabel}>Información Profesional</p>
+                  {/* Campos adicionales para profesor */}
+                  {user?.role === "teacher" && (
+                    <>
+                      <p className={styles.sectionLabel}>Información Profesional</p>
+                      <Input
+                        id="sp_specialization"
+                        label="Especialización"
+                        value={profileForm.specialization}
+                        onChange={handleProfileChange("specialization")}
+                        placeholder="Ej. Inglés, Matemáticas..."
+                      />
+                      <div className={styles.textareaField}>
+                        <label className={styles.textareaLabel}>Biografía</label>
+                        <textarea
+                          className={styles.textarea}
+                          rows={3}
+                          placeholder="Cuéntanos sobre ti..."
+                          value={profileForm.bio}
+                          onChange={handleProfileChange("bio")}
+                        />
+                      </div>
+                    </>
+                  )}
 
-        <Input
-          id="sp_specialization"
-          label="Especialización"
-          value={profileForm.specialization}
-          onChange={handleProfileChange("specialization")}
-          placeholder="Ej. Inglés, Matemáticas..."
-        />
+                  {errorProfile   && <p className={styles.errorMsg}>{errorProfile}</p>}
+                  {successProfile && <p className={styles.successMsg}>{successProfile}</p>}
 
-        <div className={styles.textareaField}>
-          <label className={styles.textareaLabel}>Biografía</label>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            placeholder="Cuéntanos sobre ti..."
-            value={profileForm.bio}
-            onChange={handleProfileChange("bio")}
-          />
-        </div>
-      </>
-    )}
+                  <Button type="submit" variant="primary" fullWidth loading={loadingProfile}>
+                    Guardar Cambios
+                  </Button>
 
-    {successProfile && (
-      <p className={styles.successMsg}>{successProfile}</p>
-    )}
+                </form>
+              )}
 
-    <Button
-      type="submit"
-      variant="primary"
-      fullWidth
-      loading={loadingProfile}
-    >
-      Guardar Cambios
-    </Button>
-
-  </form>
-)}
+              {/* ── Pestaña Contraseña ── */}
               {activeTab === "password" && (
                 <form className={styles.form} onSubmit={handlePasswordSave} noValidate>
 
                   <p className={styles.sectionLabel}>Cambiar Contraseña</p>
-
-                  <PasswordInput
-                    id="sp_current"
-                    label="Contraseña Actual"
-                    value={passwordForm.current}
-                    onChange={handlePasswordChange("current")}
-                    error={passwordErrors.current}
-                    required
-                  />
 
                   <PasswordInput
                     id="sp_newPass"
@@ -285,16 +306,10 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                     required
                   />
 
-                  {successPassword && (
-                    <p className={styles.successMsg}>{successPassword}</p>
-                  )}
+                  {errorPassword   && <p className={styles.errorMsg}>{errorPassword}</p>}
+                  {successPassword && <p className={styles.successMsg}>{successPassword}</p>}
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={loadingPassword}
-                  >
+                  <Button type="submit" variant="primary" fullWidth loading={loadingPassword}>
                     Actualizar Contraseña
                   </Button>
 
