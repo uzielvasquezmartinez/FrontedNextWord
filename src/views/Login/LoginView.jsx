@@ -106,11 +106,11 @@ hoy </h1>
 </button>
             </div>
 
-            {error && (
-              <p className={styles.errorMessage} role="alert">
-                {error}
-              </p>
-            )}
+           {error && (
+  <p className={styles.errorMessage} role="alert">
+    {typeof error === 'string' ? error : (error?.message || JSON.stringify(error))}
+  </p>
+)}
 
             <button
               type="submit"
