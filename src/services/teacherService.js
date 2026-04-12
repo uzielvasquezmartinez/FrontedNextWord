@@ -1,12 +1,17 @@
-import api from './Api'; // Importa tu configuración de Axios (la que apunta a tu backend/ngrok)
-
-const getTeachers = () => {
-  // Llama exactamente al endpoint que creamos en UserController
-  return api.get('/users/teachers');
-};
+import api from './Api';
 
 const teacherService = {
-  getTeachers
+  // GET /api/users/teachers
+  getTeachers: () =>
+    api.get('/users/teachers'),
+
+  // GET /api/teachers/me
+  getMyProfile: () =>
+    api.get('/teachers/me'),
+
+  // PUT /api/teachers/profile
+  updateProfile: (data) =>
+    api.put('/teachers/profile', data),
 };
 
 export default teacherService;

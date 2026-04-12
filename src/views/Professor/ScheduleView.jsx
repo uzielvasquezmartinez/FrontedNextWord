@@ -43,32 +43,29 @@ useEffect(() => {
     setLoading(true);
     setError("");
     try {
-      const [slotsRes, agendaRes] = await Promise.all([
-        getAvailableSlots(),   // ← asegúrate de importar esto
-        getTeacherAgenda(),
-      ]);
+     const [slotsRes, agendaRes] = await Promise.all([
+  getAvailableSlots(),
+  getTeacherAgenda(),
+]);
+     const slots = slotsRes.data.map((s) => ({
+  date:  s.slotDate,
+  start: s.startTime,
+  end:   s.endTime,
+  type:  "Disponible",
+  label: "Horario disponible para reservar",
+  slotId: s.slotId,
+}));
 
-      // SlotResponseDto → { slotId, teacherName, slotDate, startTime, endTime, classType }
-      const slots = slotsRes.data.map((s) => ({
-        date:  s.slotDate,     // ← "2026-04-06"
-        start: s.startTime,    // ← "09:00"
-        end:   s.endTime,
-        type:  "Disponible",
-        label: "Horario disponible para reservar",
-        slotId: s.slotId,
-      }));
-
-      // ReservationResponseDto → { reservationId, participantName, date, startTime, endTime, classType, status, meetLink }
-      const agenda = agendaRes.data.map((r) => ({
-        date:  r.date,         // ← LocalDate viene como "2026-04-06"
-        start: r.startTime,    // ← "09:00"
-        end:   r.endTime,
-        type:  "Reservado",
-        label: r.classType ?? "Clase reservada",
-        meetLink: r.meetLink,
-        reservationId: r.reservationId,
-        participantName: r.participantName,
-      }));
+     const agenda = agendaRes.data.map((r) => ({
+  date:  r.date,
+  start: r.startTime,
+  end:   r.endTime,
+  type:  "Reservado",
+  label: r.classType ?? "Clase reservada",
+  meetLink: r.meetLink,
+  reservationId: r.reservationId,
+  participantName: r.participantName,
+}));
 
       setSchedules([...slots, ...agenda]);
 
@@ -105,11 +102,9 @@ const handleSave = async (newSchedule) => {
     // ── Calcula las fechas según el tipo de horario ──────────────
     let dates = [];
 
-    if (scheduleType === "Único") {
-      // Un solo slot — usa la fecha actual del calendario visible
-      dates = [currentDay.toISOString().split("T")[0]];
-
-    } else if (scheduleType === "Semanal") {
+   if (scheduleType === "Único") {
+  dates = [newSchedule.selectedDate];
+}else if (scheduleType === "Semanal") {
       // Genera slots para los días seleccionados durante la duración
       const weeksMap = { "1 semana": 1, "2 semanas": 2, "4 semanas": 4, "8 semanas": 8, "3 meses": 13 };
       const weeks    = weeksMap[duration] ?? 4;
@@ -151,9 +146,10 @@ const handleSave = async (newSchedule) => {
     );
 
     // Recargar agenda
-    const res = await getTeacherAgenda();
-    setSchedules(mapAgendaToSchedules(res.data));
-    setShowModal(false);
+   const res = await getTeacherAgenda();
+setSchedules(mapAgendaToSchedules(res.data));
+setShowModal(false);
+
 
   } catch (err) {
     console.error("Error creando slot:", err);

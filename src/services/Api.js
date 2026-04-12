@@ -1,5 +1,6 @@
 import axios from "axios"; // ← este import faltaba en tu archivo original
  
+/* 
 // Api.js
 const api = axios.create({
   baseURL: 'https://unpoetically-interramal-loren.ngrok-free.dev/api',
@@ -7,15 +8,15 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': '69420'
   }
-});
+}); */
 
-/*
+
  const api = axios.create({
   baseURL: 'http://localhost:8080/api', // Asegúrate de que este URL apunte a tu backend
   headers: {
     'Content-Type': 'application/json'
   }
-});*/
+});
 // ── Interceptor REQUEST: adjunta el token en cada llamada ────────
 api.interceptors.request.use(
   (config) => {

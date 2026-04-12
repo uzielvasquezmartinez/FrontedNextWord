@@ -9,6 +9,7 @@ import PasswordInput from "../PasswordInput/PasswordInput";
 import Button from "../Button/Button";
 import styles from "./SettingsPanel.module.css";
 import userService from "../../../services/userService";
+import teacherService from "../../../services/teacherService";
 
 const SettingsPanel = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
@@ -18,11 +19,13 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   const [avatar, setAvatar]       = useState(null);
 
   const [profileForm, setProfileForm] = useState({
-    fullName:       user?.name  ?? "",
-    email:          user?.email ?? "",
-      phoneNumber:    "",           // ← agrega esta línea
-    specialization: "",
-    bio:            "",
+   ullName:                user?.name ?? "",
+  email:                   user?.email ?? "",
+  phoneNumber:             "",
+  specialization:          "",
+  yearsOfExperience:       "",
+  bio:                     "",
+  certifications:          "",
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -66,36 +69,45 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   };
 
   const handleProfileSave = async (e) => {
-    e.preventDefault();
-    const errs = validateProfile();
-    if (Object.keys(errs).length) { setProfileErrors(errs); return; }
+  e.preventDefault();
+  const errs = validateProfile();
+  if (Object.keys(errs).length) { setProfileErrors(errs); return; }
 
-    setLoadingProfile(true);
-    setErrorProfile("");
+  setLoadingProfile(true);
+  setErrorProfile("");
 
-    try {
-      // Construye el body con los campos del StudentUpdateDto
-      const body = {
-        fullName:       profileForm.fullName     || null,
-        phoneNumber:    profileForm.phoneNumber  || null,
-        profilePicture: avatar                   || null,
-        newPassword:    null, // la contraseña se cambia en la pestaña de contraseña
-      };
-
-      await userService.updateProfile(body);
-      setSuccessProfile("Perfil actualizado correctamente.");
-      setTimeout(() => setSuccessProfile(""), 3000);
-
-    } catch (error) {
-      const msg =
-        error.response?.data?.message ??
-        error.response?.data ??
-        "Error al actualizar el perfil.";
-      setErrorProfile(msg);
-    } finally {
-      setLoadingProfile(false);
+  try {
+    if (user?.role === "teacher") {
+      // Endpoint específico para profesores
+      await teacherService.updateProfile({
+        specialization:          profileForm.specialization        || "",
+        yearsOfExperience:       parseInt(profileForm.yearsOfExperience) || 0,
+        professionalDescription: profileForm.bio                  || "",
+        certifications:          profileForm.certifications       || "",
+      });
+    } else {
+      // Endpoint para estudiantes
+      await userService.updateProfile({
+        fullName:       profileForm.fullName    || null,
+        phoneNumber:    profileForm.phoneNumber || null,
+        profilePicture: avatar                  || null,
+        newPassword:    null,
+      });
     }
-  };
+
+    setSuccessProfile("Perfil actualizado correctamente.");
+    setTimeout(() => setSuccessProfile(""), 3000);
+
+  } catch (error) {
+    const msg =
+      error.response?.data?.error ??
+      error.response?.data?.message ??
+      "Error al actualizar el perfil.";
+    setErrorProfile(msg);
+  } finally {
+    setLoadingProfile(false);
+  }
+};
 
   // ── Contraseña ────────────────────────────────────────────────
   const handlePasswordChange = (field) => (e) => {
@@ -247,29 +259,46 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                     placeholder="10 dígitos"
                   />
 
-                  {/* Campos adicionales para profesor */}
-                  {user?.role === "teacher" && (
-                    <>
-                      <p className={styles.sectionLabel}>Información Profesional</p>
-                      <Input
-                        id="sp_specialization"
-                        label="Especialización"
-                        value={profileForm.specialization}
-                        onChange={handleProfileChange("specialization")}
-                        placeholder="Ej. Inglés, Matemáticas..."
-                      />
-                      <div className={styles.textareaField}>
-                        <label className={styles.textareaLabel}>Biografía</label>
-                        <textarea
-                          className={styles.textarea}
-                          rows={3}
-                          placeholder="Cuéntanos sobre ti..."
-                          value={profileForm.bio}
-                          onChange={handleProfileChange("bio")}
-                        />
-                      </div>
-                    </>
-                  )}
+                 {user?.role === "teacher" && (
+  <>
+    <p className={styles.sectionLabel}>Información Profesional</p>
+    <Input
+      id="sp_specialization"
+      label="Especialización"
+      value={profileForm.specialization}
+      onChange={handleProfileChange("specialization")}
+      placeholder="Ej. Inglés, Matemáticas..."
+    />
+    <Input
+      id="sp_yearsOfExperience"
+      label="Años de Experiencia"
+      type="number"
+      value={profileForm.yearsOfExperience}
+      onChange={handleProfileChange("yearsOfExperience")}
+      placeholder="Ej. 5"
+    />
+    <div className={styles.textareaField}>
+      <label className={styles.textareaLabel}>Descripción Profesional</label>
+      <textarea
+        className={styles.textarea}
+        rows={3}
+        placeholder="Cuéntanos sobre ti..."
+        value={profileForm.bio}
+        onChange={handleProfileChange("bio")}
+      />
+    </div>
+    <div className={styles.textareaField}>
+      <label className={styles.textareaLabel}>Certificaciones</label>
+      <textarea
+        className={styles.textarea}
+        rows={2}
+        placeholder="Ej. TOEFL, Cambridge..."
+        value={profileForm.certifications}
+        onChange={handleProfileChange("certifications")}
+      />
+    </div>
+  </>
+)}
 
                   {errorProfile   && <p className={styles.errorMsg}>{errorProfile}</p>}
                   {successProfile && <p className={styles.successMsg}>{successProfile}</p>}
