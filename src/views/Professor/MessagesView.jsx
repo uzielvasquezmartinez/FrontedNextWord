@@ -1,22 +1,19 @@
 // src/views/Professor/MessagesView.jsx
 import { useState, useRef, useEffect } from "react";
+import { useCallback } from "react";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Avatar from "../../components/UI/Avatar/Avatar";
 import { IconSend } from "../../components/Icons/Icons";
 import { useAuth } from "../../context/AuthContext";
-import {
-  getChatHistory,
-  markAsRead,
-  connectWebSocket,
-  sendMessage,
-  disconnectWebSocket,
-} from "../../services/messageService";
+import { getInbox, getChatHistory, markAsRead } from "../../services/messageService";
+import { useChatWebSocket } from "../../hooks/useChatWebSocket";
 import styles from "./MessagesView.module.css";
 
 const TEACHER_NAV = [
-  { label: "Inicio",   path: "/teacher/dashboard" },
-  { label: "Horario",  path: "/teacher/schedule"  },
-  { label: "Mensajes", path: "/teacher/messages"  },
+  { label: "Inicio", path: "/teacher/dashboard" },
+  { label: "Horario", path: "/teacher/schedule" },
+  { label: "Clases", path: "/teacher/classes" },
+  { label: "Mensajes", path: "/teacher/messages" },
 ];
 
 // ── Helper: genera iniciales desde un ID o nombre ─────────────────
@@ -24,40 +21,75 @@ const getInitials = (name = "") =>
   name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 
 const MessagesView = () => {
-  const { user }                          = useAuth();
-  const [contacts, setContacts]           = useState([]);
+  const { user } = useAuth();
+  const [contacts, setContacts] = useState([]);
   const [activeContact, setActiveContact] = useState(null);
-  const [messages, setMessages]           = useState([]);
-  const [newMessage, setNewMessage]       = useState("");
-  const [loading, setLoading]             = useState(false);
-  const messagesEndRef                    = useRef(null);
+  const activeContactRef = useRef(null); // 👈 Referencia para leerlo dentro del websocket sin desatar re-renders
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  // ── Conectar WebSocket al montar ────────────────────────────────
+  // ── Cargar Inbox al montar ────────────────────────────────────────
   useEffect(() => {
-const client = connectWebSocket(user.id, (incomingMessage) => {      
-      setActiveContact((prev) => {
-        if (
-          prev &&
-          (incomingMessage.senderId === prev.id ||
-            incomingMessage.receiverId === prev.id)
-        ) {
-          setMessages((msgs) => [...msgs, incomingMessage]);
-        }
-        return prev;
-      });
+    const fetchInbox = async () => {
+      try {
+        const res = await getInbox();
+        const mappedContacts = res.data.map(dto => ({
+          id: dto.contactId,
+          name: dto.name,            // Sincronizado con InboxDto.java (CAMBIADO)
+          preview: dto.lastMessage,  // Sincronizado con InboxDto.java (CAMBIADO)
+          avatar: dto.photoPerfil,   // Sincronizado con InboxDto.java (CAMBIADO)
+          unread: dto.unreadCount > 0,
+          online: false
+        }));
+        setContacts(mappedContacts);
+      } catch (error) {
+        console.error("Error cargando bandeja de entrada:", error);
+      }
+    };
+    if (user?.id) fetchInbox();
+  }, [user?.id]);
 
-      // Actualiza el preview del contacto
-      setContacts((prev) =>
-        prev.map((c) =>
-          c.id === incomingMessage.senderId
-            ? { ...c, preview: incomingMessage.body, unread: true }
-            : c
-        )
+  // Sincroniza el estado hacia la referencia
+  useEffect(() => {
+    activeContactRef.current = activeContact;
+  }, [activeContact]);
+
+  // ── Inicializar Hook de WebSocket ───────────────────────────────
+  const handleIncomingMessage = useCallback((incomingMessage) => {
+    const currentContact = activeContactRef.current;
+
+    // 1. Ignorar si el mensaje fue enviado por el usuario actual
+    if (incomingMessage.senderId === user.id) return;
+
+    // 2. Si recibimos una actualización de estado de lectura (read="1")
+    if (incomingMessage.read === "1") {
+      setMessages((msgs) =>
+        msgs.map((m) => (m.id === incomingMessage.id ? { ...m, read: "1" } : m))
       );
-    });
+      return;
+    }
 
-    return () => disconnectWebSocket();
+    if (
+      currentContact &&
+      (incomingMessage.senderId === currentContact.id ||
+        incomingMessage.receiverId === currentContact.id)
+    ) {
+      setMessages((msgs) => [...msgs, incomingMessage]);
+    }
+
+    // Actualiza el preview del contacto
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.id === incomingMessage.senderId
+          ? { ...c, preview: incomingMessage.body, unread: true }
+          : c
+      )
+    );
   }, []);
+
+  const { sendMessage } = useChatWebSocket(user.id, handleIncomingMessage);
 
   // ── Scroll al último mensaje ─────────────────────────────────────
   useEffect(() => {
@@ -94,21 +126,21 @@ const client = connectWebSocket(user.id, (incomingMessage) => {
     if (!newMessage.trim() || !activeContact) return;
 
     const messageDto = {
-      senderId:   user.id,
+      senderId: user.id,
       receiverId: activeContact.id,
-      body:       newMessage.trim(),
+      body: newMessage.trim(),
     };
 
     sendMessage(messageDto);
 
     // Optimistic UI — agrega el mensaje localmente antes de que llegue por WS
     const optimisticMessage = {
-      id:         Date.now().toString(),
-      senderId:   user.id,
+      id: Date.now().toString(),
+      senderId: user.id,
       receiverId: activeContact.id,
-      body:       newMessage.trim(),
-      sentAt:     new Date().toISOString(),
-      read:       "0",
+      body: newMessage.trim(),
+      sentAt: new Date().toISOString(),
+      read: "0",
     };
 
     setMessages((prev) => [...prev, optimisticMessage]);
@@ -133,7 +165,7 @@ const client = connectWebSocket(user.id, (incomingMessage) => {
   const formatTime = (sentAt) => {
     if (!sentAt) return "";
     return new Date(sentAt).toLocaleTimeString("es-MX", {
-      hour:   "2-digit",
+      hour: "2-digit",
       minute: "2-digit",
     });
   };
@@ -184,9 +216,6 @@ const client = connectWebSocket(user.id, (incomingMessage) => {
                 <Avatar initials={getInitials(activeContact.name)} size="md" />
                 <div className={styles.chatHeaderInfo}>
                   <span className={styles.chatHeaderName}>{activeContact.name}</span>
-                  <span className={`${styles.chatHeaderStatus} ${activeContact.online ? styles.statusOnline : styles.statusOffline}`}>
-                    {activeContact.online ? "En línea" : "Desconectado"}
-                  </span>
                 </div>
               </div>
 

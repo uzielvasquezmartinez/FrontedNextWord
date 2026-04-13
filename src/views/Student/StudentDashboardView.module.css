@@ -187,6 +187,122 @@
   gap: 1rem;
 }
 
+.bannerActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ── Modal Reclamar Saldo ── */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.claimModal {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  animation: modalScale 0.3s ease-out;
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: #f3f4f6;
+  border: none;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover { background: #e5e7eb; }
+
+.claimModal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+.claimModal p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.claimInput {
+  width: 100%;
+  padding: 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  transition: border-color 0.2s;
+}
+
+.claimInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.modalActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.statusMsg {
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.success { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+.error { background: #fef2f2; color: #dc2626; border: 1px solid #ef4444; }
+
+.helpText {
+  text-align: center;
+  margin-top: 1.5rem !important;
+  font-size: 0.8rem !important;
+  color: var(--color-text-muted) !important;
+}
+
+.helpText a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
 /* ── Responsivo ── */
 @media (max-width: 900px) {
   .teachersGrid { grid-template-columns: repeat(2, 1fr); }
@@ -196,8 +312,19 @@
 @media (max-width: 768px) {
   .main         { padding: 1.25rem 1rem; }
   .bannerCard   { flex-direction: column; align-items: flex-start; }
+  .bannerActions { width: 100%; flex-direction: column; }
   .kpiGrid      { grid-template-columns: 1fr; }
   .nextClassCard { flex-direction: column; }
   .nextClassActions { width: 100%; }
   .teachersGrid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.loading, .emptyMessage {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  width: 100%;
+}
+

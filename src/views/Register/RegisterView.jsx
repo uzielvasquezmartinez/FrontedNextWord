@@ -56,15 +56,15 @@ const RegisterView = () => {
     setGlobalError("");
 
     const body = {
-      email:       student.email,
-      password:    student.password,
-      fullname:    student.fullName,
+      email:       student.email.trim(),
+      password:    student.password, 
+      fullname:    student.fullName.trim(),
       dateOfBirth: student.birthDate,
-     phoneNumber: student.phoneNumber,
+      phoneNumber: student.phoneNumber.trim(),
       ...(tutor && {
-        tutorName:  tutor.tutorName,
-        tutorEmail: tutor.tutorEmail,
-        tutorPhone: tutor.tutorPhone,
+        tutorName:  tutor.tutorName.trim(),
+        tutorEmail: tutor.tutorEmail.trim(),
+        tutorPhone: tutor.tutorPhone.trim(),
       }),
     };
 
@@ -220,6 +220,7 @@ navigate("/verify-code", { state: { email: student.email, mode: "register" } });
         <TutorModal
           onConfirm={handleTutorConfirm}
           onClose={() => setShowTutorModal(false)}
+          studentEmail={formData.email}
         />
       )}
 

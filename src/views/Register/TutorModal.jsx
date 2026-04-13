@@ -1,16 +1,12 @@
 // src/views/Register/TutorModal.jsx
 import { useState } from "react";
-import { IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 import { validarTutor } from "./registerValidations";
 import styles from "./RegisterView.module.css";
 
-const TutorModal = ({ onConfirm, onClose }) => {
+const TutorModal = ({ onConfirm, onClose, studentEmail }) => {
   const [tutorData, setTutorData] = useState({
     tutorName: "", tutorEmail: "", tutorPhone: "",
-    tutorPassword: "", tutorConfirmPassword: "",
   });
-  const [showPass, setShowPass]               = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [errors, setErrors]                   = useState({});
 
   const handleChange = (e) => {
@@ -20,7 +16,7 @@ const TutorModal = ({ onConfirm, onClose }) => {
   };
 
   const handleSubmit = () => {
-    const validationErrors = validarTutor(tutorData);
+    const validationErrors = validarTutor(tutorData, studentEmail);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -83,40 +79,6 @@ const TutorModal = ({ onConfirm, onClose }) => {
                 className={`${styles.input} ${errors.tutorPhone ? styles.inputError : ""}`}
                 value={tutorData.tutorPhone} onChange={handleChange} />
               {errors.tutorPhone && <span className={styles.errorText}>{errors.tutorPhone}</span>}
-            </div>
-          </fieldset>
-
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>SEGURIDAD</legend>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Contraseña<span className={styles.required}>*</span>
-              </label>
-              <div className={styles.inputWrapper}>
-                <input name="tutorPassword" type={showPass ? "text" : "password"}
-                  className={`${styles.input} ${styles.inputWithIcon} ${errors.tutorPassword ? styles.inputError : ""}`}
-                  value={tutorData.tutorPassword} onChange={handleChange} />
-                <button type="button" className={styles.eyeButton} onClick={() => setShowPass((p) => !p)}>
-                  {showPass ? <IconEyeClosed /> : <IconEyeOpen />}
-                </button>
-              </div>
-              {errors.tutorPassword && <span className={styles.errorText}>{errors.tutorPassword}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>
-                Confirmar contraseña<span className={styles.required}>*</span>
-              </label>
-              <div className={styles.inputWrapper}>
-                <input name="tutorConfirmPassword" type={showConfirmPass ? "text" : "password"}
-                  className={`${styles.input} ${styles.inputWithIcon} ${errors.tutorConfirmPassword ? styles.inputError : ""}`}
-                  value={tutorData.tutorConfirmPassword} onChange={handleChange} />
-                <button type="button" className={styles.eyeButton} onClick={() => setShowConfirmPass((p) => !p)}>
-                  {showConfirmPass ? <IconEyeClosed /> : <IconEyeOpen />}
-                </button>
-              </div>
-              {errors.tutorConfirmPassword && <span className={styles.errorText}>{errors.tutorConfirmPassword}</span>}
             </div>
           </fieldset>
 

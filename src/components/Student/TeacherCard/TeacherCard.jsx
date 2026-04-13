@@ -15,7 +15,7 @@ const TeacherCard = ({ teacher, onViewMore }) => (
       <IconStar />
       <span>{teacher.rating?.toFixed(1)} ({teacher.classes} Clases)</span>
     </div>
-    <p className={styles.price}>${teacher.hourlyRate}/hrax</p>
+    <p className={styles.price}>${teacher.hourlyRate}/hr</p>
     <Button variant="primary" fullWidth onClick={() => onViewMore(teacher)}>
       Ver más &gt;
     </Button>

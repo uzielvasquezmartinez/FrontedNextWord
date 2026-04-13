@@ -147,6 +147,8 @@
 .infoRow p { font-size: 0.82rem; margin: 0.15rem 0 0; color: #6b7280; }
 
 .footer {
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
   border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 1rem;
 }

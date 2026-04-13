@@ -23,6 +23,7 @@ const ScheduleModal = ({ activeFilter, onClose, onSave }) => {
   const initType = activeFilter === "Diaria" ? "Único" : activeFilter === "Semanal" ? "Semanal" : "Mensual";
 
   const [scheduleType,   setScheduleType]   = useState(initType);
+  const [selectedDate,   setSelectedDate]   = useState(new Date().toISOString().split("T")[0]);
   const [recurrenceType, setRecurrenceType] = useState("Día del Mes");
   const [dayOfMonth,     setDayOfMonth]     = useState("1");
   const [selectedDays,   setSelectedDays]   = useState(["Lun","Mar","Mie","Jue","Vie"]);
@@ -34,7 +35,16 @@ const ScheduleModal = ({ activeFilter, onClose, onSave }) => {
     prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
   );
 
-  const modal = { scheduleType, recurrenceType, dayOfMonth, selectedDays, startTime, endTime, duration };
+  const modal = { 
+    scheduleType, 
+    selectedDate, 
+    recurrenceType, 
+    dayOfMonth, 
+    selectedDays, 
+    startTime, 
+    endTime, 
+    duration 
+  };
   const preview = buildPreview(modal);
   const durations = scheduleType === "Semanal" ? DURATIONS_WEEK : DURATIONS_MONTH;
 
@@ -72,6 +82,20 @@ const ScheduleModal = ({ activeFilter, onClose, onSave }) => {
               ))}
             </div>
           </div>
+
+          {scheduleType === "Único" && (
+            <div className={styles.modalSection}>
+              <label className={styles.modalLabel}>Fecha Seleccionada</label>
+              <input
+                type="date"
+                className={styles.modalInput}
+                value={selectedDate}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <span className={styles.modalHint}>Selecciona el día para este horario único</span>
+            </div>
+          )}
 
           {scheduleType === "Semanal" && (
             <div className={styles.modalSection}>

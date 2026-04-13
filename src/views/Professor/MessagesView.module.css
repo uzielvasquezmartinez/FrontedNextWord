@@ -1,21 +1,20 @@
-
 .page {
-  --color-primary:      #2B58FE;
-  --color-secondary:    #923CFF;
-  --gradient-from:      #2E3192;
-  --gradient-to:        #8E2DE2;
+  --color-primary: #2B58FE;
+  --color-secondary: #923CFF;
+  --gradient-from: #2E3192;
+  --gradient-to: #8E2DE2;
   --color-text-heading: #111827;
-  --color-text-body:    #374151;
-  --color-text-muted:   #6b7280;
-  --color-text-white:   #ffffff;
-  --color-bg-page:      #f3f4f6;
-  --color-bg-card:      #ffffff;
-  --color-border:       #e5e7eb;
+  --color-text-body: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-white: #ffffff;
+  --color-bg-page: #f3f4f6;
+  --color-bg-card: #ffffff;
+  --color-border: #e5e7eb;
 
-  --radius-md:          16px;
-  --shadow-card:        0 2px 8px rgba(0,0,0,0.07);
-  --transition-base:    0.2s ease;
-  --font-family:        'Poppins', system-ui, -apple-system, sans-serif;
+  --radius-md: 16px;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.07);
+  --transition-base: 0.2s ease;
+  --font-family: 'Poppins', system-ui, -apple-system, sans-serif;
 
   min-height: 100vh;
   width: 100%;
@@ -31,7 +30,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  max-width: 980px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -84,9 +83,17 @@
   position: relative;
 }
 
-.contactItem:hover         { background-color: #f9fafb; }
-.contactItemActive         { background-color: #eff6ff; }
-.contactItemActive:hover   { background-color: #eff6ff; }
+.contactItem:hover {
+  background-color: #f9fafb;
+}
+
+.contactItemActive {
+  background-color: #eff6ff;
+}
+
+.contactItemActive:hover {
+  background-color: #eff6ff;
+}
 
 .contactAvatar {
   position: relative;
@@ -141,6 +148,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
 }
 
 .chatHeader {
@@ -169,8 +177,13 @@
   font-weight: 500;
 }
 
-.statusOnline  { color: #16a34a; }
-.statusOffline { color: var(--color-text-muted); }
+.statusOnline {
+  color: #16a34a;
+}
+
+.statusOffline {
+  color: var(--color-text-muted);
+}
 
 .messagesList {
   flex: 1;
@@ -179,6 +192,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-height: 0;
 }
 
 .messageBubbleWrapper {
@@ -215,16 +229,26 @@
   line-height: 1.5;
 }
 
-.messageBubbleReceived .messageText { color: var(--color-text-body); }
-.messageBubbleSent     .messageText { color: var(--color-text-white); }
+.messageBubbleReceived .messageText {
+  color: var(--color-text-body);
+}
+
+.messageBubbleSent .messageText {
+  color: var(--color-text-white);
+}
 
 .messageTime {
   font-size: 0.68rem;
   align-self: flex-end;
 }
 
-.messageBubbleReceived .messageTime { color: var(--color-text-muted); }
-.messageBubbleSent     .messageTime { color: rgba(255,255,255,0.75); }
+.messageBubbleReceived .messageTime {
+  color: var(--color-text-muted);
+}
+
+.messageBubbleSent .messageTime {
+  color: rgba(255, 255, 255, 0.75);
+}
 
 .chatInputRow {
   display: flex;
@@ -234,6 +258,7 @@
   border-top: 1.5px solid var(--color-border);
   flex-shrink: 0;
 }
+
 .chatInput {
   flex: 1;
   padding: 0.65rem 1rem;
@@ -252,7 +277,10 @@
   box-shadow: 0 0 0 3px rgba(146, 60, 255, 0.12);
 }
 
-.chatInput::placeholder { color: #9ca3af; }
+.chatInput::placeholder {
+  color: #9ca3af;
+}
+
 .sendBtn {
   width: 42px;
   height: 42px;
@@ -268,8 +296,14 @@
   transition: opacity var(--transition-base);
 }
 
-.sendBtn:hover    { opacity: 0.88; }
-.sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sendBtn:hover {
+  opacity: 0.88;
+}
+
+.sendBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 .emptyChat {
   flex: 1;
@@ -281,8 +315,22 @@
 }
 
 @media (max-width: 768px) {
-  .main            { padding: 1.25rem 1rem; }
-  .chatContainer   { grid-template-columns: 1fr; height: auto; }
-  .contactList     { border-right: none; border-bottom: 1.5px solid var(--color-border); max-height: 200px; }
-  .chatPanel       { height: 500px; }
+  .main {
+    padding: 1.25rem 1rem;
+  }
+
+  .chatContainer {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .contactList {
+    border-right: none;
+    border-bottom: 1.5px solid var(--color-border);
+    max-height: 200px;
+  }
+
+  .chatPanel {
+    height: 500px;
+  }
 }

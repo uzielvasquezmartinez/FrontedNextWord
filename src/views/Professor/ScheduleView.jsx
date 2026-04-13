@@ -7,7 +7,7 @@ import DailyView      from "../../components/Schedule/DailyView";
 import ScheduleModal  from "../../components/Schedule/ScheduleModal";
 import { TEACHER_NAV, getWeekStart } from "../../components/Schedule/scheduleHelpers";
 import { useAuth }    from "../../context/AuthContext";
-import { createSlot, getTeacherAgenda, getAvailableSlots } from "../../services/reservationService";
+import { createSlot, getTeacherAgenda, getSlotsByRange } from "../../services/reservationService";
 import styles from "./ScheduleView.module.css";
 
 // ── Convierte ReservationResponseDto al formato que usan las vistas ──
@@ -38,37 +38,39 @@ const ScheduleView = () => {
   const [error,        setError]        = useState("");
 
   // ── Cargar agenda del profesor al montar ─────────────────────────
-useEffect(() => {
-  const fetchAgenda = async () => {
+  const fetchData = async () => {
     setLoading(true);
     setError("");
     try {
-     const [slotsRes, agendaRes] = await Promise.all([
-  getAvailableSlots(),
-  getTeacherAgenda(),
-]);
-     const slots = slotsRes.data.map((s) => ({
-  date:  s.slotDate,
-  start: s.startTime,
-  end:   s.endTime,
-  type:  "Disponible",
-  label: "Horario disponible para reservar",
-  slotId: s.slotId,
-}));
+      const start = `${currentYear}-01-01`;
+      const end   = `${currentYear + 1}-12-31`;
 
-     const agenda = agendaRes.data.map((r) => ({
-  date:  r.date,
-  start: r.startTime,
-  end:   r.endTime,
-  type:  "Reservado",
-  label: r.classType ?? "Clase reservada",
-  meetLink: r.meetLink,
-  reservationId: r.reservationId,
-  participantName: r.participantName,
-}));
+      const [slotsRes, agendaRes] = await Promise.all([
+        getSlotsByRange(start, end, user.id),
+        getTeacherAgenda(),
+      ]);
+
+      const slots = slotsRes.data.map((s) => ({
+        date:  s.slotDate,
+        start: s.startTime,
+        end:   s.endTime,
+        type:  "Disponible",
+        label: "Horario disponible para reservar",
+        slotId: s.slotId,
+      }));
+
+      const agenda = agendaRes.data.map((r) => ({
+        date:  r.date,
+        start: r.startTime,
+        end:   r.endTime,
+        type:  "Reservado",
+        label: r.topic || r.classType || "Clase",
+        meetLink: r.meetLink,
+        reservationId: r.reservationId,
+        participantName: r.studentName || r.participantName,
+      }));
 
       setSchedules([...slots, ...agenda]);
-
     } catch (err) {
       console.error("Error cargando agenda:", err);
       setError("No se pudo cargar la agenda.");
@@ -76,8 +78,10 @@ useEffect(() => {
       setLoading(false);
     }
   };
-  fetchAgenda();
-}, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [currentYear, user.id]);
   // ── Navegación Mensual ───────────────────────────────────────────
   const prevMonth = () => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear((y) => y - 1); } else setCurrentMonth((m) => m - 1); };
   const nextMonth = () => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear((y) => y + 1); } else setCurrentMonth((m) => m + 1); };
@@ -102,9 +106,9 @@ const handleSave = async (newSchedule) => {
     // ── Calcula las fechas según el tipo de horario ──────────────
     let dates = [];
 
-   if (scheduleType === "Único") {
-  dates = [newSchedule.selectedDate];
-}else if (scheduleType === "Semanal") {
+    if (scheduleType === "Único") {
+      dates = [newSchedule.selectedDate];
+    } else if (scheduleType === "Semanal") {
       // Genera slots para los días seleccionados durante la duración
       const weeksMap = { "1 semana": 1, "2 semanas": 2, "4 semanas": 4, "8 semanas": 8, "3 meses": 13 };
       const weeks    = weeksMap[duration] ?? 4;
@@ -115,7 +119,11 @@ const handleSave = async (newSchedule) => {
           const d = new Date(today);
           const diff = (dayMap[day] - d.getDay() + 7) % 7 + w * 7;
           d.setDate(d.getDate() + diff);
-          dates.push(d.toISOString().split("T")[0]);
+          // Usamos formato local YYYY-MM-DD para evitar desfases de UTC
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          dates.push(`${yyyy}-${mm}-${dd}`);
         });
       }
 
@@ -127,33 +135,58 @@ const handleSave = async (newSchedule) => {
       for (let m = 0; m < months; m++) {
         const d = new Date(today.getFullYear(), today.getMonth() + m, parseInt(dayOfMonth));
         if (d.getMonth() === (today.getMonth() + m) % 12) {
-          dates.push(d.toISOString().split("T")[0]);
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          dates.push(`${yyyy}-${mm}-${dd}`);
         }
       }
     }
 
-    // ── Crea un slot por cada fecha calculada ────────────────────
-    await Promise.all(
-      dates.map((slotDate) =>
-        createSlot({
-          teacherId: user.id,
-          slotDate,
-          startTime,
-          endTime,
-          classType: "individual", // valor por defecto — ajusta si tienes selector
-        })
-      )
-    );
+    // ── Validación de tiempo pasado (Frontend) ──────────────────
+    const now = new Date();
+    // Usamos el formato HH:mm (5 caracteres) para coincidir con la restricción de base de datos (VARCHAR2(5))
+    const formattedStartTime = startTime;
+    const formattedEndTime = endTime;
 
-    // Recargar agenda
-   const res = await getTeacherAgenda();
-setSchedules(mapAgendaToSchedules(res.data));
-setShowModal(false);
+    for (const dStr of dates) {
+      const slotDateTime = new Date(`${dStr}T${formattedStartTime}`);
+      if (slotDateTime < now) {
+        setError(`No puedes programar el horario del ${dStr} a las ${startTime} porque ya ha pasado.`);
+        return;
+      }
+    }
+
+    // ── Crea un slot por cada fecha calculada ────────────────────
+    console.log("Enviando slots:", {
+      dates,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+      teacherId: user.id
+    });
+
+    // ── Crea los slots uno por uno para mejor control ───────────
+    for (const slotDate of dates) {
+      await createSlot({
+        teacherId: user.id,
+        slotDate: slotDate,  // Revertido a slotDate según el DTO oficial
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
+        classType: "individual",
+      });
+    }
+
+    // Recargar todo (Slots + Agenda)
+    await fetchData();
+    setShowModal(false);
 
 
   } catch (err) {
     console.error("Error creando slot:", err);
-    setError(err.response?.data?.message ?? "Error al crear el horario.");
+    // Intentamos extraer el mensaje amigable del backend si existe
+    const backendMessage = err.response?.data?.message || err.response?.data?.error || err.response?.data;
+    const finalMessage = typeof backendMessage === 'string' ? backendMessage : "Error al crear el horario. Verifica solapamientos o fechas pasadas.";
+    setError(finalMessage);
   }
 };
   return (

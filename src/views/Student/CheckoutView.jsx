@@ -1,41 +1,61 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { bookSlot } from "../../services/reservationService";
 import GradientPage from "../../components/UI/GradientPage/GradientPage";
 import Button from "../../components/UI/Button/Button";
 import { IconCalendar, IconClock } from "../../components/Icons/Icons";
 import styles from "./CheckoutView.module.css";
 
-const CheckoutView = async () => {
+const CheckoutView = () => {
+  const { user } = useAuth();
   const location  = useLocation();
   const navigate  = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const { slot, teacher } = location.state ?? {};
 
-  // Si no hay datos redirige al horario
+  // Redirige al horario si falta información esencial
   if (!slot || !teacher) {
-    navigate("/student/schedule");
+    setTimeout(() => navigate("/student/schedule"), 0);
     return null;
   }
 
-  const handlePay = async () => {
-    setLoading(true);
-    // Mock — reemplazar con: paymentService.createPreference({ slot, teacher })
-    // y redirigir a res.data.initPoint (URL de MercadoPago)
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    // Simula pago exitoso
-    navigate("/student/payment/success", { state: { slot, teacher } });
+  const classPrice = teacher?.hourlyRate || 50; // Usar el precio del profesor o 50 por defecto
+  const userBalance = user?.walletBalance || 0;
+  const hasEnoughFunds = userBalance >= classPrice;
+
+  const handleConfirmReservation = async () => {
+    if (!hasEnoughFunds) {
+      setError("No tienes saldo suficiente para realizar esta reserva.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Llamada real al backend para reservar el slot
+      // Se asume que slot.id es el identificador del espacio
+      await bookSlot(user.id, slot.id);
+      
+      setLoading(false);
+      navigate("/student/payment/success", { state: { slot, teacher } });
+    } catch (err) {
+      console.error("Error al confirmar reserva:", err);
+      setError(err.response?.data?.message || err.response?.data || "Hubo un problema al procesar tu reserva. Intenta de nuevo.");
+      setLoading(false);
+    }
   };
-const res = await paymentService.createPreference({ slot, teacher });
-window.location.href = res.data.initPoint;
+
   return (
     <GradientPage>
       <div className={styles.card}>
 
         <div className={styles.header}>
-          <h2 className={styles.title}>Resumen de Pago</h2>
-          <p className={styles.subtitle}>Revisa los detalles antes de pagar</p>
+          <h2 className={styles.title}>Resumen de Reserva</h2>
+          <p className={styles.subtitle}>Revisa los detalles antes de confirmar</p>
         </div>
 
         {/* Info del profesor */}
@@ -69,33 +89,43 @@ window.location.href = res.data.initPoint;
           </div>
         </div>
 
-        {/* Resumen de pago */}
+        {/* Resumen de costos */}
         <div className={styles.summary}>
           <div className={styles.summaryRow}>
-            <span>Clase de 1 hora</span>
-            <span>${teacher.hourlyRate}</span>
+            <span>Tu saldo actual</span>
+            <span className={userBalance < classPrice ? styles.insufficient : ""}>
+              ${userBalance.toFixed(2)}
+            </span>
           </div>
           <div className={styles.summaryRow}>
-            <span>Comisión de servicio</span>
-            <span>$0</span>
+            <span>Costo de la clase</span>
+            <span>${classPrice.toFixed(2)}</span>
           </div>
           <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
-            <span>Total a pagar</span>
-            <span>${teacher.hourlyRate}</span>
+            <span>Total a descontar</span>
+            <span>${classPrice.toFixed(2)}</span>
           </div>
         </div>
 
+        {error && <p className={styles.errorText}>{error}</p>}
+
         {/* Botones */}
         <div className={styles.actions}>
-          <Button variant="primary" fullWidth onClick={handlePay} disabled={loading}>
-            {loading ? "Procesando..." : "Pagar con MercadoPago"}
+          <Button 
+            variant="primary" 
+            fullWidth 
+            onClick={handleConfirmReservation} 
+            loading={loading}
+            disabled={!hasEnoughFunds}
+          >
+            {hasEnoughFunds ? "Confirmar Reserva" : "Saldo Insuficiente"}
           </Button>
-          <Button variant="secondary" fullWidth onClick={() => navigate(-1)}>
+          <Button variant="secondary" fullWidth onClick={() => navigate(-1)} disabled={loading}>
             Cancelar
           </Button>
         </div>
 
-        <p className={styles.secureNote}>🔒 Pago seguro procesado por MercadoPago</p>
+        <p className={styles.secureNote}>ℹ️ Esta reserva se descontará de tu saldo disponible ($)</p>
 
       </div>
     </GradientPage>

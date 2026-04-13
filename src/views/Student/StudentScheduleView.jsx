@@ -16,10 +16,7 @@ import styles from "./StudentScheduleView.module.css";
 import teacherService from "../../services/teacherService";
 // 1. Agrega el import de tu nuevo servicio (que crearemos en breve)
 
-// ... dentro de tu componente StudentScheduleView ...
-import scheduleService from "../../services/scheduleService";
-
-
+import { getSlotsByRange } from "../../services/reservationService";
 
 const STUDENT_NAV = [
   { label: "Inicio",    path: "/student/dashboard" },
@@ -65,13 +62,13 @@ const STUDENT_NAV = [
         const mappedTeachers = response.data.map(t => ({
           id: t.id,
           name: t.fullName, 
-          rating: t.averageRating,
-          classes: 0, 
-          hourlyRate: 25, 
-          avatar: "https://i.pravatar.cc/150?u=" + t.id, 
-          bio: t.professionalDescription,
-          education: t.certifications,
-          experience: `${t.yearsOfExperience} años de experiencia`,
+          rating: t.averageRating ?? 0,
+          classes: t.completedClasses ?? 0, 
+          hourlyRate: t.hourlyRate ?? 25, 
+          avatar: t.profilePicture || "https://i.pravatar.cc/150?u=" + t.id, 
+          bio: t.professionalDescription ?? "Sin descripción profesional.",
+          education: t.certifications ?? "No especificada",
+          experience: t.yearsOfExperience ? `${t.yearsOfExperience} años de experiencia` : "Experiencia no especificada",
         }));
 
         setTeachers(mappedTeachers);
@@ -97,14 +94,19 @@ const STUDENT_NAV = [
     const fetchTeacherSchedules = async () => {
       try {
         setLoadingSchedules(true);
-        const response = await scheduleService.getSchedulesByTeacher(activeTeacher.id);
+        const today = new Date();
+        const response = await getSlotsByRange(
+          `${today.getFullYear()}-01-01`, 
+          `${today.getFullYear() + 1}-12-31`, 
+          activeTeacher.id
+        );
         
         const mappedSchedules = response.data.map(slot => ({
-          id: slot.reservationId, 
-          date: slot.date,         
+          id: slot.slotId, 
+          date: slot.slotDate,         
           start: slot.startTime,   
           end: slot.endTime,       
-          type: slot.status        
+          type: "Disponible"
         }));
 
         setSchedules(mappedSchedules);

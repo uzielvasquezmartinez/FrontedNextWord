@@ -21,6 +21,7 @@ import ForgotPasswordView from "../views/ForgotPassword/ForgotPasswordView";
 import VerifyCodeView     from "../views/ForgotPassword/VerifyCodeView";
 import ResetPasswordView  from "../views/ForgotPassword/ResetPasswordView";
 import MessagesView from "../views/Professor/MessagesView";
+import TeacherClassesView from "../views/Professor/TeacherClassesView";
 import StudentMessagesView from "../views/Student/StudentMessagesView";
 
 // AnimatePresence necesita leer la location, por eso se separa en un componente interno
@@ -85,6 +86,11 @@ const AnimatedRoutes = () => {
 <Route path="/teacher/messages" element={
   <ProtectedRoute allowedRoles={["teacher"]}>
     <PageTransition type="slide"><MessagesView /></PageTransition>
+  </ProtectedRoute>
+}/>
+<Route path="/teacher/classes" element={
+  <ProtectedRoute allowedRoles={["teacher"]}>
+    <PageTransition type="slide"><TeacherClassesView /></PageTransition>
   </ProtectedRoute>
 }/>
 

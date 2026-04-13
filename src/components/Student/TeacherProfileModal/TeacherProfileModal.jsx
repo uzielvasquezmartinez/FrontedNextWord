@@ -1,9 +1,24 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../../UI/Button/Button";
 import { IconStar, IconGraduate, IconBriefcase } from "../../Icons/Icons";
 import styles from "./TeacherProfileModal.module.css";
-
 const TeacherProfileModal = ({ teacher, onClose, onViewSchedule }) => {
+  const navigate = useNavigate();
+
   if (!teacher) return null;
+
+  const handleMessageClick = () => {
+    // Redirige a mensajes pasando el objeto del profesor en el estado de navegación
+    navigate("/student/messages", { 
+      state: { 
+        selectedTeacher: {
+          id: teacher.id,
+          name: teacher.name || teacher.fullName || "Profesor",
+          avatar: teacher.avatar
+        } 
+      } 
+    });
+  };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -59,6 +74,9 @@ const TeacherProfileModal = ({ teacher, onClose, onViewSchedule }) => {
         </div>
 
         <div className={styles.footer}>
+          <Button variant="secondary" fullWidth onClick={handleMessageClick}>
+            Enviar Mensaje
+          </Button>
           <Button variant="primary" fullWidth onClick={() => onViewSchedule(teacher)}>
             Ver Horarios disponibles
           </Button>

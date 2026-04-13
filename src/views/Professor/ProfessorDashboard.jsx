@@ -10,6 +10,7 @@ import Avatar from "../../components/UI/Avatar/Avatar";
 const TEACHER_NAV = [
   { label: "Inicio",   path: "/teacher/dashboard" },
   { label: "Horario",  path: "/teacher/schedule"  },
+  { label: "Clases",   path: "/teacher/classes"   },
   { label: "Mensajes", path: "/teacher/messages"  },
 ];
 

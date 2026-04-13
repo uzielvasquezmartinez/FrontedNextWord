@@ -12,12 +12,12 @@ export const calcularEdad = (birthDate) => {
 
 export const validarFormulario = (formData) => {
   const errors      = {};
-  const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+  const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/;
 
   if (!formData.fullName.trim()) {
     errors.fullName = "El nombre es requerido.";
   } else if (!regexNombre.test(formData.fullName.trim())) {
-    errors.fullName = "El nombre solo debe contener letras y espacios.";
+    errors.fullName = "El nombre solo debe contener letras, espacios y guiones.";
   }
 
   if (!formData.email.trim()) {
@@ -48,6 +48,8 @@ if (!formData.phoneNumber.trim()) {
     errors.password = "La contraseña es requerida.";
   } else if (formData.password.length < 8) {
     errors.password = "Mínimo 8 caracteres.";
+  } else if (!/^(?=.*[a-zA-Z])(?=.*\d).+$/.test(formData.password)) {
+    errors.password = "La contraseña debe incluir al menos una letra y un número.";
   }
 
   if (!formData.confirmPassword) {
@@ -59,31 +61,24 @@ if (!formData.phoneNumber.trim()) {
   return errors;
 };
 
-export const validarTutor = (tutorData) => {
+export const validarTutor = (tutorData, studentEmail) => {
   const errors = {};
 
   if (!tutorData.tutorName.trim())
     errors.tutorName = "El nombre del tutor es requerido.";
 
-  if (!tutorData.tutorEmail.trim())
+  if (!tutorData.tutorEmail.trim()) {
     errors.tutorEmail = "El email del tutor es requerido.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tutorData.tutorEmail))
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tutorData.tutorEmail)) {
     errors.tutorEmail = "Ingresa un email válido.";
+  } else if (studentEmail && tutorData.tutorEmail.trim().toLowerCase() === studentEmail.trim().toLowerCase()) {
+    errors.tutorEmail = "El correo del tutor no puede ser el mismo que el del alumno.";
+  }
 
   if (!tutorData.tutorPhone.trim())
     errors.tutorPhone = "El teléfono es requerido.";
   else if (!/^\d{10}$/.test(tutorData.tutorPhone))
     errors.tutorPhone = "El teléfono debe tener exactamente 10 dígitos.";
-
-  if (!tutorData.tutorPassword)
-    errors.tutorPassword = "La contraseña es requerida.";
-  else if (tutorData.tutorPassword.length < 8)
-    errors.tutorPassword = "Mínimo 8 caracteres.";
-
-  if (!tutorData.tutorConfirmPassword)
-    errors.tutorConfirmPassword = "Confirma la contraseña.";
-  else if (tutorData.tutorPassword !== tutorData.tutorConfirmPassword)
-    errors.tutorConfirmPassword = "Las contraseñas no coinciden.";
 
   return errors;
 };

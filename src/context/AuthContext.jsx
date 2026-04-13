@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import userService from "../services/userService";
@@ -13,7 +13,7 @@ const ROLE_MAP = {
 
 // ── Mapa de roles a rutas ────────────────────────────────────────
 const ROLE_REDIRECTS = {
-  admin:   "/admin/dashboard",
+  admin: "/admin/dashboard",
   teacher: "/teacher/dashboard",
   student: "/student/dashboard",
 };
@@ -31,6 +31,50 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
+  // ── Helper: Procesa y guarda los datos del usuario ──────────────
+  const saveUserProfile = useCallback((me, tokenArg) => {
+    const token = tokenArg || localStorage.getItem("token");
+    const role = ROLE_MAP[me.roleId] ?? "student";
+    const name = me.fullName ?? me.email;
+    const loggedUser = {
+      token,
+      email: me.email,
+      role,
+      name,
+      id: me.id,
+      photo: me.profilePicture, // Opcional: añadir foto si el sidebar la usa
+      walletBalance: me.walletBalance || 0 // 🌟 Añadido para mostrar el saldo
+    };
+    localStorage.setItem("user", JSON.stringify(loggedUser));
+    setUser(loggedUser);
+    return loggedUser;
+  }, []);
+
+  // ── Sincronizar datos con el servidor (Refresh) ──────────────────
+  const refreshUser = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const meRes = await userService.getMe();
+      saveUserProfile(meRes.data, token);
+    } catch (error) {
+      console.error("Error sincronizando perfil:", error);
+      // Si el error es de autenticación (401), cerramos sesión
+      if (error.response?.status === 401) {
+        logout();
+      }
+    }
+  }, [saveUserProfile]);
+
+  // Sincronización automática al cargar la app o refrescar la página
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      refreshUser();
+    }
+  }, []); // Solo al montar
+
   // ── Login ──────────────────────────────────────────────────────
   const login = async (email, password) => {
     if (!email || !password)
@@ -38,25 +82,18 @@ export const AuthProvider = ({ children }) => {
 
     try {
       // 1. Obtiene el token
-      const res   = await authService.login(email, password);
+      const res = await authService.login(email, password);
       const token = res.data.token;
 
       // 2. Guarda el token para que el interceptor lo use
       localStorage.setItem("token", token);
 
-      // 3. Llama a /users/me para obtener rol y nombre
-      const meRes  = await userService.getMe();
-      const me     = meRes.data;
-      const role   = ROLE_MAP[me.roleId] ?? "student";
-      const name   = me.fullName ?? email;
+      // 3. Obtener datos y persistir
+      const meRes = await userService.getMe();
+      const loggedUser = saveUserProfile(meRes.data, token);
 
-      // 4. Persiste el usuario completo
-      const loggedUser = { token, email: me.email, role, name, id: me.id };
-      localStorage.setItem("user", JSON.stringify(loggedUser));
-      setUser(loggedUser);
-
-      // 5. Redirige según el rol
-      navigate(ROLE_REDIRECTS[role] ?? "/login");
+      // 4. Redirige según el rol
+      navigate(ROLE_REDIRECTS[loggedUser.role] ?? "/login");
       return { success: true };
 
     } catch (error) {
@@ -72,12 +109,12 @@ export const AuthProvider = ({ children }) => {
   // ── Mock Login (Solo para saltar el login en desarrollo) ───────
   const mockLogin = (role = "student") => {
     // Creamos un usuario falso respetando la estructura de tu app
-    const mockUser = { 
-      token: "mock-token-desarrollo-123", 
-      email: `test@${role}.com`, 
-      role: role, 
-      name: `Uzi (${role})`, 
-      id: 999 
+    const mockUser = {
+      token: "mock-token-desarrollo-123",
+      email: `test@${role}.com`,
+      role: role,
+      name: `Uzi (${role})`,
+      id: 999
     };
 
     // Lo guardamos en localStorage para que persista si recargas la página
@@ -95,12 +132,12 @@ export const AuthProvider = ({ children }) => {
       await authService.registerStudent(data);
       return { success: true };
     } catch (error) {
-     const message =
-  error.response?.data?.message ??
-  error.response?.data?.error ??
-  (typeof error.response?.data === "string"
-    ? error.response.data
-    : "Error al registrar estudiante.");
+      const message =
+        error.response?.data?.message ??
+        error.response?.data?.error ??
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : "Error al registrar estudiante.");
       return { success: false, message };
     }
   };
@@ -131,11 +168,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
- // ── Verify Code (Forgot Password) ─────────────────────────────
-const verifyCode = async (email, code) => {
- 
-  return { success: true, token: code };
-};
+  // ── Verify Code (Forgot Password) ─────────────────────────────
+  const verifyCode = async (email, code) => {
+
+    return { success: true, token: code };
+  };
 
   const verifyAccount = async (email, code) => {
     try {
@@ -171,12 +208,13 @@ const verifyCode = async (email, code) => {
     setUser(null);
     navigate("/login");
   };
- 
+
   return (
     <AuthContext.Provider value={{
       user,
       login,
-      mockLogin, // <-- Función inyectada aquí
+      refreshUser,
+      mockLogin,
       registerStudent,
       registerTeacher,
       forgotPassword,

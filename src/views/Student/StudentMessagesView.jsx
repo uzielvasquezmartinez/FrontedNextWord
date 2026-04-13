@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Avatar from "../../components/UI/Avatar/Avatar";
 import { IconSend } from "../../components/Icons/Icons";
 import { useAuth } from "../../context/AuthContext";
 import {
+  getInbox,
   getChatHistory,
   markAsRead,
-  connectWebSocket,
-  sendMessage,
-  disconnectWebSocket,
 } from "../../services/messageService";
+import { useChatWebSocket } from "../../hooks/useChatWebSocket";
 import styles from "../Professor/MessagesView.module.css";
 
 // ── Navegación ───────────────────────────────────────────────────
@@ -24,68 +24,111 @@ const STUDENT_NAV = [
 const getInitials = (name = "") =>
   name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 
-// ── Datos mock temporales (hasta que tengas tu endpoint de contactos) ──
-const MOCK_TEACHERS = [
-  {
-    id: "1", // Asegúrate de que coincida con el ID real del Profesor Uzi en tu BD
-    name: "Mario Moreno",
-    initials: "MM",
-    avatar: "https://i.pravatar.cc/150?img=33",
-    preview: "Envía un mensaje para comenzar",
-    online: true,
-    unread: false,
-  },
-  {
-    id: "2",
-    name: "Carolina Bahena",
-    initials: "CB",
-    avatar: "https://i.pravatar.cc/150?img=44",
-    preview: "",
-    online: false,
-    unread: false,
-  }
-];
-
 // ── Componente principal ─────────────────────────────────────────
 const StudentMessagesView = () => {
   const { user }                          = useAuth(); // Obtenemos el ID del alumno logueado
-  const [contacts, setContacts]           = useState(MOCK_TEACHERS);
+  const [contacts, setContacts]           = useState([]);
   const [activeContact, setActiveContact] = useState(null);
+  const activeContactRef                  = useRef(null);
   const [messages, setMessages]           = useState([]);
   const [newMessage, setNewMessage]       = useState("");
   const [loading, setLoading]             = useState(false);
+  const [hasFetchedInbox, setHasFetchedInbox] = useState(false); 
   const messagesEndRef                    = useRef(null);
 
-  // ── Conectar WebSocket al montar ────────────────────────────────
+  // ── Cargar Inbox al montar ────────────────────────────────────────
   useEffect(() => {
-    if (!user?.id) return;
-
-    const client = connectWebSocket(user.id, (incomingMessage) => {
-      // Solo agrega el mensaje si pertenece a la conversación activa
-      setActiveContact((prev) => {
-        if (
-          prev &&
-          (incomingMessage.senderId === prev.id ||
-            incomingMessage.receiverId === prev.id)
-        ) {
-          setMessages((msgs) => [...msgs, incomingMessage]);
-        }
-        return prev;
-      });
-
-      // Actualiza el preview del contacto
-      setContacts((prev) =>
-        prev.map((c) =>
-          c.id === incomingMessage.senderId
-            ? { ...c, preview: incomingMessage.body, unread: true }
-            : c
-        )
-      );
-    });
-
-    return () => disconnectWebSocket();
+    const fetchInbox = async () => {
+      try {
+        const res = await getInbox();
+        const mappedContacts = res.data.map(dto => ({
+          id: dto.contactId,
+          name: dto.name,            // Sincronizado con InboxDto.java (CAMBIADO)
+          preview: dto.lastMessage,  // Sincronizado con InboxDto.java (CAMBIADO)
+          avatar: dto.photoPerfil,   // Sincronizado con InboxDto.java (CAMBIADO)
+          unread: dto.unreadCount > 0,
+          online: false 
+        }));
+        setContacts(mappedContacts);
+      } catch (error) {
+        console.error("Error cargando bandeja de entrada:", error);
+      } finally {
+        setHasFetchedInbox(true);
+      }
+    };
+    if (user?.id) fetchInbox();
   }, [user?.id]);
 
+  useEffect(() => {
+    activeContactRef.current = activeContact;
+  }, [activeContact]);
+
+  // ── Auto-selección desde el estado de navegación ────────────────
+  const location = useLocation();
+  useEffect(() => {
+    // Solo procedemos si ya intentamos cargar el inbox y tenemos un profesor seleccionado del estado
+    if (hasFetchedInbox && location.state?.selectedTeacher) {
+      const teacher = location.state.selectedTeacher;
+      // Buscamos si el profesor YA está en la lista de contactos
+      const existing = contacts.find(c => c.id === teacher.id);
+
+      if (existing) {
+        handleSelectContact(existing);
+      } else {
+        // Si no está, lo agregamos como un contacto temporal al inicio de la lista
+        const tempContact = {
+          id:      teacher.id,
+          name:    teacher.name,
+          preview: "Nuevo chat...",
+          avatar:  teacher.avatar,
+          unread:  false,
+          online:  false,
+          initials: getInitials(teacher.name)
+        };
+        setContacts((prev) => [tempContact, ...prev]);
+        setActiveContact(tempContact);
+      }
+      // Limpiar el estado para evitar re-selecciones infinitas
+      window.history.replaceState({}, document.title);
+    }
+  }, [hasFetchedInbox, location.state, contacts.length]);
+
+  // ── Inicializar Hook de WebSocket ───────────────────────────────
+  const handleIncomingMessage = useCallback((incomingMessage) => {
+    const currentContact = activeContactRef.current;
+
+    // 1. Ignorar si el mensaje fue enviado por el usuario actual 
+    // (ya lo mostramos en pantalla vía Optimistic UI)
+    if (incomingMessage.senderId === user.id) return;
+
+    // 2. Si recibimos una actualización de estado de lectura (read="1")
+    if (incomingMessage.read === "1") {
+      setMessages((msgs) =>
+        msgs.map((m) => (m.id === incomingMessage.id ? { ...m, read: "1" } : m))
+      );
+      return;
+    }
+
+    // Solo agrega el mensaje si pertenece a la conversación activa
+    if (
+      currentContact &&
+      (incomingMessage.senderId === currentContact.id ||
+        incomingMessage.receiverId === currentContact.id)
+    ) {
+      setMessages((msgs) => [...msgs, incomingMessage]);
+    }
+    
+    // ... resto del código de preview ...
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.id === incomingMessage.senderId
+          ? { ...c, preview: incomingMessage.body, unread: true }
+          : c
+      )
+    );
+  }, []);
+
+  const { sendMessage } = useChatWebSocket(user.id, handleIncomingMessage);
   // ── Scroll al último mensaje ─────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -205,9 +248,6 @@ const StudentMessagesView = () => {
                 <Avatar initials={activeContact.initials} size="md" />
                 <div className={styles.chatHeaderInfo}>
                   <span className={styles.chatHeaderName}>{activeContact.name}</span>
-                  <span className={`${styles.chatHeaderStatus} ${activeContact.online ? styles.statusOnline : styles.statusOffline}`}>
-                    {activeContact.online ? "En línea" : "Desconectado"}
-                  </span>
                 </div>
               </div>
 
