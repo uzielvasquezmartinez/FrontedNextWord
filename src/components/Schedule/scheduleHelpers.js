@@ -8,6 +8,7 @@ export const DURATIONS_MONTH= ["1 mes","2 meses","3 meses","6 meses"];
 export const TEACHER_NAV = [
   { label: "Inicio",   path: "/teacher/dashboard" },
   { label: "Horario",  path: "/teacher/schedule"  },
+  { label: "Clases",   path: "/teacher/classes"   },
   { label: "Mensajes", path: "/teacher/messages"  },
 ];
 const generateMockSchedules = () => {
