@@ -1,9 +1,9 @@
 import api from './Api';
 
 const teacherService = {
-  // GET /api/users/teachers
+  // GET /api/teachers
   getTeachers: () =>
-    api.get('/users/teachers'),
+    api.get('/teachers'),
 
   // GET /api/teachers/me
   getMyProfile: () =>

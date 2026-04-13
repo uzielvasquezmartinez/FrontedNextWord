@@ -1,7 +1,7 @@
 import api from "./Api";
 
 export const createSlot = (data) =>
-api.post('/reservations/slots/available', data)
+  api.post('/reservations/slot', data);
 /**
  * GET /api/reservations/slots/available
  * Devuelve todos los slots disponibles

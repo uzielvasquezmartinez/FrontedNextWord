@@ -1,22 +1,24 @@
-import axios from "axios"; // ← este import faltaba en tu archivo original
- 
-/* 
+import axios from "axios";
+
+/*
 // Api.js
 const api = axios.create({
-  baseURL: 'https://unpoetically-interramal-loren.ngrok-free.dev/api',
+  baseURL: '/api', // Vite proxy lo redirigirá a Ngrok
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': '69420'
   }
-}); */
+});
+*/
 
 
- const api = axios.create({
+const api = axios.create({
   baseURL: 'http://localhost:8080/api', // Asegúrate de que este URL apunte a tu backend
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
 // ── Interceptor REQUEST: adjunta el token en cada llamada ────────
 api.interceptors.request.use(
   (config) => {
@@ -28,7 +30,7 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
- 
+
 // ── Interceptor RESPONSE: manejo global de sesión expirada ───────
 api.interceptors.response.use(
   (response) => response,
@@ -41,5 +43,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
- 
+
 export default api;
