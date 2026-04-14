@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import NextWordLogo from "../../components/NextWordLogo/NextWordLogo";
 import styles from "./LoginView.module.css";
+import { IconEyeOpen, IconEyeClosed } from "../../components/Icons/Icons";
 const LoginView = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -11,7 +12,8 @@ const LoginView = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-const { mockLogin } = useAuth();
+  const { mockLogin } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,22 +30,22 @@ const { mockLogin } = useAuth();
       setError(result.message);
       setLoading(false);
     }
-    
+
   };
 
   return (
-    
+
     <div className={styles.layout}>
 
       <aside className={styles.branding}>
         <div className={styles.brandingContent}>
-<h1 className={styles.welcome}>Transforma tu futuro dominando el ingles
-hoy </h1>
+          <h1 className={styles.welcome}>Transforma tu futuro dominando el ingles
+            hoy </h1>
           <NextWordLogo size="md" />
 
 
           <p className={styles.tagline}>
-  
+
             Transforma tu aprendizaje con clases personalizadas
             y profesores expertos
           </p>
@@ -73,18 +75,27 @@ hoy </h1>
             </div>
 
 
-            <div className={styles.field}>
+            <div className={`${styles.field} ${styles.passwordWrapper}`}>
               <label htmlFor="password" className={styles.label}>
                 Contraseña
               </label>
+
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className={styles.input}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
               />
+
+              <button
+                type="button"
+                className={styles.eyeButton}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <IconEyeClosed /> : <IconEyeOpen />}
+              </button>
             </div>
 
             <div className={styles.rowOptions}>
@@ -97,20 +108,20 @@ hoy </h1>
                 />
                 Recordarme
               </label>
-           <button
-  type="button"
-  className={styles.forgotLink}
-  onClick={() => navigate("/forgot-password")}
->
-  ¿Olvidaste tu contraseña?
-</button>
+              <button
+                type="button"
+                className={styles.forgotLink}
+                onClick={() => navigate("/forgot-password")}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
 
-           {error && (
-  <p className={styles.errorMessage} role="alert">
-    {typeof error === 'string' ? error : (error?.message || JSON.stringify(error))}
-  </p>
-)}
+            {error && (
+              <p className={styles.errorMessage} role="alert">
+                {typeof error === 'string' ? error : (error?.message || JSON.stringify(error))}
+              </p>
+            )}
 
             <button
               type="submit"
@@ -121,70 +132,38 @@ hoy </h1>
             </button>
 
           </form>
-<button 
-          type="button" 
-          onClick={() => mockLogin("student")} 
-          style={{
-            width: "100%",
-            padding: "0.8rem",
-            background: "#f5a623", // Color naranja para que sepas que es de prueba
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginBottom: "0.5rem"
-          }}
-        >
-          🚧 Entrar rápido como Estudiante
-        </button>
-
-        {/* ¡Incluso puedes agregar otro para el profesor! */}
-        <button 
-          type="button" 
-          onClick={() => mockLogin("teacher")} 
-          style={{
-            width: "100%",
-            padding: "0.8rem",
-            background: "#8e4bff", 
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-        >
-          🚧 Entrar rápido como Profesor
-        </button>
-           <button 
-          type="button" 
-          onClick={() => mockLogin("admin")} 
-          style={{
-            width: "100%",
-            padding: "0.8rem",
-            background: "#8e4bff", 
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-        >
-          🚧 Entrar rápido como Profesor
-        </button>
 
 
 
-        <p className={styles.registerText}>
-  ¿No tienes una cuenta?{" "}
-  <button
-    type="button"
-    className={styles.registerLink}
-    onClick={() => navigate("/register")}
-  >
-    Registrarse
-  </button>
-</p>
+          <button
+            type="button"
+            onClick={() => mockLogin("admin")}
+            style={{
+              width: "100%",
+              padding: "0.8rem",
+              background: "#8e4bff",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            🚧 Entrar rápido como Profesor
+          </button>
+
+
+
+          <p className={styles.registerText}>
+            ¿No tienes una cuenta?{" "}
+            <button
+              type="button"
+              className={styles.registerLink}
+              onClick={() => navigate("/register")}
+            >
+              Registrarse
+            </button>
+          </p>
 
         </div>
       </main>

@@ -1,34 +1,33 @@
-
 .layout {
-  --color-primary:          #7c5cbf;   
-  --color-primary-hover:    #6a4aad;   
-  --color-primary-border:   #a78bdf;  
-  --color-primary-focus:    rgba(124, 92, 191, 0.18); 
+  --color-primary: #7c5cbf;
+  --color-primary-hover: #6a4aad;
+  --color-primary-border: #a78bdf;
+  --color-primary-focus: rgba(124, 92, 191, 0.18);
 
-  --gradient-from:          #4f6ef7;   
-  --gradient-to:            #8b5cf6;   
+  --gradient-from: #4f6ef7;
+  --gradient-to: #8b5cf6;
 
-  --logo-card-bg:           #0f2a3c;  
-  --logo-text-color:        #ffffff;   
-  --logo-o-accent:          #38bdf8;   
+  --logo-card-bg: #0f2a3c;
+  --logo-text-color: #ffffff;
+  --logo-o-accent: #38bdf8;
 
-  --color-text-heading:     #111827;
-  --color-text-body:        #374151;
-  --color-text-muted:       #6b7280;
-  --color-text-white:       #ffffff;
-  --color-bg-form:          #ffffff;
-  --color-border-input:     #d1d5db;
-  --color-border-focus:     var(--color-primary);
-  --color-error-text:       #dc2626;
-  --color-error-bg:         #fef2f2;
-  --color-error-border:     #fecaca;
+  --color-text-heading: #111827;
+  --color-text-body: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-white: #ffffff;
+  --color-bg-form: #ffffff;
+  --color-border-input: #d1d5db;
+  --color-border-focus: var(--color-primary);
+  --color-error-text: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
 
-  --radius-sm:              6px;
-  --radius-md:              12px;
-  --radius-lg:              18px;
-  --transition-base:        0.2s ease;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --transition-base: 0.2s ease;
 
-  --font-family:            'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 
   display: flex;
   height: 100vh;
@@ -38,26 +37,47 @@
 }
 
 
+.passwordWrapper {
+  position: relative;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 20px;
+  top: 45px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #666;
+}
+
+.eyeButton:hover {
+  color: #000;
+}
 
 .branding {
   flex: 0 0 50%;
-  background: linear-gradient(
-    140deg,
-    var(--gradient-from) 0%,
-    var(--gradient-to) 100%
-  );
+  background: linear-gradient(140deg,
+      var(--gradient-from) 0%,
+      var(--gradient-to) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 3rem 2.5rem;
 }
-.welcome{
+
+.welcome {
   color: var(--color-text-white);
   font-size: 1.25rem;
   line-height: 1.65;
   opacity: 0.92;
   margin: 0;
 }
+
 .brandingContent {
   display: flex;
   flex-direction: column;
@@ -125,7 +145,7 @@
   text-align: center;
   letter-spacing: 0.06em;
   margin: 0;
-   color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 
@@ -139,14 +159,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-   text-align: left;
+  text-align: left;
 }
 
 .label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-body);
-  text-align: left; 
+  text-align: left;
 }
 
 .input {
@@ -258,7 +278,7 @@
   cursor: not-allowed;
 }
 
-button{
+button {
   background-color: white;
 }
 
