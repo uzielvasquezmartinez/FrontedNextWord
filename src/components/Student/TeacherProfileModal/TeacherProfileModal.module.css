@@ -60,6 +60,21 @@
   border: 3px solid #c7d2fe;
 }
 
+.avatarInitials {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  background: #8A2BE2; /* Fallback consistent with TeacherCard */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  border: 3px solid #c7d2fe;
+}
+
 .name {
   font-size: 1.2rem;
   font-weight: 700;

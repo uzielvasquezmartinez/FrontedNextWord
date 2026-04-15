@@ -1,6 +1,6 @@
 import axios from "axios";
 
-/*
+
 // Api.js
 const api = axios.create({
   baseURL: '/api', // Vite proxy lo redirigirá a Ngrok
@@ -9,15 +9,15 @@ const api = axios.create({
     'ngrok-skip-browser-warning': '69420'
   }
 });
-*/
 
 
+/*
 const api = axios.create({
   baseURL: 'http://localhost:8080/api', // Asegúrate de que este URL apunte a tu backend
   headers: {
     'Content-Type': 'application/json'
   }
-});
+});*/
 
 // ── Interceptor REQUEST: adjunta el token en cada llamada ────────
 api.interceptors.request.use(

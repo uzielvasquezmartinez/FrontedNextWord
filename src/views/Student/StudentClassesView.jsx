@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
 import Button from "../../components/UI/Button/Button";
 import { getMyReservations, cancelReservation } from "../../services/reservationService";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./StudentClassesView.module.css";
 
-// ── Navegación ───────────────────────────────────────────────────
 const STUDENT_NAV = [
   { label: "Inicio", path: "/student/dashboard" },
   { label: "Horario", path: "/student/schedule" },
@@ -13,43 +12,71 @@ const STUDENT_NAV = [
   { label: "Mensajes", path: "/student/messages" },
 ];
 
-const STATUS_FILTERS = ["Proximas", "Completadas", "Canceladas"];
+const STATUS_FILTERS = ["Pendientes", "Completadas", "Canceladas"];
 
-// Mapeo de filtros UI a estados del Backend
-const FILTER_TO_STATUS = {
-  "Proximas": "PENDING",
-  "Completadas": "COMPLETED",
-  "Canceladas": "CANCELLED"
+const STATUS_BY_FILTER = {
+  Pendientes: ["PENDIENTE", "PENDIENTEPAGO", "PENDING", "PROGRAMADA", "PENDIENTES"],
+  Completadas: ["COMPLETADA", "COMPLETADAS", "COMPLETED", "FINALIZADA"],
+  Canceladas: ["CANCELADA", "CANCELADAS", "CANCELLED", "CANCELED"],
 };
 
-// ── Componente principal ─────────────────────────────────────────
+const extractReservations = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.content)) return payload.content;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
+const normalizeTeacherName = (item) =>
+  item.teacherName ||
+  item.profeFullName ||
+  item.professorName ||
+  item.teacher?.fullName ||
+  item.teacher?.name ||
+  "Profesor asignado";
+
+const normalizeStatus = (status) => {
+  if (!status) return "Pendientes";
+  const s = String(status).trim().toUpperCase();
+  if (STATUS_BY_FILTER.Completadas.includes(s)) return "Completadas";
+  if (STATUS_BY_FILTER.Canceladas.includes(s)) return "Canceladas";
+  return "Pendientes";
+};
+
 const StudentClassesView = () => {
   const { user } = useAuth();
-  const [activeFilter, setActiveFilter] = useState("Proximas");
+  const [activeFilter, setActiveFilter] = useState("Pendientes");
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchClasses = async () => {
     setLoading(true);
-    try {
-      const status = FILTER_TO_STATUS[activeFilter];
-      const response = await getMyReservations(status);
+    setError("");
 
-      const mappedData = response.data.map(item => ({
-        id: item.reservationId,
-        subject: item.classType || "Ingles Avanzado",
-        teacher: item.participantName,
-        teacherAvatar: "https://i.pravatar.cc/150?img=33",
-        date: item.date,
-        time: `${item.startTime} - ${item.endTime}`,
-        status: activeFilter,
+    try {
+      // Nota: traemos todas las clases y filtramos en frontend.
+      // Evita romper por diferencias de contrato del query param status.
+      const response = await getMyReservations();
+      const reservations = extractReservations(response.data);
+
+      const mappedData = reservations.map((item) => ({
+        id: item.reservationId ?? item.id,
+        subject: item.topic || "Clase de Ingles",
+        teacher: normalizeTeacherName(item),
+        teacherAvatar: null,
+        date: item.date ?? item.slotDate ?? "-",
+        time: `${item.startTime ?? "--:--"} - ${item.endTime ?? "--:--"}`,
+        status: normalizeStatus(item.status),
         meetUrl: item.meetLink,
-        duration: "50 min" // Mocked based on screenshot
+        duration: "50 min",
       }));
 
       setClasses(mappedData);
-    } catch (error) {
-      console.error("Error al cargar las clases:", error);
+    } catch (err) {
+      console.error("Error al cargar las clases:", err);
+      setClasses([]);
+      setError("No se pudieron cargar tus clases.");
     } finally {
       setLoading(false);
     }
@@ -59,36 +86,35 @@ const StudentClassesView = () => {
     if (user?.id) {
       fetchClasses();
     }
-  }, [activeFilter, user?.id]);
+  }, [user?.id]);
 
   const handleCancel = async (reservaId) => {
-    const confirmation = window.confirm("¿Estás seguro de que quieres cancelar esta clase?");
+    const confirmation = window.confirm("Estas seguro de que quieres cancelar esta clase?");
     if (!confirmation) return;
 
     try {
-      await cancelReservation(reservaId, "STUDENT", "Cancelación por el alumno", user.id);
+      await cancelReservation(reservaId, "STUDENT", "Cancelacion por el alumno", user.id);
       alert("Clase cancelada exitosamente");
       fetchClasses();
-    } catch (error) {
-      console.error("Error al cancelar:", error);
+    } catch (err) {
+      console.error("Error al cancelar:", err);
       alert("No se pudo cancelar la clase");
     }
   };
+
+  const filteredClasses = classes.filter((cls) => cls.status === activeFilter);
 
   return (
     <div className={styles.page}>
       <AppNavbar title="NextWord" navItems={STUDENT_NAV} activeItem="Clases" />
 
       <main className={styles.main}>
-        {/* ── Título y Subtítulo ── */}
         <section className={styles.headerSection}>
           <h1 className={styles.title}>Mis clases</h1>
           <p className={styles.subtitle}>Revisa tus clases con facilidad</p>
         </section>
 
         <div className={styles.dashboardContainer}>
-
-          {/* ── Tabs / Filtros ── */}
           <section className={styles.filterSection}>
             <div className={styles.filterButtons}>
               {STATUS_FILTERS.map((filter) => (
@@ -105,33 +131,33 @@ const StudentClassesView = () => {
 
           <div className={styles.divider} />
 
-          {/* ── Lista de clases ── */}
           <section className={styles.contentSection}>
             {loading ? (
               <p className={styles.empty}>Cargando clases...</p>
-            ) : classes.length === 0 ? (
-              <p className={styles.empty}>No hay clases en esta categoría todavía.</p>
+            ) : error ? (
+              <p className={styles.empty}>{error}</p>
+            ) : filteredClasses.length === 0 ? (
+              <p className={styles.empty}>No hay clases en esta categoria todavia.</p>
             ) : (
               <div className={styles.classesList}>
-                {classes.map((cls) => (
+                {filteredClasses.map((cls) => (
                   <article key={cls.id} className={styles.classCard}>
-                    {/* Foto */}
-                    <img
-                      className={styles.teacherAvatar}
-                      src={cls.teacherAvatar}
-                      alt={cls.teacher}
-                    />
+                    {cls.teacherAvatar ? (
+                      <img className={styles.teacherAvatar} src={cls.teacherAvatar} alt={cls.teacher} />
+                    ) : (
+                      <div className={styles.teacherAvatarInitials}>
+                        {cls.teacher?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
+                      </div>
+                    )}
 
-                    {/* Información Central */}
                     <div className={styles.classInfo}>
                       <h3 className={styles.classSubject}>{cls.subject}</h3>
                       <p className={styles.classMeta}>Docente: {cls.teacher}</p>
                       <p className={styles.classMeta}>Duracion: {cls.duration}</p>
                     </div>
 
-                    {/* Botones Derecha */}
                     <div className={styles.classActions}>
-                      {activeFilter === "Proximas" && (
+                      {activeFilter === "Pendientes" && (
                         <>
                           <Button
                             variant="primary"

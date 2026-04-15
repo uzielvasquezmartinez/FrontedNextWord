@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       name,
       id: me.id,
       photo: me.profilePicture, // Opcional: añadir foto si el sidebar la usa
-      walletBalance: me.walletBalance || 0 // 🌟 Añadido para mostrar el saldo
+      walletBalance: me.walletBalance ?? me.saldoFavor ?? me.saldo_favor ?? 0
     };
     localStorage.setItem("user", JSON.stringify(loggedUser));
     setUser(loggedUser);
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     if (!token) return;
 
     try {
-      const meRes = await userService.getMe();
+      const meRes = await userService.getUserAuth();
       saveUserProfile(meRes.data, token);
     } catch (error) {
       console.error("Error sincronizando perfil:", error);
@@ -77,54 +77,52 @@ export const AuthProvider = ({ children }) => {
 
   // ── Login ──────────────────────────────────────────────────────
   const login = async (email, password) => {
-    if (!email || !password)
-      return { success: false, message: "Completa todos los campos." };
-
     try {
-      // 1. Obtiene el token
+      // 1. Obtener Token
       const res = await authService.login(email, password);
       const token = res.data.token;
-
-      // 2. Guarda el token para que el interceptor lo use
       localStorage.setItem("token", token);
 
-      // 3. Obtener datos y persistir
-      const meRes = await userService.getMe();
-      const loggedUser = saveUserProfile(meRes.data, token);
+      // 2. Obtener datos de la cuenta (UserController -> /api/users/me)
+      const meRes = await userService.getUserAuth();
+      const rawData = meRes.data; // { id, email, fullName, roleId }
 
-      // 4. Redirige según el rol
-      navigate(ROLE_REDIRECTS[loggedUser.role] ?? "/login");
+      // 3. Traducir roleId usando tu mapa
+      const userRole = ROLE_MAP[rawData.roleId]; // resultará en "admin", "teacher" o "student"
+
+      // 4. Cargar perfil extendido (Evita el 404 al filtrar por rol)
+      let profileData = {};
+      if (userRole === "student") {
+        const studRes = await userService.getStudentProfile();
+        profileData = studRes.data;
+      } else if (userRole === "teacher") {
+        const teachRes = await userService.getTeacherProfile();
+        profileData = teachRes.data;
+      }
+      // Si es "admin", no entra a ninguno y no dispara peticiones innecesarias
+
+      // 5. Consolidar el usuario y guardar
+      const finalUser = {
+        ...rawData,
+        ...profileData,
+        role: userRole
+      };
+
+      saveUserProfile(finalUser, token); // Función que guarda en state y localStorage
+
+      // 6. Redirigir usando tu ROLE_REDIRECTS
+      const path = ROLE_REDIRECTS[userRole] || "/login";
+      navigate(path);
+
       return { success: true };
 
     } catch (error) {
-      // Limpia el token si algo falla
+      console.error("Error en el login centralizado:", error);
       localStorage.removeItem("token");
-      const message = error.response?.data?.message
-        ?? error.response?.data
-        ?? "Credenciales incorrectas.";
-      return { success: false, message };
+      return { success: false, message: "No se pudo iniciar sesión." };
     }
   };
 
-  // ── Mock Login (Solo para saltar el login en desarrollo) ───────
-  const mockLogin = (role = "student") => {
-    // Creamos un usuario falso respetando la estructura de tu app
-    const mockUser = {
-      token: "mock-token-desarrollo-123",
-      email: `test@${role}.com`,
-      role: role,
-      name: `Uzi (${role})`,
-      id: 999
-    };
-
-    // Lo guardamos en localStorage para que persista si recargas la página
-    localStorage.setItem("token", mockUser.token);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    setUser(mockUser);
-
-    // Redirigimos usando tu propio mapa de rutas
-    navigate(ROLE_REDIRECTS[role]);
-  };
 
   // ── Registro Estudiante ────────────────────────────────────────
   const registerStudent = async (data) => {
@@ -214,7 +212,6 @@ export const AuthProvider = ({ children }) => {
       user,
       login,
       refreshUser,
-      mockLogin,
       registerStudent,
       registerTeacher,
       forgotPassword,

@@ -25,6 +25,13 @@ const STUDENT_NAV = [
   { label: "Mensajes",  path: "/student/messages"  },
 ];
 
+const toArray = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.content)) return payload.content;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
 // 2. AGREGA ESTOS ESTADOS JUSTO DEBAJO DE TUS OTROS ESTADOS
   
   const StudentScheduleView = () => {
@@ -58,14 +65,15 @@ const STUDENT_NAV = [
       try {
         setLoadingTeachers(true);
         const response = await teacherService.getTeachers();
-        
-        const mappedTeachers = response.data.map(t => ({
+        const teacherRows = toArray(response.data);
+
+        const mappedTeachers = teacherRows.map(t => ({
           id: t.id,
           name: t.fullName, 
           rating: t.averageRating ?? 0,
           classes: t.completedClasses ?? 0, 
           hourlyRate: t.hourlyRate ?? 25, 
-          avatar: t.profilePicture || "https://i.pravatar.cc/150?u=" + t.id, 
+          avatar: t.profilePicture, 
           bio: t.professionalDescription ?? "Sin descripción profesional.",
           education: t.certifications ?? "No especificada",
           experience: t.yearsOfExperience ? `${t.yearsOfExperience} años de experiencia` : "Experiencia no especificada",
@@ -100,8 +108,9 @@ const STUDENT_NAV = [
           `${today.getFullYear() + 1}-12-31`, 
           activeTeacher.id
         );
-        
-        const mappedSchedules = response.data.map(slot => ({
+
+        const slotRows = toArray(response.data);
+        const mappedSchedules = slotRows.map(slot => ({
           id: slot.slotId, 
           date: slot.slotDate,         
           start: slot.startTime,   
@@ -175,7 +184,7 @@ const handleDayClick = ({ day, currentYear, currentMonth }) => {
                 />
                 <div>
                   <span className={styles.activeTeacherName}>{activeTeacher.name}</span>
-                  <span className={styles.activeTeacherPrice}>${activeTeacher.hourlyRate}/hr</span>
+                  <span className={styles.activeTeacherPrice}>{activeTeacher.hourlyRate} créditos/hr</span>
                 </div>
               </div>
               <div className={styles.activeTeacherActions}>

@@ -8,10 +8,19 @@ import TeacherCard from "../../components/Student/TeacherCard/TeacherCard";
 import TeacherProfileModal from "../../components/Student/TeacherProfileModal/TeacherProfileModal";
 import { IconCalendar, IconClock, IconStar } from "../../components/Icons/Icons";
 import teacherService from "../../services/teacherService";
-import { getStudentAgenda } from "../../services/reservationService";
-import paymentService from "../../services/paymentService"; // Nuevo servicio
+import paymentService from "../../services/paymentService";
 import styles from "./StudentDashboardView.module.css";
-// ── Navegación ───────────────────────────────────────────────────
+import api from "../../services/Api";
+import userService from "../../services/userService";
+import { getMyReservations } from "../../services/reservationService";
+
+const toArray = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.content)) return payload.content;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
 const STUDENT_NAV = [
   { label: "Inicio", path: "/student/dashboard" },
   { label: "Horario", path: "/student/schedule" },
@@ -19,16 +28,16 @@ const STUDENT_NAV = [
   { label: "Mensajes", path: "/student/messages" },
 ];
 
-// ── Datos mock para KPIs ─────────────────────────────────────────
+// ── Valores iniciales de KPIs (se actualizan con datos reales) ───
 const KPIS_INITIAL = [
   { id: "next", label: "Próxima Capacitación", value: "Pendiente", icon: <IconCalendar /> },
   { id: "completed", label: "Clases Completadas", value: "0", icon: <IconCalendar /> },
-  { id: "credits", label: "Saldo Disponible", value: "$0.00", icon: <IconStar /> },
+  { id: "credits", label: "Créditos Disponibles", value: "0", icon: <IconStar /> },
 ];
 
 // ── Componente principal ─────────────────────────────────────────
 const StudentDashboard = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [teachers, setTeachers] = useState([]);
@@ -45,60 +54,90 @@ const StudentDashboard = () => {
   const [loadingAgenda, setLoadingAgenda] = useState(true);
   const [kpis, setKpis] = useState(KPIS_INITIAL);
 
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // 1. Cargar profesores
-        const resTeachers = await teacherService.getTeachers();
-        const mappedTeachers = resTeachers.data.slice(0, 4).map(t => ({
-          id: t.id,
-          name: t.fullName,
-          rating: t.averageRating ?? 0,
-          classes: t.completedClasses ?? 0,
-          hourlyRate: t.hourlyRate ?? 25,
-          avatar: t.profilePicture || `https://i.pravatar.cc/150?u=${t.id}`,
-          bio: t.professionalDescription ?? "Sin descripción profesional.",
-          education: t.certifications ?? "No especificada",
-          experience: t.yearsOfExperience ? `${t.yearsOfExperience} años de experiencia` : "Experiencia no especificada",
-        }));
-        setTeachers(mappedTeachers);
-
-        // 2. Cargar agenda y próxima capacitación
         setLoadingAgenda(true);
-        const resAgenda = await getStudentAgenda();
-        if (resAgenda.data && resAgenda.data.length > 0) {
-          // Asumimos que la API devuelve los eventos ordenados por fecha
-          const soonest = resAgenda.data[0];
-          setNextClass({
-            subject: soonest.subject || "Clase de Inglés",
-            teacher: soonest.teacherName || "Tu profesor",
-            duration: "50 min",
-            meetUrl: soonest.meetUrl || "#",
-            date: soonest.slotDate,
-            time: soonest.startTime
-          });
-
-          // Actualizar KPI de próxima fecha
-          setKpis(prev => prev.map(k =>
-            k.id === "next" ? { ...k, value: soonest.slotDate } : k
-          ));
+        let saldoReal = 0;
+        try {
+          const meResponse = await userService.getStudentProfile();
+          saldoReal = meResponse.data.walletBalance || 0;
+        } catch (e) {
+          console.error("Error al obtener el saldo:", e);
         }
+
+        // 2. Refrescar contexto del usuario (opcional si ya usamos userService)
+        await refreshUser();
+
+        // 3. Cargar Profesores
+        try {
+          const resTeachers = await teacherService.getTeachers();
+          const teacherRows = toArray(resTeachers.data);
+          const mappedTeachers = teacherRows.slice(0, 4).map(t => ({
+            id: t.id,
+            name: t.fullName,
+            rating: t.averageRating ?? 0,
+            classes: t.completedClasses ?? 0,
+            hourlyRate: t.hourlyRate ?? 25,
+            avatar: t.profilePicture,
+            bio: t.professionalDescription ?? "Sin descripción profesional.",
+            education: t.certifications ?? "No especificada",
+            experience: t.yearsOfExperience ? `${t.yearsOfExperience} años de experiencia` : "Experiencia no especificada",
+          }));
+          setTeachers(mappedTeachers);
+        } catch (e) {
+          console.error("Error al cargar profesores:", e);
+        }
+
+        // 4. Cargar Agenda (Pendientes)
+        let proximaFecha = "Pendiente";
+        try {
+          const resAgenda = await getMyReservations("pendientes");
+          const agendaRows = toArray(resAgenda.data);
+          if (agendaRows.length > 0) {
+            const soonest = agendaRows[0];
+
+            setNextClass({
+              subject: soonest.topic || "Clase de Inglés",
+              // Ajustamos el mapeo: intentamos con teacherName primero
+              teacher: soonest.teacherName || soonest.profeFullName || "Profesor asignado",
+              duration: "50 min",
+              meetUrl: soonest.meetLink || "https://meet.google.com/landing",
+              date: soonest.date || soonest.slotDate || "Pendiente",
+              time: soonest.startTime || ""
+            });
+
+            proximaFecha = soonest.date || soonest.slotDate || "Pendiente";
+          }
+        } catch (e) {
+          console.error("Error en agenda (pendientes):", e);
+        }
+
+        // 5. Cargar Clases Completadas
+        let completedCount = 0;
+        try {
+          const resCompleted = await getMyReservations("Completadas");
+          completedCount = toArray(resCompleted.data).length;
+        } catch (e) {
+          console.error("Error al cargar clases completadas:", e);
+        }
+
+        // 6. Actualizar TODOS los KPIs al mismo tiempo (Evita parpadeos en la UI)
+        setKpis([
+          { id: "next", label: "Próxima Capacitación", value: proximaFecha, icon: <IconCalendar /> },
+          { id: "completed", label: "Clases Completadas", value: `${completedCount}`, icon: <IconCalendar /> },
+          { id: "credits", label: "Créditos Disponibles", value: `${saldoReal}`, icon: <IconStar /> },
+        ]);
+
       } catch (err) {
-        console.error("Error fetching dashboard data:", err);
+        console.error("Error crítico global cargando el dashboard:", err);
       } finally {
         setLoading(false);
         setLoadingAgenda(false);
-
-        // Sincronizar KPI de Saldo con el usuario real
-        if (user) {
-          setKpis(prev => prev.map(k =>
-            k.id === "credits" ? { ...k, value: `$${user.walletBalance || 0}` } : k
-          ));
-        }
       }
     };
-
     fetchDashboardData();
   }, []);
 
@@ -121,9 +160,7 @@ const StudentDashboard = () => {
       setPaymentId("");
 
       // Opcional: Recargar la página o actualizar el contexto para ver el nuevo saldo
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      await fetchDashboardData();
 
     } catch (err) {
       setClaimStatus({

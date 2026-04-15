@@ -9,14 +9,14 @@ const TeacherProfileModal = ({ teacher, onClose, onViewSchedule }) => {
 
   const handleMessageClick = () => {
     // Redirige a mensajes pasando el objeto del profesor en el estado de navegación
-    navigate("/student/messages", { 
-      state: { 
+    navigate("/student/messages", {
+      state: {
         selectedTeacher: {
           id: teacher.id,
           name: teacher.name || teacher.fullName || "Profesor",
           avatar: teacher.avatar
-        } 
-      } 
+        }
+      }
     });
   };
 
@@ -27,11 +27,13 @@ const TeacherProfileModal = ({ teacher, onClose, onViewSchedule }) => {
         <button className={styles.closeBtn} onClick={onClose}>✕</button>
 
         <div className={styles.header}>
-          <img
-            className={styles.avatar}
-            src={teacher.avatar ?? `https://i.pravatar.cc/150?img=${teacher.id}`}
-            alt={teacher.name}
-          />
+          {teacher.avatar ? (
+            <img className={styles.avatar} src={teacher.avatar} alt={teacher.name} />
+          ) : (
+            <div className={styles.avatarInitials}>
+              {teacher.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
+            </div>
+          )}
           <h2 className={styles.name}>{teacher.name}</h2>
           <div className={styles.rating}>
             <IconStar />
@@ -43,8 +45,8 @@ const TeacherProfileModal = ({ teacher, onClose, onViewSchedule }) => {
               <span className={styles.statLabel}>Clases</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statValue}>${teacher.hourlyRate}</span>
-              <span className={styles.statLabel}>Por hora</span>
+              <span className={styles.statValue}>{teacher.hourlyRate}</span>
+              <span className={styles.statLabel}>Créditos</span>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ export const useChatWebSocket = (userId, onMessageReceived) => {
 
   const getWebSocketUrl = useCallback(() => {
     let baseURL = api.defaults.baseURL || "http://localhost:8080/api";
-    
+
     // Si la URL es relativa (ej: /api), la convertimos en absoluta usando el host actual
     if (baseURL.startsWith("/")) {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -29,13 +29,11 @@ export const useChatWebSocket = (userId, onMessageReceived) => {
       brokerURL: getWebSocketUrl(),
       reconnectDelay: 5000,
       onConnect: () => {
-        console.log(`✅ WebSocket conectado para el usuario: ${userId}`);
         client.subscribe(`/topic/messages`, (frame) => {
           const message = JSON.parse(frame.body);
           if (onMessageReceived) onMessageReceived(message);
         });
       },
-      onDisconnect: () => console.log("❌ WebSocket desconectado"),
       onStompError: (frame) => console.error("STOMP error:", frame),
     });
 

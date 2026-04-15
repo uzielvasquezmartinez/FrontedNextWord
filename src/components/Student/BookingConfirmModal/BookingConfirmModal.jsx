@@ -25,7 +25,7 @@ const BookingConfirmModal = ({ slot, teacher, onConfirm, onClose }) => {
             />
             <div>
               <span className={styles.teacherName}>{teacher.name}</span>
-              <span className={styles.teacherPrice}>${teacher.hourlyRate}/hr</span>
+              <span className={styles.teacherPrice}>{teacher.hourlyRate} créditos/hr</span>
             </div>
           </div>
 
@@ -51,15 +51,15 @@ const BookingConfirmModal = ({ slot, teacher, onConfirm, onClose }) => {
           <div className={styles.paymentSummary}>
             <div className={styles.paymentRow}>
               <span>Clase de 1 hora</span>
-              <span>${teacher.hourlyRate}</span>
+              <span>{teacher.hourlyRate} créditos</span>
             </div>
             <div className={styles.paymentRow}>
               <span>Comisión de servicio</span>
-              <span>$0</span>
+              <span>0 créditos</span>
             </div>
             <div className={`${styles.paymentRow} ${styles.paymentTotal}`}>
               <span>Total</span>
-              <span>${teacher.hourlyRate}</span>
+              <span>{teacher.hourlyRate} créditos</span>
             </div>
           </div>
 
