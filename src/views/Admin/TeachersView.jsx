@@ -123,22 +123,10 @@ const TeachersView = () => {
       if (activeTab === "teachers") {
         await adminService.updateProfile(editModal.id, {
           fullName: editForm.name?.trim() || "",
-          phoneNumber: "",
-          profilePicture: "",
-          status: editForm.status
+          phoneNumber: editForm.phoneNumber?.trim() || "",
+          profilePicture: editForm.profilePicture?.trim() || "",
         });
-        setTeachers((prev) =>
-          prev.map((p) =>
-            p.id === editModal.id
-              ? {
-                ...p,
-                name: editForm.name,
-                email: editForm.email,
-                status: editForm.status
-              }
-              : p
-          )
-        );
+        setTeachers((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
       } else {
         setStudents((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
       }
@@ -169,7 +157,7 @@ const TeachersView = () => {
 
     // 3. Validar Password
     if (!newForm.password.trim() || newForm.password.length < 6) {
-      errors.password = "MÃ­nimo 6 caracteres.";
+      errors.password = "Maximo 6 caracteres.";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -307,8 +295,7 @@ const TeachersView = () => {
           </div>
         </Modal>
       )}
-/*
-      */
+
       {/* MODAL: EDITAR */}
       {editModal && (
         <Modal title="Editar" onClose={() => { setEditModal(null); setFormErrors({}); }}>
@@ -324,6 +311,11 @@ const TeachersView = () => {
               <input className={styles.formInput} value={editForm.email} onChange={(e) => { setEditForm((p) => ({ ...p, email: e.target.value })); if (formErrors.email) setFormErrors(p => ({ ...p, email: null })); }} />
               {formErrors.email && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.email}</div>}
             </div>
+            <label className={styles.formLabel}>Estado</label>
+            <select className={styles.formInput} value={editForm.status} onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
             {formErrors.general && <div style={{ color: '#dc3545', fontSize: '0.85rem' }}>{formErrors.general}</div>}
           </div>
           <div className={styles.modalFooter}>
@@ -377,7 +369,7 @@ const TeachersView = () => {
               <input
                 type="password"
                 className={styles.formInput}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="MÃ­nimo 6 caracteres"
                 value={newForm.password}
                 onChange={(e) => {
                   setNewForm((p) => ({ ...p, password: e.target.value }));
