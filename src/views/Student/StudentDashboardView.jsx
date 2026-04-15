@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import AppNavbar from "../../components/AppNavbar/AppNavbar";
@@ -10,7 +10,6 @@ import { IconCalendar, IconClock, IconStar } from "../../components/Icons/Icons"
 import teacherService from "../../services/teacherService";
 import paymentService from "../../services/paymentService";
 import styles from "./StudentDashboardView.module.css";
-import api from "../../services/Api";
 import userService from "../../services/userService";
 import { getMyReservations } from "../../services/reservationService";
 
@@ -28,14 +27,12 @@ const STUDENT_NAV = [
   { label: "Mensajes", path: "/student/messages" },
 ];
 
-// ── Valores iniciales de KPIs (se actualizan con datos reales) ───
 const KPIS_INITIAL = [
-  { id: "next", label: "Próxima Capacitación", value: "Pendiente", icon: <IconCalendar /> },
+  { id: "next", label: "Proxima Capacitacion", value: "Pendiente", icon: <IconCalendar /> },
   { id: "completed", label: "Clases Completadas", value: "0", icon: <IconCalendar /> },
-  { id: "credits", label: "Créditos Disponibles", value: "0", icon: <IconStar /> },
+  { id: "credits", label: "Creditos Disponibles", value: "0", icon: <IconStar /> },
 ];
 
-// ── Componente principal ─────────────────────────────────────────
 const StudentDashboard = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
@@ -43,103 +40,97 @@ const StudentDashboard = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados para Reclamar Saldo
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [paymentId, setPaymentId] = useState("");
   const [claiming, setClaiming] = useState(false);
   const [claimStatus, setClaimStatus] = useState({ type: "", message: "" });
 
-  // Estados para la próxima capacitación
   const [nextClass, setNextClass] = useState(null);
   const [loadingAgenda, setLoadingAgenda] = useState(true);
   const [kpis, setKpis] = useState(KPIS_INITIAL);
 
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadingAgenda(true);
+
+      let saldoReal = 0;
+      try {
+        const meResponse = await userService.getStudentProfile();
+        saldoReal = meResponse.data.walletBalance || 0;
+      } catch (error) {
+        console.error("Error al obtener el saldo:", error);
+      }
+
+      await refreshUser();
+
+      try {
+        const resTeachers = await teacherService.getTeachers();
+        const teacherRows = toArray(resTeachers.data);
+        const mappedTeachers = teacherRows.map((teacher) => ({
+          id: teacher.id,
+          name: teacher.fullName,
+          rating: teacher.averageRating ?? 0,
+          classes: teacher.completedClasses ?? 0,
+          hourlyRate: teacher.hourlyRate ?? 25,
+          avatar: teacher.profilePicture,
+          bio: teacher.professionalDescription ?? "Sin descripcion profesional.",
+          education: teacher.certifications ?? "No especificada",
+          experience: teacher.yearsOfExperience
+            ? `${teacher.yearsOfExperience} anos de experiencia`
+            : "Experiencia no especificada",
+        }));
+        setTeachers(mappedTeachers);
+      } catch (error) {
+        console.error("Error al cargar profesores:", error);
+      }
+
+      let proximaFecha = "Pendiente";
+      try {
+        const resAgenda = await getMyReservations("pendientes");
+        const agendaRows = toArray(resAgenda.data);
+        if (agendaRows.length > 0) {
+          const soonest = agendaRows[0];
+          setNextClass({
+            subject: soonest.topic || "Clase de Ingles",
+            teacher: soonest.teacherName || soonest.profeFullName || "Profesor asignado",
+            duration: "50 min",
+            meetUrl: soonest.meetLink || "https://meet.google.com/landing",
+            date: soonest.date || soonest.slotDate || "Pendiente",
+            time: soonest.startTime || "",
+          });
+          proximaFecha = soonest.date || soonest.slotDate || "Pendiente";
+        } else {
+          setNextClass(null);
+        }
+      } catch (error) {
+        console.error("Error en agenda (pendientes):", error);
+      }
+
+      let completedCount = 0;
+      try {
+        const resCompleted = await getMyReservations("Completadas");
+        completedCount = toArray(resCompleted.data).length;
+      } catch (error) {
+        console.error("Error al cargar clases completadas:", error);
+      }
+
+      setKpis([
+        { id: "next", label: "Proxima Capacitacion", value: proximaFecha, icon: <IconCalendar /> },
+        { id: "completed", label: "Clases Completadas", value: `${completedCount}`, icon: <IconCalendar /> },
+        { id: "credits", label: "Creditos Disponibles", value: `${saldoReal}`, icon: <IconStar /> },
+      ]);
+    } catch (error) {
+      console.error("Error critico global cargando el dashboard:", error);
+    } finally {
+      setLoading(false);
+      setLoadingAgenda(false);
+    }
+  }, [refreshUser]);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setLoadingAgenda(true);
-        let saldoReal = 0;
-        try {
-          const meResponse = await userService.getStudentProfile();
-          saldoReal = meResponse.data.walletBalance || 0;
-        } catch (e) {
-          console.error("Error al obtener el saldo:", e);
-        }
-
-        // 2. Refrescar contexto del usuario (opcional si ya usamos userService)
-        await refreshUser();
-
-        // 3. Cargar Profesores
-        try {
-          const resTeachers = await teacherService.getTeachers();
-          const teacherRows = toArray(resTeachers.data);
-          const mappedTeachers = teacherRows.slice(0, 4).map(t => ({
-            id: t.id,
-            name: t.fullName,
-            rating: t.averageRating ?? 0,
-            classes: t.completedClasses ?? 0,
-            hourlyRate: t.hourlyRate ?? 25,
-            avatar: t.profilePicture,
-            bio: t.professionalDescription ?? "Sin descripción profesional.",
-            education: t.certifications ?? "No especificada",
-            experience: t.yearsOfExperience ? `${t.yearsOfExperience} años de experiencia` : "Experiencia no especificada",
-          }));
-          setTeachers(mappedTeachers);
-        } catch (e) {
-          console.error("Error al cargar profesores:", e);
-        }
-
-        // 4. Cargar Agenda (Pendientes)
-        let proximaFecha = "Pendiente";
-        try {
-          const resAgenda = await getMyReservations("pendientes");
-          const agendaRows = toArray(resAgenda.data);
-          if (agendaRows.length > 0) {
-            const soonest = agendaRows[0];
-
-            setNextClass({
-              subject: soonest.topic || "Clase de Inglés",
-              // Ajustamos el mapeo: intentamos con teacherName primero
-              teacher: soonest.teacherName || soonest.profeFullName || "Profesor asignado",
-              duration: "50 min",
-              meetUrl: soonest.meetLink || "https://meet.google.com/landing",
-              date: soonest.date || soonest.slotDate || "Pendiente",
-              time: soonest.startTime || ""
-            });
-
-            proximaFecha = soonest.date || soonest.slotDate || "Pendiente";
-          }
-        } catch (e) {
-          console.error("Error en agenda (pendientes):", e);
-        }
-
-        // 5. Cargar Clases Completadas
-        let completedCount = 0;
-        try {
-          const resCompleted = await getMyReservations("Completadas");
-          completedCount = toArray(resCompleted.data).length;
-        } catch (e) {
-          console.error("Error al cargar clases completadas:", e);
-        }
-
-        // 6. Actualizar TODOS los KPIs al mismo tiempo (Evita parpadeos en la UI)
-        setKpis([
-          { id: "next", label: "Próxima Capacitación", value: proximaFecha, icon: <IconCalendar /> },
-          { id: "completed", label: "Clases Completadas", value: `${completedCount}`, icon: <IconCalendar /> },
-          { id: "credits", label: "Créditos Disponibles", value: `${saldoReal}`, icon: <IconStar /> },
-        ]);
-
-      } catch (err) {
-        console.error("Error crítico global cargando el dashboard:", err);
-      } finally {
-        setLoading(false);
-        setLoadingAgenda(false);
-      }
-    };
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   const userName = user?.name?.split(" ")[0] ?? "Estudiante";
 
@@ -148,8 +139,8 @@ const StudentDashboard = () => {
     navigate("/student/schedule", { state: { teacher } });
   };
 
-  const handleClaimPayment = async (e) => {
-    e.preventDefault();
+  const handleClaimPayment = async (event) => {
+    event.preventDefault();
     if (!paymentId) return;
 
     try {
@@ -158,14 +149,11 @@ const StudentDashboard = () => {
       const response = await paymentService.claimPayment(paymentId);
       setClaimStatus({ type: "success", message: response.data.message });
       setPaymentId("");
-
-      // Opcional: Recargar la página o actualizar el contexto para ver el nuevo saldo
       await fetchDashboardData();
-
-    } catch (err) {
+    } catch (error) {
       setClaimStatus({
         type: "error",
-        message: err.response?.data?.error || "Error al reclamar el pago. Verifica el ID."
+        message: error.response?.data?.error || "Error al reclamar el pago. Verifica el ID.",
       });
     } finally {
       setClaiming(false);
@@ -177,8 +165,6 @@ const StudentDashboard = () => {
       <AppNavbar title="NextWord" navItems={STUDENT_NAV} activeItem="Inicio" />
 
       <main className={styles.main}>
-
-        {/* ── Banner ── */}
         <section className={styles.bannerCard}>
           <div className={styles.bannerText}>
             <h1>Bienvenido, {userName}</h1>
@@ -194,7 +180,6 @@ const StudentDashboard = () => {
           </div>
         </section>
 
-        {/* ── KPIs ── */}
         <section className={styles.kpiGrid}>
           {kpis.map((kpi) => (
             <article key={kpi.id} className={styles.kpiCard}>
@@ -207,11 +192,10 @@ const StudentDashboard = () => {
           ))}
         </section>
 
-        {/* ── Próxima capacitación ── */}
         <section className={styles.nextClassSection}>
           <div className={styles.nextClassHeading}>
             <span className={styles.nextClassTag}>
-              <IconClock /> Próxima capacitación
+              <IconClock /> Proxima capacitacion
             </span>
           </div>
 
@@ -226,18 +210,16 @@ const StudentDashboard = () => {
                 <div>
                   <h3>{nextClass.subject}</h3>
                   <p>Docente: {nextClass.teacher}</p>
-                  <p>Fecha: {nextClass.date} · {nextClass.time}</p>
+                  <p>
+                    Fecha: {nextClass.date} - {nextClass.time}
+                  </p>
                 </div>
               </div>
               <div className={styles.nextClassActions}>
-                <Button
-                  variant="primary"
-                  fullWidth
-                  onClick={() => window.open(nextClass.meetUrl, "_blank")}
-                >
+                <Button variant="primary" fullWidth onClick={() => window.open(nextClass.meetUrl, "_blank")}>
                   Unirse
                 </Button>
-                <Button variant="secondary" fullWidth onClick={() => alert("Función de cancelación próximamente")}>
+                <Button variant="secondary" fullWidth onClick={() => alert("Funcion de cancelacion proximamente")}>
                   Cancelar
                 </Button>
               </div>
@@ -249,7 +231,6 @@ const StudentDashboard = () => {
           )}
         </section>
 
-        {/* ── Profesores recomendados ── */}
         <section className={styles.teachersSection}>
           <h2 className={styles.teachersTitle}>Profesores recomendados</h2>
           {loading ? (
@@ -257,19 +238,13 @@ const StudentDashboard = () => {
           ) : (
             <div className={styles.teachersGrid}>
               {teachers.map((teacher) => (
-                <TeacherCard
-                  key={teacher.id}
-                  teacher={teacher}
-                  onViewMore={(t) => setSelectedTeacher(t)}
-                />
+                <TeacherCard key={teacher.id} teacher={teacher} onViewMore={(item) => setSelectedTeacher(item)} />
               ))}
             </div>
           )}
         </section>
-
       </main>
 
-      {/* ── Modal perfil del profesor ── */}
       {selectedTeacher && (
         <TeacherProfileModal
           teacher={selectedTeacher}
@@ -277,13 +252,17 @@ const StudentDashboard = () => {
           onViewSchedule={handleViewSchedule}
         />
       )}
-      {/* ── Modal Reclamar Saldo ── */}
+
       {showClaimModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.claimModal}>
-            <button className={styles.closeBtn} onClick={() => setShowClaimModal(false)}>×</button>
+            <button className={styles.closeBtn} onClick={() => setShowClaimModal(false)} type="button">
+              X
+            </button>
             <h2>Reclamar Saldo</h2>
-            <p>Ingresa el <b>ID de Operación</b> que aparece en tu comprobante de Mercado Pago.</p>
+            <p>
+              Ingresa el <b>ID de Operacion</b> que aparece en tu comprobante de Mercado Pago.
+            </p>
 
             <form onSubmit={handleClaimPayment}>
               <input
@@ -291,33 +270,38 @@ const StudentDashboard = () => {
                 className={styles.claimInput}
                 placeholder="Ej: 1234567890"
                 value={paymentId}
-                onChange={(e) => setPaymentId(e.target.value)}
+                onChange={(event) => setPaymentId(event.target.value)}
                 required
               />
 
               {claimStatus.message && (
-                <div className={`${styles.statusMsg} ${styles[claimStatus.type]}`}>
-                  {claimStatus.message}
-                </div>
+                <div className={`${styles.statusMsg} ${styles[claimStatus.type]}`}>{claimStatus.message}</div>
               )}
 
               <div className={styles.modalActions}>
                 <Button variant="primary" fullWidth type="submit" loading={claiming}>
                   Validar Pago
                 </Button>
-                <Button variant="outline" fullWidth onClick={() => setShowClaimModal(false)} disabled={claiming}>
+                <Button
+                  variant="outline"
+                  fullWidth
+                  onClick={() => setShowClaimModal(false)}
+                  disabled={claiming}
+                >
                   Cerrar
                 </Button>
               </div>
             </form>
 
             <p className={styles.helpText}>
-              ¿No tienes saldo? <a href="https://link.mercadopago.com.mx/prueba" target="_blank" rel="noreferrer">Paga aquí primero</a>
+              No tienes saldo?{" "}
+              <a href="https://link.mercadopago.com.mx/prueba" target="_blank" rel="noreferrer">
+                Paga aqui primero
+              </a>
             </p>
           </div>
         </div>
       )}
-
     </div>
   );
 };

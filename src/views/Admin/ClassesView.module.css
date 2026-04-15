@@ -49,12 +49,94 @@
   box-sizing: border-box;
 }
 
+.filtersPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 .filtersRow {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+.toolsRow {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 220px 220px 220px auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.dateField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.selectField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dateLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.dateInput {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: #374151;
+  background: #ffffff;
+  outline: none;
+}
+
+.dateInput:focus {
+  border-color: #2B58FE;
+}
+
+.selectInput {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: #374151;
+  background: #ffffff;
+  outline: none;
+  height: 45px;
+}
+
+.selectInput:focus {
+  border-color: #2B58FE;
+}
+
+.clearBtn {
+  height: 45px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0 1rem;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.86rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-base);
+}
+
+.clearBtn:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
 }
 
 .filterLabel {
@@ -328,6 +410,17 @@
   color: var(--color-text-body);
 }
 
+.detailLink {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.detailLink:hover {
+  text-decoration: underline;
+}
+
 .btnSecondary {
   padding: 0.55rem 1.25rem;
   background-color: transparent;
@@ -349,6 +442,11 @@
   .main {
     padding: 1.25rem 1rem;
   }
+
+  .toolsRow {
+    grid-template-columns: 1fr;
+  }
+
   .card {
     flex-wrap: wrap;
   }

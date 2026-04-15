@@ -132,28 +132,6 @@ const LoginView = () => {
             </button>
 
           </form>
-
-
-
-          <button
-            type="button"
-            onClick={() => mockLogin("admin")}
-            style={{
-              width: "100%",
-              padding: "0.8rem",
-              background: "#8e4bff",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            🚧 Entrar rápido como Profesor
-          </button>
-
-
-
           <p className={styles.registerText}>
             ¿No tienes una cuenta?{" "}
             <button

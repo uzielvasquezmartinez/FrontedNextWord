@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import adminService from "../../services/adminService"; // Asegúrate de que la ruta sea correcta
-// Importa tus íconos, componentes (AppNavbar, IconSearch, etc.) y estilos (styles) aquí
-import { useAuth } from "../../context/AuthContext";
+﻿import { useState, useEffect } from "react";
+import adminService from "../../services/AdminService"; // AsegÃºrate de que la ruta sea correcta
+// Importa tus Ã­conos, componentes (AppNavbar, IconSearch, etc.) y estilos (styles) aquÃ­
 import AppNavbar from "../../components/AppNavbar/AppNavbar"; import styles from "./TeachersView.module.css";
 import { IconEye, IconEdit, IconTrash, IconSearch, IconPlus } from "../../components/Icons/Icons";
 const ADMIN_NAV = [
@@ -11,19 +10,15 @@ const ADMIN_NAV = [
   { label: "Reportes", path: "/admin/reports" },
 ];
 
-// Mantenemos los estudiantes de prueba por ahora (hasta que conectes su endpoint)
-const INITIAL_STUDENTS = [
-  { id: 1, name: "Laura Salsedo", email: "laura@mail.com", date: "10-01-2026", status: "Activo" },
-  { id: 2, name: "Laura Dominguez", email: "ldomin@mail.com", date: "10-01-2026", status: "Activo" },
-  { id: 3, name: "Mariana García", email: "mariana@mail.com", date: "11-01-2026", status: "Inactivo" },
-];
+const ROLE_STUDENT = 1;
+const ROLE_TEACHER = 2;
 
 const Modal = ({ title, onClose, children }) => (
   <div className={styles.modalOverlay} onClick={onClose}>
     <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
       <div className={styles.modalHeader}>
         <h3 className={styles.modalTitle}>{title}</h3>
-        <button className={styles.modalClose} onClick={onClose}>✕</button>
+        <button className={styles.modalClose} onClick={onClose} type="button">X</button>
       </div>
       <div className={styles.modalBody}>{children}</div>
     </div>
@@ -36,7 +31,7 @@ const TeachersView = () => {
 
   // Estados para la data
   const [teachers, setTeachers] = useState([]);
-  const [students, setStudents] = useState(INITIAL_STUDENTS);
+  const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Estados de los Modales
@@ -47,44 +42,41 @@ const TeachersView = () => {
   const [newModal, setNewModal] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
-  // El payload exacto para el CreateTeacherRequest de tu backend
+  // El administrador solo captura los datos base de acceso del profesor.
   const [newForm, setNewForm] = useState({
     fullName: "",
     email: "",
     password: "",
-    specialization: "",
-    yearsOfExperience: 0
   });
-  const loadTeachers = async () => {
+  const loadDirectory = async () => {
     try {
       setIsLoading(true);
-      const res = await adminService.getTeachers();
+      const res = await adminService.getUserDirectory();
 
-      // Mapeamos lo que llega de UserDirectoryResponse a lo que tu tabla espera
-      const mappedTeachers = res.data.map(t => ({
-        id: t.userId,           // Coincide con 'userId' del record
-        name: t.fullName,       // Coincide con 'fullName' del record
-        email: t.email,         // Coincide con 'email' del record
-        // Formateamos la ZonedDateTime a algo legible (dd-mm-yyyy)
-        date: t.registrationDate ?
-          new Date(t.registrationDate).toLocaleDateString("es-MX").replaceAll("/", "-") :
-          "Sin fecha",
-        status: t.status || "Activo"
+      const rows = Array.isArray(res.data) ? res.data : [];
+      const mappedUsers = rows.map((u) => ({
+        id: u.userId,
+        name: u.fullName,
+        email: u.email,
+        roleId: u.roleId,
+        date: u.registrationDate
+          ? new Date(u.registrationDate).toLocaleDateString("es-MX").replaceAll("/", "-")
+          : "Sin fecha",
+        status: u.status || "Activo",
       }));
 
-      setTeachers(mappedTeachers);
+      setTeachers(mappedUsers.filter((u) => u.roleId === ROLE_TEACHER));
+      setStudents(mappedUsers.filter((u) => u.roleId === ROLE_STUDENT));
     } catch (error) {
-      console.error("Error al cargar profesores:", error);
+      console.error("Error al cargar directorio de usuarios:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  /*
   useEffect(() => {
-    loadTeachers();
+    loadDirectory();
   }, []);
-*/
   // Preparar datos para la tabla
   const data = activeTab === "teachers" ? teachers : students;
   const filtered = data.filter(
@@ -103,7 +95,7 @@ const TeachersView = () => {
   const openDelete = (id) => setDeleteConfirm(id);
 
   const handleDelete = () => {
-    // Aquí a futuro agregarás la llamada await adminService.deleteUser(deleteConfirm)
+    // AquÃ­ a futuro agregarÃ¡s la llamada await adminService.deleteUser(deleteConfirm)
     if (activeTab === "teachers") {
       setTeachers((prev) => prev.filter((p) => p.id !== deleteConfirm));
     } else {
@@ -112,10 +104,9 @@ const TeachersView = () => {
     setDeleteConfirm(null);
   };
 
-  const handleEditSave = () => {
-    // Aquí a futuro agregarás await adminService.updateProfile(...)
+  const handleEditSave = async () => {
     const errors = {};
-    const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexNombre = /^[a-zA-ZÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“ÃšÃ±Ã‘\s]+$/;
 
     if (!editForm.name.trim()) errors.name = "El nombre es requerido.";
     else if (!regexNombre.test(editForm.name.trim())) errors.name = "El nombre solo debe contener letras.";
@@ -128,17 +119,43 @@ const TeachersView = () => {
       return;
     }
 
-    if (activeTab === "teachers") {
-      setTeachers((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
-    } else {
-      setStudents((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
+    try {
+      if (activeTab === "teachers") {
+        await adminService.updateProfile(editModal.id, {
+          fullName: editForm.name?.trim() || "",
+          phoneNumber: "",
+          profilePicture: "",
+          status: editForm.status
+        });
+        setTeachers((prev) =>
+          prev.map((p) =>
+            p.id === editModal.id
+              ? {
+                ...p,
+                name: editForm.name,
+                email: editForm.email,
+                status: editForm.status
+              }
+              : p
+          )
+        );
+      } else {
+        setStudents((prev) => prev.map((p) => p.id === editModal.id ? { ...p, ...editForm } : p));
+      }
+
+      setEditModal(null);
+      setFormErrors({});
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      setFormErrors((prev) => ({
+        ...prev,
+        general: "No se pudo actualizar el perfil. Intenta nuevamente.",
+      }));
     }
-    setEditModal(null);
-    setFormErrors({});
   };
   const handleNewSave = async () => {
     const errors = {};
-    const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexNombre = /^[a-zA-ZÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“ÃšÃ±Ã‘\s]+$/;
 
     // 1. Validar Nombre
     if (!newForm.fullName.trim()) errors.fullName = "El nombre es requerido.";
@@ -152,11 +169,8 @@ const TeachersView = () => {
 
     // 3. Validar Password
     if (!newForm.password.trim() || newForm.password.length < 6) {
-      errors.password = "Mínimo 6 caracteres.";
+      errors.password = "MÃ­nimo 6 caracteres.";
     }
-
-    // NOTA: Eliminamos las validaciones de specialization y yearsOfExperience 
-    // porque el usuario ya no los ve en el modal.
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -171,7 +185,7 @@ const TeachersView = () => {
         password: newForm.password
       });
 
-      await loadTeachers(); // Recargar la tabla
+      await loadDirectory(); // Recargar la tabla
 
       setNewModal(false);
       // Limpiar el formulario solo con los campos base
@@ -181,20 +195,20 @@ const TeachersView = () => {
       console.error("Error al crear profesor:", error);
       // Opcional: Si el backend devuelve un 400 porque el correo ya existe
       if (error.response?.status === 400) {
-        setFormErrors({ email: "Este correo ya está registrado en el sistema." });
+        setFormErrors({ email: "Este correo ya estÃ¡ registrado en el sistema." });
       }
     }
   };
 
   return (
     <div className={styles.page}>
-      {/* Asumiendo que tus componentes AppNavbar y los iconos están importados arriba */}
+      {/* Asumiendo que tus componentes AppNavbar y los iconos estÃ¡n importados arriba */}
       <AppNavbar title="Panel de Administrador" navItems={ADMIN_NAV} activeItem="Profesores" />
 
       <main className={styles.main}>
         <div className={styles.toolbar}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>🔍</span> {/* Cambia por tu <IconSearch /> */}
+            <span className={styles.searchIcon}><IconSearch /></span>
             <input
               type="text"
               className={styles.searchInput}
@@ -207,7 +221,7 @@ const TeachersView = () => {
           <div className={styles.toolbarRight}>
             {activeTab === "teachers" && (
               <button className={styles.btnNew} onClick={() => { setNewModal(true); setFormErrors({}); }}>
-                + Nuevo Profesor {/* Cambia por tu <IconPlus /> */}
+                <IconPlus /> Nuevo Profesor
               </button>
             )}
             <div className={styles.toggle}>
@@ -256,9 +270,13 @@ const TeachersView = () => {
                     </td>
                     <td className={styles.td}>
                       <div className={styles.actions}>
-                        <button className={styles.btnAction} onClick={() => openView(person)} title="Ver detalle">👁️</button>
-                        <button className={`${styles.btnAction} ${styles.btnEdit}`} onClick={() => openEdit(person)} title="Editar">✏️</button>
-                        <button className={`${styles.btnAction} ${styles.btnDelete}`} onClick={() => openDelete(person.id)} title="Eliminar">🗑️</button>
+                        <button className={styles.btnAction} onClick={() => openView(person)} title="Ver detalle"><IconEye /></button>
+                        {activeTab === "teachers" && (
+                          <>
+                            <button className={`${styles.btnAction} ${styles.btnEdit}`} onClick={() => openEdit(person)} title="Editar"><IconEdit /></button>
+                            <button className={`${styles.btnAction} ${styles.btnDelete}`} onClick={() => openDelete(person.id)} title="Eliminar"><IconTrash /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -289,7 +307,8 @@ const TeachersView = () => {
           </div>
         </Modal>
       )}
-
+/*
+      */
       {/* MODAL: EDITAR */}
       {editModal && (
         <Modal title="Editar" onClose={() => { setEditModal(null); setFormErrors({}); }}>
@@ -305,11 +324,7 @@ const TeachersView = () => {
               <input className={styles.formInput} value={editForm.email} onChange={(e) => { setEditForm((p) => ({ ...p, email: e.target.value })); if (formErrors.email) setFormErrors(p => ({ ...p, email: null })); }} />
               {formErrors.email && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.email}</div>}
             </div>
-            <label className={styles.formLabel}>Estado</label>
-            <select className={styles.formInput} value={editForm.status} onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
+            {formErrors.general && <div style={{ color: '#dc3545', fontSize: '0.85rem' }}>{formErrors.general}</div>}
           </div>
           <div className={styles.modalFooter}>
             <button className={styles.btnSecondary} onClick={() => { setEditModal(null); setFormErrors({}); }}>Cancelar</button>
@@ -320,7 +335,14 @@ const TeachersView = () => {
 
       {/* MODAL: NUEVO PROFESOR (CONECTADO AL BACKEND Y DTO) */}
       {newModal && (
-        <Modal title="Nuevo Profesor" onClose={() => { setNewModal(false); setFormErrors({}); }}>
+        <Modal
+          title="Nuevo Profesor"
+          onClose={() => {
+            setNewModal(false);
+            setFormErrors({});
+            setNewForm({ fullName: "", email: "", password: "" });
+          }}
+        >
           <div className={styles.formGrid}>
             <label className={styles.formLabel}>Nombre</label>
             <div>
@@ -340,7 +362,7 @@ const TeachersView = () => {
             <div>
               <input
                 className={styles.formInput}
-                placeholder="correo@nextword.com"
+                placeholder="correo@nextword.com.mx"
                 value={newForm.email}
                 onChange={(e) => {
                   setNewForm((p) => ({ ...p, email: e.target.value }));
@@ -365,40 +387,18 @@ const TeachersView = () => {
               {formErrors.password && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.password}</div>}
             </div>
 
-            <label className={styles.formLabel}>Especialidad</label>
-            <div>
-              <input
-                className={styles.formInput}
-                placeholder="Ej. Gramática, Conversación..."
-                value={newForm.specialization}
-                onChange={(e) => {
-                  setNewForm((p) => ({ ...p, specialization: e.target.value }));
-                  if (formErrors.specialization) setFormErrors(p => ({ ...p, specialization: null }));
-                }}
-              />
-              {formErrors.specialization && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.specialization}</div>}
-            </div>
-
-            <label className={styles.formLabel}>Experiencia</label>
-            <div>
-              <input
-                type="number"
-                min="0"
-                className={styles.formInput}
-                placeholder="Años"
-                value={newForm.yearsOfExperience}
-                onChange={(e) => {
-                  setNewForm((p) => ({ ...p, yearsOfExperience: Number(e.target.value) }));
-                  if (formErrors.yearsOfExperience) setFormErrors(p => ({ ...p, yearsOfExperience: null }));
-                }}
-              />
-              {formErrors.yearsOfExperience && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '4px' }}>{formErrors.yearsOfExperience}</div>}
-            </div>
-
-            {/* Ocultamos el 'Estado' en la creación ya que tu Java AdminService siempre lo pone 'Activo' por defecto */}
           </div>
           <div className={styles.modalFooter}>
-            <button className={styles.btnSecondary} onClick={() => { setNewModal(false); setFormErrors({}); }}>Cancelar</button>
+            <button
+              className={styles.btnSecondary}
+              onClick={() => {
+                setNewModal(false);
+                setFormErrors({});
+                setNewForm({ fullName: "", email: "", password: "" });
+              }}
+            >
+              Cancelar
+            </button>
             <button className={styles.btnPrimary} onClick={handleNewSave}>Agregar Profesor</button>
           </div>
         </Modal>
@@ -419,3 +419,4 @@ const TeachersView = () => {
 };
 
 export default TeachersView;
+

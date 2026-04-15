@@ -11,7 +11,6 @@
   --color-border:        #e5e7eb;
 
 --bar-clases:   #2B58FE;
---bar-ingresos: #923CFF;
 
   --radius-sm:           8px;
   --radius-md:           14px;
@@ -152,6 +151,12 @@
   color: #fff;
 }
 
+.btnPdf:disabled,
+.btnExcel:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -214,6 +219,13 @@
   font-weight: 600;
 }
 
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
 .chartWrapper {
   margin-top: 0.5rem;
 }
@@ -269,13 +281,6 @@
   font-size: 0.78rem;
   color: var(--color-primary);
   margin: 0 0 0.15rem;
-  font-weight: 600;
-}
-
-.tooltipIncome {
-  font-size: 0.78rem;
-  color: var(--color-secondary);
-  margin: 0;
   font-weight: 600;
 }
 
